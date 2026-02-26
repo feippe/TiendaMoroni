@@ -1,0 +1,11 @@
+# Root .htaccess — redirect all traffic to /public
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Serve requests that already point inside /public directly
+    RewriteRule ^public/(.*)$ public/$1 [L]
+
+    # Everything else → public/
+    RewriteCond %{REQUEST_URI} !^/public
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>

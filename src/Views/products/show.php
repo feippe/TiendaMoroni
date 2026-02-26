@@ -1,0 +1,205 @@
+<?php
+$layout = 'layout/app';
+
+// JSON-LD Product schema
+$availability = $product['stock'] > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock';
+$jsonLD = json_encode([
+    '@context'         => 'https://schema.org',
+    '@type'            => 'Product',
+    'name'             => $product['name'],
+    'description'      => strip_tags($product['description'] ?? $product['short_description'] ?? ''),
+    'image'            => $product['main_image_url'],
+    'sku'              => (string) $product['id'],
+    'offers' => [
+        '@type'         => 'Offer',
+        'price'         => $product['price'],
+        'priceCurrency' => 'UYU',
+        'availability'  => $availability,
+        'url'           => SITE_URL . '/producto/' . $product['slug'],
+    ],
+], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+
+$crumbs = [
+    ['name' => 'Inicio',      'url' => SITE_URL . '/'],
+    ['name' => 'Productos',  'url' => SITE_URL . '/productos'],
+];
+if ($category) {
+    $crumbs[] = ['name' => $category['name'], 'url' => SITE_URL . '/categoria/' . $category['slug']];
+}
+$crumbs[] = ['name' => $product['name'], 'url' => SITE_URL . '/producto/' . $product['slug']];
+?>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+  <!-- Breadcrumb -->
+  <?php view('partials/breadcrumbs', ['crumbs' => $crumbs]) ?>
+
+  <div class="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-10">
+
+    <!-- Image gallery -->
+    <div x-data="{ activeImage: '<?= e($product['main_image_url']) ?>' }">
+      <!-- Main image -->
+      <div class="rounded-2xl overflow-hidden bg-warm-100 aspect-square">
+        <img :src="activeImage" alt="<?= e($product['name']) ?>"
+             loading="eager" width="600" height="600"
+             class="w-full h-full object-cover transition-opacity duration-200">
+      </div>
+
+      <!-- Thumbnails -->
+      <?php
+      // Use the gallery images; fall back to main_image_url only when the gallery is empty
+      $thumbs = !empty($images)
+          ? array_map(fn($i) => ['image_url' => $i['image_url']], $images)
+          : ($product['main_image_url'] ? [['image_url' => $product['main_image_url']]] : []);
+      ?>
+      <?php if (count($thumbs) > 1): ?>
+      <div class="mt-3 flex gap-2 overflow-x-auto pb-1">
+        <?php foreach ($thumbs as $thumb): ?>
+        <button @click="activeImage = '<?= e($thumb['image_url']) ?>'"
+                :class="activeImage === '<?= e($thumb['image_url']) ?>' ? 'ring-2 ring-brand-600' : 'ring-1 ring-warm-200'"
+                class="flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden bg-warm-100 focus:outline-none transition">
+          <img src="<?= e($thumb['image_url']) ?>" alt="" loading="lazy" width="64" height="64"
+               class="w-full h-full object-cover">
+        </button>
+        <?php endforeach; ?>
+      </div>
+      <?php endif; ?>
+    </div>
+
+    <!-- Product info -->
+    <div>
+      <?php if (!empty($product['category_name'])): ?>
+      <a href="/categoria/<?= e($product['category_slug']) ?>"
+         class="text-xs font-semibold text-brand-600 uppercase tracking-wider hover:text-brand-800 transition">
+        <?= e($product['category_name']) ?>
+      </a>
+      <?php endif; ?>
+
+      <h1 class="mt-2 text-3xl font-bold text-warm-900 leading-tight"><?= e($product['name']) ?></h1>
+
+      <?php if (!empty($product['short_description'])): ?>
+      <p class="mt-3 text-warm-500 text-base leading-relaxed"><?= e($product['short_description']) ?></p>
+      <?php endif; ?>
+
+      <div class="mt-5 flex items-baseline gap-3">
+        <span class="text-4xl font-extrabold text-warm-900"><?= formatPrice($product['price']) ?></span>
+        <?php if ($product['stock'] > 0): ?>
+        <span class="text-sm font-medium text-green-600 bg-green-50 px-2.5 py-1 rounded-full">En stock</span>
+        <?php else: ?>
+        <span class="text-sm font-medium text-red-500 bg-red-50 px-2.5 py-1 rounded-full">Sin stock</span>
+        <?php endif; ?>
+      </div>
+
+      <!-- Quantity + Add to cart -->
+      <?php if ($product['stock'] > 0): ?>
+      <div class="mt-6 flex items-center gap-3" x-data="{ qty: 1 }">
+        <div class="flex items-center border border-warm-300 rounded-xl overflow-hidden">
+          <button @click="if(qty>1) qty--"
+                  class="px-3 py-2.5 text-warm-700 hover:bg-warm-100 transition font-medium">−</button>
+          <span x-text="qty" class="px-4 py-2.5 text-sm font-semibold border-x border-warm-300 min-w-[40px] text-center"></span>
+          <button @click="qty++"
+                  class="px-3 py-2.5 text-warm-700 hover:bg-warm-100 transition font-medium">+</button>
+        </div>
+        <button @click="addToCart(<?= (int)$product['id'] ?>, $el, qty)"
+                class="flex-1 bg-brand-700 text-white py-3 px-6 rounded-xl font-bold text-base
+                       hover:bg-brand-800 active:scale-95 transition-all duration-150">
+          Agregá al carrito
+        </button>
+      </div>
+      <a href="/checkout"
+         class="mt-3 block w-full text-center bg-warm-900 text-white py-3 px-6 rounded-xl font-bold text-base
+                hover:bg-warm-700 transition">
+        Comprar ahora →
+      </a>
+      <?php else: ?>
+      <div class="mt-6">
+        <button disabled class="w-full bg-warm-200 text-warm-500 py-3 px-6 rounded-xl font-bold text-base cursor-not-allowed">
+          Sin stock
+        </button>
+      </div>
+      <?php endif; ?>
+
+      <!-- Description -->
+      <?php if (!empty($product['description'])): ?>
+      <div class="mt-8 pt-6 border-t border-warm-200" x-data="{ open: false }">
+        <button @click="open = !open"
+                class="flex items-center justify-between w-full text-left font-semibold text-warm-900">
+          <span>Sobre este producto</span>
+          <span :class="open && 'rotate-180'" class="transition-transform duration-200 inline-flex flex-shrink-0">
+            <i data-lucide="chevron-down" class="w-4 h-4"></i>
+          </span>
+        </button>
+        <div x-show="open" x-collapse class="mt-3 prose prose-sm max-w-none text-warm-600">
+          <?= $product['description'] ?>
+        </div>
+      </div>
+      <?php endif; ?>
+    </div>
+
+  </div>
+
+  <!-- Q&A Section -->
+  <section class="mt-16 max-w-3xl">
+    <h2 class="text-2xl font-bold text-warm-900 mb-6 font-serif" style="font-family:'Playfair Display',Georgia,serif">Preguntas al vendedor</h2>
+
+    <?php if ($questions): ?>
+    <div class="space-y-4 mb-8">
+      <?php foreach ($questions as $q): ?>
+      <div class="bg-white border border-warm-200 rounded-2xl p-5">
+        <p class="font-medium text-warm-900">
+          <span class="text-brand-700">P:</span> <?= e($q['question']) ?>
+          <span class="text-xs text-warm-400 ml-2"><?= e($q['user_name']) ?> · <?= date('d/m/Y', strtotime($q['created_at'])) ?></span>
+        </p>
+        <?php if ($q['answer']): ?>
+        <p class="mt-2 text-sm text-warm-600 pl-4 border-l-2 border-brand-200">
+          <span class="font-semibold text-brand-700">R:</span> <?= e($q['answer']) ?>
+          <span class="text-xs text-warm-400 ml-2"><?= date('d/m/Y', strtotime($q['answered_at'])) ?></span>
+        </p>
+        <?php else: ?>
+        <p class="mt-2 text-xs text-warm-400 italic pl-4">Aún sin respuesta…</p>
+        <?php endif; ?>
+      </div>
+      <?php endforeach; ?>
+    </div>
+    <?php else: ?>
+    <p class="text-warm-400 text-sm mb-6">Todavía no hay preguntas para este producto. ¡Sé el primero en preguntar!</p>
+    <?php endif; ?>
+
+    <!-- Ask question -->
+    <?php if (\TiendaMoroni\Core\Session::isLoggedIn()): ?>
+    <div class="bg-brand-50 border border-brand-200 rounded-2xl p-5">
+      <h3 class="font-semibold text-warm-900 mb-3">Hacé tu pregunta al vendedor</h3>
+      <?php if ($questionSaved): ?>
+      <div class="text-sm text-green-700 bg-green-50 rounded-lg px-4 py-2 mb-3">
+        ¡Pregunta enviada! El vendedor responderá pronto.
+      </div>
+      <?php endif; ?>
+      <?php if ($questionError): ?>
+      <div class="text-sm text-red-600 bg-red-50 rounded-lg px-4 py-2 mb-3"><?= e($questionError) ?></div>
+      <?php endif; ?>
+      <form method="post">
+        <input type="hidden" name="_csrf" value="<?= csrfToken() ?>">
+        <input type="hidden" name="ask_question" value="1">
+        <textarea name="question" rows="3" required
+                  placeholder="Escribí tu pregunta al vendedor sobre este producto..."
+                  class="w-full border border-warm-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 transition resize-none"></textarea>
+        <button type="submit"
+                class="mt-3 px-5 py-2.5 bg-brand-700 text-white text-sm font-semibold rounded-xl hover:bg-brand-800 transition">
+          Enviar pregunta
+        </button>
+      </form>
+    </div>
+    <?php else: ?>
+    <div class="bg-warm-100 border border-warm-200 rounded-2xl p-5 text-center">
+      <p class="text-warm-600 text-sm">
+        <a href="/auth/login?redirect=<?= urlencode('/producto/' . $product['slug']) ?>"
+           class="font-semibold text-brand-700 hover:text-brand-900 transition">
+          Iniciá sesión
+        </a>
+        para hacer una pregunta.
+      </p>
+    </div>
+    <?php endif; ?>
+  </section>
+
+</div>
