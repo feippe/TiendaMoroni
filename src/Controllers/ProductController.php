@@ -18,16 +18,22 @@ class ProductController
         $filters = [
             'q'           => sanitize(get('q', '')),
             'category_id' => (int) get('categoria', 0) ?: null,
+            'vendor_id'   => (int) get('vendedor', 0) ?: null,
             'min_price'   => get('precio_min', ''),
             'max_price'   => get('precio_max', ''),
             'sort'        => get('orden', ''),
         ];
 
+        // Expand selected category to include all descendants
+        if ($filters['category_id']) {
+            $filters['category_ids'] = CategoryModel::descendantIds((int) $filters['category_id']);
+        }
+
         $perPage    = 12;
         $total      = ProductModel::count($filters);
         $pagination = paginate($total, $perPage);
         $products   = ProductModel::list($filters, $perPage, $pagination['offset']);
-        $categories = CategoryModel::all();
+        $categories = CategoryModel::tree();
 
         view('products/index', [
             'products'   => $products,
@@ -86,13 +92,20 @@ class ProductController
             ? CategoryModel::findById((int) $product['category_id'])
             : null;
 
+        $vendorProducts = ProductModel::byVendor(
+            (int) $product['vendor_id'],
+            (int) $product['id'],
+            $product['category_id'] ? (int) $product['category_id'] : null
+        );
+
         view('products/show', [
-            'product'       => $product,
-            'images'        => $images,
-            'questions'     => $questions,
-            'questionSaved' => $questionSaved,
-            'questionError' => $questionError,
-            'category'      => $category,
+            'product'        => $product,
+            'images'         => $images,
+            'questions'      => $questions,
+            'questionSaved'  => $questionSaved,
+            'questionError'  => $questionError,
+            'category'       => $category,
+            'vendorProducts' => $vendorProducts,
             'pageTitle'     => ($product['meta_title'] ?: $product['name']) . ' – ' . SITE_NAME,
             'metaDesc'      => $product['meta_description'] ?: $product['short_description'],
             'canonical'     => SITE_URL . '/producto/' . $product['slug'],

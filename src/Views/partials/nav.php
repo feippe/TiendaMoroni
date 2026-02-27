@@ -3,15 +3,13 @@
     <div class="flex items-center justify-between h-16">
 
       <!-- Logo -->
-      <a href="/" class="flex items-center gap-2 text-brand-700 font-extrabold text-xl tracking-tight font-serif">
-        <svg class="w-7 h-7" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect width="32" height="32" rx="8" fill="#1B3A5C"/>
-          <!-- Ángel Moroni estilizado -->
-          <circle cx="16" cy="9" r="3" fill="#C9A84C"/>
-          <path d="M16 13 l-5 9 h10 z" fill="#C9A84C"/>
-          <path d="M11 18 h10" stroke="#FAFAF7" stroke-width="1"/>
-        </svg>
-        <?= SITE_NAME ?>
+      <a href="/" class="flex items-center text-brand-800 font-extrabold text-xl tracking-tight font-serif">
+        
+        <img src="/assets/img/Logo.svg"
+             alt="<?= e(SITE_NAME) ?>"
+             class="hidden sm:block h-9 w-auto"
+             height="32">
+        <span class="sm:hidden"><?= e(SITE_NAME) ?></span>
       </a>
 
       <!-- Search (desktop) -->
@@ -31,11 +29,11 @@
       <!-- Desktop actions -->
       <div class="hidden md:flex items-center gap-4">
         <!-- Cart -->
-        <a id="cart-icon" href="/carrito" class="relative flex items-center text-warm-600 hover:text-brand-700 transition">
+        <a id="cart-icon" href="/carrito" class="relative flex items-center text-warm-600 hover:text-brand-800 transition">
           <i data-lucide="shopping-cart" class="w-6 h-6"></i>
-          <span x-cloak
-                x-show="$store.cart.count > 0"
+          <span x-show="$store.cart.count > 0"
                 x-text="$store.cart.count"
+                style="<?= \TiendaMoroni\Core\Cart::count() > 0 ? '' : 'display:none' ?>"
                 class="absolute -top-2 -right-2 bg-brand-600 text-white text-xs font-bold
                        min-w-[20px] h-5 rounded-full flex items-center justify-center px-1 leading-none">
           </span>
@@ -44,12 +42,12 @@
         <!-- Account -->
         <?php if (\TiendaMoroni\Core\Session::isLoggedIn()): ?>
         <div class="relative" x-data="{ open: false }">
-          <button @click="open = !open" class="flex items-center gap-2 text-sm font-medium text-warm-700 hover:text-brand-700 transition">
+          <button @click="open = !open" class="flex items-center gap-2 text-sm font-medium text-warm-700 hover:text-brand-800 transition">
             <?php $u = \TiendaMoroni\Core\Session::user(); ?>
             <?php if ($u['avatar_url']): ?>
             <img src="<?= e($u['avatar_url']) ?>" alt="" class="w-7 h-7 rounded-full object-cover">
             <?php else: ?>
-            <div class="w-7 h-7 rounded-full bg-brand-100 flex items-center justify-center text-brand-700 font-bold text-xs">
+            <div class="w-7 h-7 rounded-full bg-brand-100 flex items-center justify-center text-brand-800 font-bold text-xs">
               <?= strtoupper(substr($u['name'], 0, 1)) ?>
             </div>
             <?php endif; ?>
@@ -70,11 +68,11 @@
         </div>
         <?php else: ?>
         <a href="/auth/login"
-           class="text-sm font-medium text-warm-700 hover:text-brand-700 transition">
+           class="text-sm font-medium text-warm-700 hover:text-brand-800 transition">
           Iniciar sesión
         </a>
         <a href="/auth/register"
-           class="text-sm font-semibold bg-brand-700 text-white px-4 py-2 rounded-lg hover:bg-brand-800 transition">
+           class="text-sm font-semibold bg-brand-800 text-white px-4 py-2 rounded-lg hover:bg-brand-700 transition">
           Registrate
         </a>
         <?php endif; ?>
@@ -91,11 +89,11 @@
     <!-- Mobile menu -->
     <div x-show="mobileMenuOpen" x-transition class="md:hidden pb-4">
       <form action="/buscar" method="get" class="mb-3">
-        <input type="search" name="q" placeholder="Buscar artesanías..."
+        <input type="search" name="q" placeholder="Buscar productos..."
                class="w-full px-4 py-2 border border-warm-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 transition">
       </form>
       <div class="flex flex-col gap-1 text-sm font-medium">
-        <a href="/productos" class="py-2 text-warm-700">Artesanías</a>
+        <a href="/productos" class="py-2 text-warm-700">Productos</a>
         <a href="/carrito" class="py-2 text-warm-700">Carrito (<span x-text="$store.cart.count"><?= \TiendaMoroni\Core\Cart::count() ?></span>)</a>
         <?php if (\TiendaMoroni\Core\Session::isLoggedIn()): ?>
         <a href="/mi-cuenta" class="py-2 text-warm-700">Mi cuenta</a>
@@ -117,10 +115,10 @@
 <div class="hidden md:block bg-warm-100 border-b border-warm-200">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex items-center gap-6 h-10 text-sm font-medium text-warm-600 overflow-x-auto">
-      <a href="/productos" class="hover:text-brand-700 whitespace-nowrap transition">Todas las artesanías</a>
+      <a href="/productos" class="hover:text-brand-800 whitespace-nowrap transition">Todos los productos</a>
       <?php foreach (\TiendaMoroni\Models\CategoryModel::roots() as $cat): ?>
       <a href="/categoria/<?= e($cat['slug']) ?>"
-         class="hover:text-brand-700 whitespace-nowrap transition">
+         class="hover:text-brand-800 whitespace-nowrap transition">
         <?= e($cat['name']) ?>
       </a>
       <?php endforeach; ?>

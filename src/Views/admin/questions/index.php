@@ -42,7 +42,7 @@
       <textarea name="answer" rows="2" required placeholder="Escribir respuesta…"
                 class="flex-1 border border-warm-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 resize-none transition"></textarea>
       <button type="submit"
-              class="self-end bg-brand-700 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-brand-800 transition whitespace-nowrap">
+              class="self-end bg-brand-800 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-brand-700 transition whitespace-nowrap">
         Responder
       </button>
     </form>

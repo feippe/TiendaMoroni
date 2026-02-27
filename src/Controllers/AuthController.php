@@ -39,7 +39,7 @@ class AuthController
             redirect('/auth/login' . ($redirect ? '?redirect=' . urlencode($redirect) : ''));
         }
 
-        $user = UserModel::findByEmail($email);
+        $user = UserModel::findByEmailWithPassword($email);
 
         if (!$user || !password_verify($password, $user['password_hash'] ?? '')) {
             Session::flash('error', 'Email o contraseña incorrectos.');
@@ -61,7 +61,7 @@ class AuthController
 
         view('auth/register', [
             'pageTitle' => 'Crear cuenta – ' . SITE_NAME,
-            'metaDesc'  => 'Creá tu cuenta en TiendaMoroni.',
+            'metaDesc'  => 'Creá tu cuenta en Tienda Moroni.',
             'canonical' => SITE_URL . '/auth/register',
             'error'     => Session::getFlash('error'),
         ]);
@@ -131,7 +131,7 @@ class AuthController
         $_SESSION['oauth_state'] = $state;
 
         $queryString = http_build_query([
-            'client_id'     => GOOGLE_CLIENT_ID,
+            'client_id'     => ],
             'redirect_uri'  => GOOGLE_REDIRECT_URI,
             'response_type' => 'code',
             'scope'         => 'openid email profile',

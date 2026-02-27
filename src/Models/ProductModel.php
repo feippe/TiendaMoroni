@@ -23,9 +23,11 @@ class ProductModel
     public static function findBySlug(string $slug): array|false
     {
         return DB::fetchOne(
-            'SELECT p.*, c.name AS category_name, c.slug AS category_slug
+            'SELECT p.*, c.name AS category_name, c.slug AS category_slug,
+                    v.business_name AS vendor_name, v.slug AS vendor_slug
              FROM products p
              LEFT JOIN categories c ON c.id = p.category_id
+             LEFT JOIN vendors v ON v.id = p.vendor_id
              WHERE p.slug = ?',
             [$slug]
         );
@@ -34,7 +36,11 @@ class ProductModel
     public static function featured(int $limit = 8): array
     {
         return DB::fetchAll(
-            'SELECT * FROM products WHERE status = "active" AND featured = 1 ORDER BY created_at DESC LIMIT ?',
+            'SELECT p.*, v.business_name AS vendor_name
+             FROM products p
+             LEFT JOIN vendors v ON v.id = p.vendor_id
+             WHERE p.status = "active" AND p.featured = 1
+             ORDER BY p.created_at DESC LIMIT ?',
             [$limit]
         );
     }
@@ -42,7 +48,11 @@ class ProductModel
     public static function recent(int $limit = 8): array
     {
         return DB::fetchAll(
-            'SELECT * FROM products WHERE status = "active" ORDER BY created_at DESC LIMIT ?',
+            'SELECT p.*, v.business_name AS vendor_name
+             FROM products p
+             LEFT JOIN vendors v ON v.id = p.vendor_id
+             WHERE p.status = "active"
+             ORDER BY p.created_at DESC LIMIT ?',
             [$limit]
         );
     }
@@ -67,9 +77,10 @@ class ProductModel
         $params[] = $offset;
 
         return DB::fetchAll(
-            "SELECT p.*, c.name AS category_name
+            "SELECT p.*, c.name AS category_name, v.business_name AS vendor_name
              FROM products p
              LEFT JOIN categories c ON c.id = p.category_id
+             LEFT JOIN vendors v ON v.id = p.vendor_id
              WHERE $where
              ORDER BY $sort
              LIMIT ? OFFSET ?",
@@ -92,6 +103,30 @@ class ProductModel
         return self::list(['category_id' => $categoryId], $limit, $offset);
     }
 
+    /**
+     * Up to $limit products from the same vendor, excluding $excludeId.
+     * Ordered: same category → sub-categories of that category → rest.
+     * Within each group: featured first, then newest.
+     */
+    public static function byVendor(int $vendorId, int $excludeId, ?int $categoryId, int $limit = 8): array
+    {
+        return DB::fetchAll(
+            'SELECT p.*, c.name AS category_name
+             FROM products p
+             LEFT JOIN categories c ON c.id = p.category_id
+             WHERE p.vendor_id = ?
+               AND p.id        != ?
+               AND p.status     = "active"
+             ORDER BY
+               CASE WHEN p.category_id = ? THEN 0 ELSE 1 END ASC,
+               CASE WHEN c.parent_id   = ? THEN 0 ELSE 1 END ASC,
+               p.featured DESC,
+               p.created_at DESC
+             LIMIT ?',
+            [$vendorId, $excludeId, $categoryId, $categoryId, $limit]
+        );
+    }
+
     // ── Images ────────────────────────────────────────────────────────────────
 
     public static function images(int $productId): array
@@ -104,25 +139,37 @@ class ProductModel
 
     // ── Admin all ─────────────────────────────────────────────────────────────
 
-    public static function all(int $limit = 50, int $offset = 0, string $q = ''): array
+    public static function all(int $limit = 50, int $offset = 0, string $q = '', ?int $vendorId = null, ?int $categoryId = null): array
     {
+        $where  = ['1=1'];
+        $params = [];
+
         if ($q) {
-            return DB::fetchAll(
-                'SELECT p.*, c.name AS category_name
-                 FROM products p
-                 LEFT JOIN categories c ON c.id = p.category_id
-                 WHERE p.name LIKE ? OR p.short_description LIKE ?
-                 ORDER BY p.created_at DESC LIMIT ? OFFSET ?',
-                ["%$q%", "%$q%", $limit, $offset]
-            );
+            $where[]  = '(p.name LIKE ? OR p.short_description LIKE ?)';
+            $params[] = "%$q%";
+            $params[] = "%$q%";
+        }
+        if ($vendorId) {
+            $where[]  = 'p.vendor_id = ?';
+            $params[] = $vendorId;
+        }
+        if ($categoryId) {
+            $where[]  = 'p.category_id = ?';
+            $params[] = $categoryId;
         }
 
+        $whereStr = implode(' AND ', $where);
+        $params[] = $limit;
+        $params[] = $offset;
+
         return DB::fetchAll(
-            'SELECT p.*, c.name AS category_name
+            "SELECT p.*, c.name AS category_name, v.business_name AS vendor_name
              FROM products p
              LEFT JOIN categories c ON c.id = p.category_id
-             ORDER BY p.created_at DESC LIMIT ? OFFSET ?',
-            [$limit, $offset]
+             LEFT JOIN vendors v ON v.id = p.vendor_id
+             WHERE $whereStr
+             ORDER BY p.created_at DESC LIMIT ? OFFSET ?",
+            $params
         );
     }
 
@@ -160,13 +207,14 @@ class ProductModel
     {
         DB::query(
             'UPDATE products SET
-               category_id=:category_id, name=:name, slug=:slug,
+               vendor_id=:vendor_id, category_id=:category_id, name=:name, slug=:slug,
                description=:description, short_description=:short_description,
                price=:price, stock=:stock, status=:status, featured=:featured,
                main_image_url=:main_image_url, meta_title=:meta_title,
                meta_description=:meta_description
              WHERE id = :id',
             [
+                ':vendor_id'         => $data['vendor_id'],
                 ':category_id'       => $data['category_id'] ?? null,
                 ':name'              => $data['name'],
                 ':slug'              => $data['slug'],
@@ -209,9 +257,18 @@ class ProductModel
         $where  = ['p.status = "active"'];
         $params = [];
 
-        if (!empty($filters['category_id'])) {
+        if (!empty($filters['category_ids']) && is_array($filters['category_ids'])) {
+            $placeholders = implode(',', array_fill(0, count($filters['category_ids']), '?'));
+            $where[]      = "p.category_id IN ($placeholders)";
+            $params       = array_merge($params, array_map('intval', $filters['category_ids']));
+        } elseif (!empty($filters['category_id'])) {
             $where[]  = 'p.category_id = ?';
             $params[] = (int) $filters['category_id'];
+        }
+
+        if (!empty($filters['vendor_id'])) {
+            $where[]  = 'p.vendor_id = ?';
+            $params[] = (int) $filters['vendor_id'];
         }
 
         if (!empty($filters['q'])) {

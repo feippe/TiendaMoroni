@@ -90,4 +90,71 @@ class CategoryModel
     {
         DB::query('DELETE FROM categories WHERE id = ?', [$id]);
     }
+
+    /** Direct children of a category. */
+    public static function children(int $parentId): array
+    {
+        return DB::fetchAll(
+            'SELECT * FROM categories WHERE parent_id = ? ORDER BY sort_order ASC, name ASC',
+            [$parentId]
+        );
+    }
+
+    /**
+     * Returns all IDs that belong to the subtree rooted at $categoryId
+     * (including $categoryId itself).
+     */
+    public static function descendantIds(int $categoryId): array
+    {
+        $all = DB::fetchAll('SELECT id, parent_id FROM categories');
+
+        $ids     = [$categoryId];
+        $changed = true;
+        while ($changed) {
+            $changed = false;
+            foreach ($all as $row) {
+                $rowId  = (int) $row['id'];
+                $rowPid = $row['parent_id'] !== null ? (int) $row['parent_id'] : null;
+                if (!in_array($rowId, $ids, true) && $rowPid !== null && in_array($rowPid, $ids, true)) {
+                    $ids[]   = $rowId;
+                    $changed = true;
+                }
+            }
+        }
+
+        return $ids;
+    }
+
+    /**
+     * Returns every category as a flat list ordered for tree rendering,
+     * with an added 'depth' key (0 = root).
+     */
+    public static function tree(): array
+    {
+        $all = DB::fetchAll(
+            'SELECT * FROM categories ORDER BY sort_order ASC, name ASC'
+        );
+
+        $byParent = [];
+        foreach ($all as $cat) {
+            $key              = $cat['parent_id'] !== null ? (int) $cat['parent_id'] : 0;
+            $byParent[$key][] = $cat;
+        }
+
+        $result = [];
+        self::flattenTree($byParent, 0, 0, $result);
+        return $result;
+    }
+
+    private static function flattenTree(array $byParent, int $parentId, int $depth, array &$result): void
+    {
+        if (!isset($byParent[$parentId])) {
+            return;
+        }
+        foreach ($byParent[$parentId] as $cat) {
+            $cat['depth'] = $depth;
+            $result[]     = $cat;
+            self::flattenTree($byParent, (int) $cat['id'], $depth + 1, $result);
+        }
+    }
 }

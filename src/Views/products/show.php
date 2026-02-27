@@ -92,25 +92,27 @@ $crumbs[] = ['name' => $product['name'], 'url' => SITE_URL . '/producto/' . $pro
 
       <!-- Quantity + Add to cart -->
       <?php if ($product['stock'] > 0): ?>
-      <div class="mt-6 flex items-center gap-3" x-data="{ qty: 1 }">
-        <div class="flex items-center border border-warm-300 rounded-xl overflow-hidden">
-          <button @click="if(qty>1) qty--"
-                  class="px-3 py-2.5 text-warm-700 hover:bg-warm-100 transition font-medium">−</button>
-          <span x-text="qty" class="px-4 py-2.5 text-sm font-semibold border-x border-warm-300 min-w-[40px] text-center"></span>
-          <button @click="qty++"
-                  class="px-3 py-2.5 text-warm-700 hover:bg-warm-100 transition font-medium">+</button>
+      <div class="mt-6" x-data="{ qty: 1 }">
+        <div class="flex items-center gap-3">
+          <div class="flex items-center border border-warm-300 rounded-xl overflow-hidden">
+            <button @click="if(qty>1) qty--"
+                    class="px-3 py-2.5 text-warm-700 hover:bg-warm-100 transition font-medium">−</button>
+            <span x-text="qty" class="px-4 py-2.5 text-sm font-semibold border-x border-warm-300 min-w-[40px] text-center"></span>
+            <button @click="qty++"
+                    class="px-3 py-2.5 text-warm-700 hover:bg-warm-100 transition font-medium">+</button>
+          </div>
+          <button @click="addToCart(<?= (int)$product['id'] ?>, $el, qty)"
+                  class="flex-1 bg-brand-800 text-white py-3 px-6 rounded-xl font-bold text-base
+                         hover:bg-brand-700 active:scale-95 transition-all duration-150">
+            Agregá al carrito
+          </button>
         </div>
-        <button @click="addToCart(<?= (int)$product['id'] ?>, $el, qty)"
-                class="flex-1 bg-brand-700 text-white py-3 px-6 rounded-xl font-bold text-base
-                       hover:bg-brand-800 active:scale-95 transition-all duration-150">
-          Agregá al carrito
+        <button @click="buyNow(<?= (int)$product['id'] ?>, $el, qty)"
+                class="mt-3 w-full bg-warm-900 text-white py-3 px-6 rounded-xl font-bold text-base
+                       hover:bg-warm-700 active:scale-95 transition-all duration-150">
+          Comprar ahora →
         </button>
       </div>
-      <a href="/checkout"
-         class="mt-3 block w-full text-center bg-warm-900 text-white py-3 px-6 rounded-xl font-bold text-base
-                hover:bg-warm-700 transition">
-        Comprar ahora →
-      </a>
       <?php else: ?>
       <div class="mt-6">
         <button disabled class="w-full bg-warm-200 text-warm-500 py-3 px-6 rounded-xl font-bold text-base cursor-not-allowed">
@@ -119,17 +121,23 @@ $crumbs[] = ['name' => $product['name'], 'url' => SITE_URL . '/producto/' . $pro
       </div>
       <?php endif; ?>
 
+      <!-- Vendor -->
+      <?php if (!empty($product['vendor_name'])): ?>
+      <div class="mt-6 pt-5 border-t border-warm-100 flex items-center gap-2 text-sm text-warm-500">
+        <i data-lucide="store" class="w-4 h-4 flex-shrink-0"></i>
+        Vendido por
+        <a href="/vendedor/<?= e($product['vendor_slug'] ?? '') ?>"
+           class="font-medium text-warm-800 hover:text-brand-800 transition">
+          <?= e($product['vendor_name']) ?>
+        </a>
+      </div>
+      <?php endif; ?>
+
       <!-- Description -->
       <?php if (!empty($product['description'])): ?>
-      <div class="mt-8 pt-6 border-t border-warm-200" x-data="{ open: false }">
-        <button @click="open = !open"
-                class="flex items-center justify-between w-full text-left font-semibold text-warm-900">
-          <span>Sobre este producto</span>
-          <span :class="open && 'rotate-180'" class="transition-transform duration-200 inline-flex flex-shrink-0">
-            <i data-lucide="chevron-down" class="w-4 h-4"></i>
-          </span>
-        </button>
-        <div x-show="open" x-collapse class="mt-3 prose prose-sm max-w-none text-warm-600">
+      <div class="mt-8 pt-6 border-t border-warm-200">
+        <h2 class="font-semibold text-warm-900 mb-3">Sobre este producto</h2>
+        <div class="prose prose-sm max-w-none text-warm-600">
           <?= $product['description'] ?>
         </div>
       </div>
@@ -137,6 +145,70 @@ $crumbs[] = ['name' => $product['name'], 'url' => SITE_URL . '/producto/' . $pro
     </div>
 
   </div>
+
+  <!-- Vendor products slider -->
+  <?php if (!empty($vendorProducts)): ?>
+  <section class="mt-16" x-data="{
+    el: null,
+    canPrev: false,
+    canNext: true,
+    init() {
+      this.el = this.$refs.slider;
+      this.el.addEventListener('scroll', () => this.updateNav(), { passive: true });
+      this.$nextTick(() => this.updateNav());
+    },
+    updateNav() {
+      this.canPrev = this.el.scrollLeft > 4;
+      this.canNext = this.el.scrollLeft + this.el.offsetWidth < this.el.scrollWidth - 4;
+    },
+    scroll(dir) {
+      this.el.scrollBy({ left: dir * (this.el.offsetWidth * 0.75), behavior: 'smooth' });
+    }
+  }">
+    <div class="flex items-center justify-between mb-5">
+      <h2 class="text-xl font-bold text-warm-900">
+        Más de <span class="text-brand-800"><?= e($product['vendor_name']) ?></span>
+      </h2>
+      <div class="flex items-center gap-2">
+        <button @click="scroll(-1)" :disabled="!canPrev"
+                class="w-9 h-9 rounded-full border border-warm-200 flex items-center justify-center text-warm-600
+                       hover:border-brand-400 hover:text-brand-800 transition disabled:opacity-30 disabled:cursor-not-allowed">
+          <i data-lucide="chevron-left" class="w-4 h-4"></i>
+        </button>
+        <button @click="scroll(1)" :disabled="!canNext"
+                class="w-9 h-9 rounded-full border border-warm-200 flex items-center justify-center text-warm-600
+                       hover:border-brand-400 hover:text-brand-800 transition disabled:opacity-30 disabled:cursor-not-allowed">
+          <i data-lucide="chevron-right" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </div>
+
+    <div x-ref="slider"
+         class="flex gap-4 overflow-x-auto pb-3 scroll-smooth snap-x snap-mandatory"
+         style="scrollbar-width: none; -ms-overflow-style: none;">
+
+      <?php $mainProduct = $product; ?>
+      <?php foreach ($vendorProducts as $product): ?>
+      <div class="flex-shrink-0 snap-start" style="width: clamp(180px, 22%, 220px)">
+        <?php include __DIR__ . '/../partials/product_card.php'; ?>
+      </div>
+      <?php endforeach; ?>
+      <?php $product = $mainProduct; unset($mainProduct); ?>
+
+      <!-- "Ver más" card -->
+      <div class="flex-shrink-0 snap-start" style="width: clamp(180px, 22%, 220px)">
+        <a href="/vendedor/<?= e($product['vendor_slug'] ?? '') ?>"
+           class="flex flex-col items-center justify-center h-full min-h-[240px] rounded-2xl border-2 border-dashed
+                  border-warm-300 text-warm-500 hover:border-brand-400 hover:text-brand-800 transition group p-6 text-center">
+          <i data-lucide="layout-grid" class="w-8 h-8 mb-3 opacity-60 group-hover:opacity-100 transition"></i>
+          <span class="text-sm font-semibold">Ver todos los productos</span>
+          <span class="text-xs mt-1 opacity-70">de <?= e($product['vendor_name']) ?></span>
+        </a>
+      </div>
+
+    </div>
+  </section>
+  <?php endif; ?>
 
   <!-- Q&A Section -->
   <section class="mt-16 max-w-3xl">
@@ -147,12 +219,12 @@ $crumbs[] = ['name' => $product['name'], 'url' => SITE_URL . '/producto/' . $pro
       <?php foreach ($questions as $q): ?>
       <div class="bg-white border border-warm-200 rounded-2xl p-5">
         <p class="font-medium text-warm-900">
-          <span class="text-brand-700">P:</span> <?= e($q['question']) ?>
+          <span class="text-brand-800">P:</span> <?= e($q['question']) ?>
           <span class="text-xs text-warm-400 ml-2"><?= e($q['user_name']) ?> · <?= date('d/m/Y', strtotime($q['created_at'])) ?></span>
         </p>
         <?php if ($q['answer']): ?>
         <p class="mt-2 text-sm text-warm-600 pl-4 border-l-2 border-brand-200">
-          <span class="font-semibold text-brand-700">R:</span> <?= e($q['answer']) ?>
+          <span class="font-semibold text-brand-800">R:</span> <?= e($q['answer']) ?>
           <span class="text-xs text-warm-400 ml-2"><?= date('d/m/Y', strtotime($q['answered_at'])) ?></span>
         </p>
         <?php else: ?>
@@ -184,7 +256,7 @@ $crumbs[] = ['name' => $product['name'], 'url' => SITE_URL . '/producto/' . $pro
                   placeholder="Escribí tu pregunta al vendedor sobre este producto..."
                   class="w-full border border-warm-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 transition resize-none"></textarea>
         <button type="submit"
-                class="mt-3 px-5 py-2.5 bg-brand-700 text-white text-sm font-semibold rounded-xl hover:bg-brand-800 transition">
+                class="mt-3 px-5 py-2.5 bg-brand-800 text-white text-sm font-semibold rounded-xl hover:bg-brand-700 transition">
           Enviar pregunta
         </button>
       </form>
@@ -193,7 +265,7 @@ $crumbs[] = ['name' => $product['name'], 'url' => SITE_URL . '/producto/' . $pro
     <div class="bg-warm-100 border border-warm-200 rounded-2xl p-5 text-center">
       <p class="text-warm-600 text-sm">
         <a href="/auth/login?redirect=<?= urlencode('/producto/' . $product['slug']) ?>"
-           class="font-semibold text-brand-700 hover:text-brand-900 transition">
+           class="font-semibold text-brand-800 hover:text-brand-900 transition">
           Iniciá sesión
         </a>
         para hacer una pregunta.

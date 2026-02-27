@@ -23,10 +23,10 @@ class CategoryController
         Session::requireAdmin();
 
         view('admin/categories/form', [
-            'category'   => null,
-            'categories' => CategoryModel::all(),
-            'error'      => Session::getFlash('error'),
-            'pageTitle'  => 'Nueva categoría – Admin',
+            'category'      => null,
+            'allCategories' => CategoryModel::all(),
+            'error'         => Session::getFlash('error'),
+            'pageTitle'     => 'Nueva categoría – Admin',
         ]);
     }
 
@@ -54,10 +54,10 @@ class CategoryController
         if (!$category) redirect('/admin/categorias');
 
         view('admin/categories/form', [
-            'category'   => $category,
-            'categories' => CategoryModel::all(),
-            'error'      => Session::getFlash('error'),
-            'pageTitle'  => 'Editar categoría – Admin',
+            'category'      => $category,
+            'allCategories' => CategoryModel::all(),
+            'error'         => Session::getFlash('error'),
+            'pageTitle'     => 'Editar categoría – Admin',
         ]);
     }
 

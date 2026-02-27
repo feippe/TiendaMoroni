@@ -15,7 +15,8 @@ CREATE TABLE IF NOT EXISTS `users` (
   `avatar_url`    VARCHAR(500)        NULL  DEFAULT NULL,
   `auth_provider` ENUM('own','google') NOT NULL DEFAULT 'own',
   `google_id`     VARCHAR(80)         NULL  DEFAULT NULL,
-  `role`          ENUM('admin','buyer') NOT NULL DEFAULT 'buyer',
+  `role`          ENUM('admin','buyer','vendor') NOT NULL DEFAULT 'buyer',
+  `active`        TINYINT(1)           NOT NULL DEFAULT 1,
   `created_at`    DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_users_email` (`email`),
@@ -24,13 +25,17 @@ CREATE TABLE IF NOT EXISTS `users` (
 
 -- ── Vendors ───────────────────────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS `vendors` (
-  `id`            BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `user_id`       BIGINT UNSIGNED NOT NULL,
-  `business_name` VARCHAR(180)    NOT NULL,
-  `email`         VARCHAR(255)    NOT NULL,
-  `phone`         VARCHAR(30)         NULL  DEFAULT NULL,
-  `created_at`    DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `id`                   BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `user_id`              BIGINT UNSIGNED NOT NULL,
+  `business_name`        VARCHAR(180)    NOT NULL,
+  `slug`                 VARCHAR(200)    NOT NULL,
+  `business_description` TEXT                NULL  DEFAULT NULL,
+  `email`                VARCHAR(255)    NOT NULL,
+  `phone`                VARCHAR(30)         NULL  DEFAULT NULL,
+  `is_verified`          TINYINT(1)      NOT NULL DEFAULT 0,
+  `created_at`           DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_vendors_slug` (`slug`),
   KEY `idx_vendors_user` (`user_id`),
   CONSTRAINT `fk_vendors_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -156,3 +161,25 @@ CREATE TABLE IF NOT EXISTS `sessions` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 SET foreign_key_checks = 1;
+-- ── Vendor contacts (publicar-gratis landing form) ────────────────────────────
+CREATE TABLE IF NOT EXISTS vendor_contacts (
+  id           INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  name         VARCHAR(100) NOT NULL,
+  lastname     VARCHAR(100) NOT NULL,
+  phone        VARCHAR(30)  NOT NULL,
+  email        VARCHAR(150) NOT NULL,
+  comments     TEXT,
+  ip_address   VARCHAR(45),
+  created_at   DATETIME DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ── Site settings (key/value store) ──────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS site_settings (
+  id          INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  setting_key VARCHAR(100) NOT NULL UNIQUE,
+  value       VARCHAR(255) NOT NULL,
+  updated_at  DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT IGNORE INTO site_settings (setting_key, value)
+VALUES ('maintenance_mode', '0');

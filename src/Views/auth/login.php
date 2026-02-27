@@ -6,7 +6,7 @@
     <div class="text-center mb-8">
       <h1 class="text-3xl font-bold text-warm-800 font-serif" style="font-family:'Playfair Display',Georgia,serif">Bienvenido de vuelta</h1>
       <p class="mt-2 text-warm-500 text-sm">¿No tenés cuenta?
-        <a href="/auth/register" class="text-brand-700 font-semibold hover:text-brand-900 transition">Registrate gratis</a>
+        <a href="/auth/register" class="text-brand-800 font-semibold hover:text-brand-900 transition">Registrate gratis</a>
       </p>
     </div>
 
@@ -52,7 +52,7 @@
       </div>
 
       <button type="submit"
-              class="w-full bg-brand-700 text-white py-3.5 rounded-xl font-bold text-sm hover:bg-brand-800 transition">
+              class="w-full bg-brand-800 text-white py-3.5 rounded-xl font-bold text-sm hover:bg-brand-700 transition">
         Ingresar
       </button>
     </form>

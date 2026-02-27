@@ -26,7 +26,7 @@ $statusLabels = [
     <img src="<?= e($user['avatar_url']) ?>" alt="<?= e($user['name']) ?>"
          class="w-16 h-16 rounded-full object-cover border-2 border-brand-200">
     <?php else: ?>
-    <div class="w-16 h-16 rounded-full bg-brand-100 flex items-center justify-center text-brand-700 font-bold text-2xl">
+    <div class="w-16 h-16 rounded-full bg-brand-100 flex items-center justify-center text-brand-800 font-bold text-2xl">
       <?= strtoupper(mb_substr($user['name'], 0, 1)) ?>
     </div>
     <?php endif; ?>
@@ -34,7 +34,7 @@ $statusLabels = [
       <p class="text-xl font-bold text-warm-900"><?= e($user['name']) ?></p>
       <p class="text-warm-500 text-sm"><?= e($user['email']) ?></p>
       <span class="inline-block mt-1 text-xs font-medium px-2.5 py-0.5 rounded-full
-                   <?= $user['role'] === 'admin' ? 'bg-brand-100 text-brand-700' : 'bg-warm-100 text-warm-600' ?>">
+                   <?= $user['role'] === 'admin' ? 'bg-brand-100 text-brand-800' : 'bg-warm-100 text-warm-600' ?>">
         <?= $user['role'] === 'admin' ? 'Administrador' : 'Comprador' ?>
       </span>
     </div>
@@ -45,7 +45,7 @@ $statusLabels = [
     <a href="/productos"
        class="flex items-center gap-3 bg-white border border-warm-200 rounded-2xl p-4 hover:border-brand-300 hover:shadow-sm transition">
       <div class="w-9 h-9 bg-brand-100 rounded-xl flex items-center justify-center flex-shrink-0">
-        <i data-lucide="store" class="w-5 h-5 text-brand-700"></i>
+        <i data-lucide="store" class="w-5 h-5 text-brand-800"></i>
       </div>
       <div>
         <p class="font-semibold text-warm-900 text-sm">Explorar</p>
@@ -56,7 +56,7 @@ $statusLabels = [
     <a href="/carrito"
        class="flex items-center gap-3 bg-white border border-warm-200 rounded-2xl p-4 hover:border-brand-300 hover:shadow-sm transition">
       <div class="w-9 h-9 bg-brand-100 rounded-xl flex items-center justify-center flex-shrink-0">
-        <i data-lucide="shopping-cart" class="w-5 h-5 text-brand-700"></i>
+        <i data-lucide="shopping-cart" class="w-5 h-5 text-brand-800"></i>
       </div>
       <div>
         <p class="font-semibold text-warm-900 text-sm">Carrito</p>
@@ -66,7 +66,7 @@ $statusLabels = [
 
     <?php if ($user['role'] === 'admin'): ?>
     <a href="/admin"
-       class="flex items-center gap-3 bg-brand-700 text-white rounded-2xl p-4 hover:bg-brand-800 transition">
+       class="flex items-center gap-3 bg-brand-800 text-white rounded-2xl p-4 hover:bg-brand-700 transition">
       <div class="w-9 h-9 bg-brand-600 rounded-xl flex items-center justify-center flex-shrink-0">
         <i data-lucide="layout-dashboard" class="w-5 h-5 text-white"></i>
       </div>
@@ -97,7 +97,7 @@ $statusLabels = [
     <div class="bg-white border border-warm-200 rounded-2xl p-10 text-center text-warm-400">
       <i data-lucide="file-text" class="w-12 h-12 mx-auto mb-3 opacity-40"></i>
       <p class="font-medium text-sm">Aún no realizaste ningún pedido.</p>
-      <a href="/productos" class="inline-block mt-4 px-5 py-2 bg-brand-700 text-white rounded-xl text-sm font-semibold hover:bg-brand-800 transition">
+      <a href="/productos" class="inline-block mt-4 px-5 py-2 bg-brand-800 text-white rounded-xl text-sm font-semibold hover:bg-brand-700 transition">
         Explorar productos
       </a>
     </div>
@@ -123,7 +123,7 @@ $statusLabels = [
             <?= e($order['shipping_address']) ?>
           </div>
           <a href="/checkout/confirmacion?orden=<?= (int)$order['id'] ?>"
-             class="flex-shrink-0 text-sm font-semibold text-brand-700 hover:text-brand-900 transition whitespace-nowrap">
+             class="flex-shrink-0 text-sm font-semibold text-brand-800 hover:text-brand-900 transition whitespace-nowrap">
             Ver detalle →
           </a>
         </div>

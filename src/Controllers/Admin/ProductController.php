@@ -15,13 +15,19 @@ class ProductController
     {
         Session::requireAdmin();
 
-        $q        = sanitize(get('q', ''));
-        $products = ProductModel::all(50, 0, $q);
+        $q          = sanitize(get('q', ''));
+        $vendorId   = (int) get('vendor_id', 0) ?: null;
+        $categoryId = (int) get('category_id', 0) ?: null;
+        $products   = ProductModel::all(50, 0, $q, $vendorId, $categoryId);
 
         view('admin/products/index', [
-            'products'  => $products,
-            'q'         => $q,
-            'pageTitle' => 'Productos – Admin',
+            'products'   => $products,
+            'q'          => $q,
+            'vendorId'   => $vendorId,
+            'categoryId' => $categoryId,
+            'vendors'    => VendorModel::allForSelect(),
+            'categories' => CategoryModel::all(),
+            'pageTitle'  => 'Productos – Admin',
         ]);
     }
 
@@ -33,6 +39,7 @@ class ProductController
             'product'    => null,
             'images'     => [],
             'categories' => CategoryModel::all(),
+            'vendors'    => VendorModel::allForSelect(),
             'error'      => Session::getFlash('error'),
             'pageTitle'  => 'Nuevo producto – Admin',
         ]);
@@ -84,6 +91,7 @@ class ProductController
             'product'    => $product,
             'images'     => $images,
             'categories' => CategoryModel::all(),
+            'vendors'    => VendorModel::allForSelect(),
             'saved'      => get('saved') === '1',
             'error'      => Session::getFlash('error'),
             'pageTitle'  => 'Editar ' . $product['name'] . ' – Admin',
@@ -252,10 +260,10 @@ class ProductController
 
     private function collectFormData(): array
     {
-        $vendor = VendorModel::first();
+        $defaultVendor = VendorModel::first();
 
         return [
-            'vendor_id'         => $vendor ? (int) $vendor['id'] : 1,
+            'vendor_id'         => (int) post('vendor_id') ?: ($defaultVendor ? (int) $defaultVendor['id'] : 1),
             'category_id'       => (int) post('category_id') ?: null,
             'name'              => sanitize(post('name', '')),
             'slug'              => sanitize(post('slug', '')) ?: slugify(post('name', '')),

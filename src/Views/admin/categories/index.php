@@ -3,7 +3,7 @@
 <div class="mb-6 flex justify-between items-center">
   <h2 class="text-xl font-bold text-warm-900">Categorías</h2>
   <a href="/admin/categorias/nueva"
-     class="bg-brand-700 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-brand-800 transition">
+     class="bg-brand-800 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-brand-700 transition">
     + Nueva categoría
   </a>
 </div>

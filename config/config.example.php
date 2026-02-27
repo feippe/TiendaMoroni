@@ -13,7 +13,7 @@ define('DB_PASS',     '');
 define('DB_CHARSET',  'utf8mb4');
 
 // ── Site ──────────────────────────────────────────────────────────────────────
-define('SITE_NAME',   'TiendaMoroni');
+define('SITE_NAME',   'Tienda Moroni');
 // Auto-detect scheme + host + port from the incoming request (includes port on dev servers).
 // Override with a fixed value for production, e.g.: define('SITE_URL', 'https://tiendamoroni.com');
 define('SITE_URL', (function (): string {
@@ -42,7 +42,7 @@ define('SMTP_PORT',   587);
 define('SMTP_USER',   'YOUR_SMTP_USER');
 define('SMTP_PASS',   'YOUR_SMTP_PASS');
 define('SMTP_FROM',   'noreply@tiendamoroni.com');
-define('SMTP_FROM_NAME', 'TiendaMoroni');
+define('SMTP_FROM_NAME', 'Tienda Moroni');
 
 // ── File Uploads ──────────────────────────────────────────────────────────────
 define('UPLOAD_PATH', dirname(__DIR__) . '/public/assets/uploads/');

@@ -7,6 +7,8 @@
   <title><?= e($pageTitle ?? SITE_NAME) ?></title>
   <meta name="description" content="<?= e($metaDesc ?? '') ?>">
   <link rel="canonical" href="<?= e($canonical ?? currentUrl()) ?>">
+  <link rel="icon" href="/assets/img/isotipo.ico" type="image/x-icon">
+  <link rel="shortcut icon" href="/assets/img/isotipo.ico" type="image/x-icon">
 
   <!-- Open Graph -->
   <?php if (isset($ogImage)): ?>
@@ -34,33 +36,33 @@
           },
           colors: {
             brand: {
-              50:  '#fdfaf0',
-              100: '#f7f0d6',
-              200: '#edd9a3',
-              300: '#d4b566',
-              400: '#C9A84C',   /* dorado Ángel Moroni */
-              500: '#b89235',
-              600: '#24527F',
-              700: '#1B3A5C',   /* azul marino — botones principales */
-              800: '#142d47',
-              900: '#0d1f30',
+              50:  '#f5f7fa',
+              100: '#e8edf4',
+              200: '#c8d4e4',
+              300: '#9ab1cc',
+              400: '#C6A75E',   /* gold matte — primary accent */
+              500: '#b5923f',
+              600: '#1B3A5C',   /* mid navy — compatibility */
+              700: '#162E4A',   /* mid navy */
+              800: '#0F1E2E',   /* deep midnight navy — primary */
+              900: '#090f17',
             },
             warm: {
-              50:  '#FAFAF7',   /* fondo blanco cálido */
-              100: '#f2f2ef',
-              200: '#e5e5e0',
-              300: '#d0cfc9',
-              400: '#a8a79f',
-              500: '#78776f',
-              600: '#57564e',
-              700: '#44433c',
-              800: '#2C2C2C',   /* texto principal */
-              900: '#1a1a17',
+              50:  '#F8F6F2',   /* warm white */
+              100: '#f0ede6',
+              200: '#e2ddd4',
+              300: '#cdc7bb',
+              400: '#a8a092',
+              500: '#7a7268',
+              600: '#5a5450',
+              700: '#44403c',
+              800: '#2C2A27',   /* dark text */
+              900: '#1a1916',
             },
             accent: {
-              DEFAULT: '#A0522D', /* terracota artesanal */
-              light:   '#c27042',
-              dark:    '#7a3e22',
+              DEFAULT: '#C6A75E', /* gold matte */
+              light:   '#d4b97a',
+              dark:    '#a88840',
             },
           },
           transitionDuration: { DEFAULT: '200ms' },
@@ -110,8 +112,7 @@
   <!-- Cart notification toast -->
   <div x-cloak x-show="$store.cart.toast"
        x-transition
-       class="fixed bottom-6 right-6 z-50 bg-brand-700 text-white px-5 py-3 rounded-xl shadow-xl text-sm font-medium"
-       x-init="Alpine.store('cart', { toast: false })">
+       class="fixed bottom-6 right-6 z-50 bg-brand-800 text-white px-5 py-3 rounded-xl shadow-xl text-sm font-medium">
     ¡Agregado al carrito! 🛒
   </div>
 

@@ -80,11 +80,15 @@ class Router
 
     private function call404(): void
     {
-        $viewPath = dirname(__DIR__) . '/Views/errors/404.php';
-        if (file_exists($viewPath)) {
-            require $viewPath;
+        if (function_exists('view')) {
+            view('errors/404');
         } else {
-            echo '<h1>404 – Página no encontrada</h1>';
+            $viewPath = dirname(__DIR__) . '/Views/errors/404.php';
+            if (file_exists($viewPath)) {
+                require $viewPath;
+            } else {
+                echo '<h1>404 – Página no encontrada</h1>';
+            }
         }
     }
 }

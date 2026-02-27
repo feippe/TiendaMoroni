@@ -72,7 +72,7 @@
 
       <button type="button"
               @click="window.dispatchEvent(new CustomEvent('open-media-picker', { detail: { callback: (f) => imageUrl = f.url } }))"
-              class="flex items-center gap-2 px-4 py-2 border border-warm-300 rounded-xl text-sm text-warm-700 hover:border-brand-400 hover:text-brand-700 transition">
+              class="flex items-center gap-2 px-4 py-2 border border-warm-300 rounded-xl text-sm text-warm-700 hover:border-brand-400 hover:text-brand-800 transition">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909M3 9h18M3 6h18"/>
         </svg>
@@ -104,7 +104,7 @@
     </div>
 
     <button type="submit"
-            class="w-full bg-brand-700 text-white py-2.5 rounded-xl text-sm font-bold hover:bg-brand-800 transition">
+            class="w-full bg-brand-800 text-white py-2.5 rounded-xl text-sm font-bold hover:bg-brand-700 transition">
       <?= $category ? 'Guardar cambios' : 'Crear categoría' ?>
     </button>
   </div>

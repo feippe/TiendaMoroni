@@ -109,7 +109,7 @@
           <!-- Pick from repository -->
           <button type="button"
                   @click="openPicker()"
-                  class="flex items-center gap-1.5 px-3 py-2 bg-brand-700 text-white rounded-lg text-sm font-semibold hover:bg-brand-800 transition">
+                  class="flex items-center gap-1.5 px-3 py-2 bg-brand-800 text-white rounded-lg text-sm font-semibold hover:bg-brand-700 transition">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
             </svg>
@@ -127,7 +127,7 @@
                  onerror="this.style.background='#f5f5f0'">
             <div class="flex-1 min-w-0">
               <span x-show="index === 0"
-                    class="inline-block text-xs font-semibold px-2 py-0.5 bg-brand-100 text-brand-700 rounded-full mb-1">
+                    class="inline-block text-xs font-semibold px-2 py-0.5 bg-brand-100 text-brand-800 rounded-full mb-1">
                 Principal
               </span>
               <p class="text-xs text-warm-500 truncate" x-text="img.image_url.split('/').pop()"></p>
@@ -266,8 +266,22 @@
         </select>
       </div>
 
+      <div>
+        <label class="block text-sm font-medium text-warm-700 mb-1">Vendedor *</label>
+        <select name="vendor_id"
+                class="w-full border border-warm-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 transition">
+          <option value="">— Seleccionar vendedor —</option>
+          <?php foreach ($vendors as $v): ?>
+          <option value="<?= (int)$v['id'] ?>"
+                  <?= (int)($product['vendor_id'] ?? 0) === (int)$v['id'] ? 'selected' : '' ?>>
+            <?= e($v['business_name']) ?>
+          </option>
+          <?php endforeach; ?>
+        </select>
+      </div>
+
       <button type="submit"
-              class="w-full bg-brand-700 text-white py-2.5 rounded-xl text-sm font-bold hover:bg-brand-800 transition">
+              class="w-full bg-brand-800 text-white py-2.5 rounded-xl text-sm font-bold hover:bg-brand-700 transition">
         <?= $product ? 'Guardar cambios' : 'Crear producto' ?>
       </button>
     </div>

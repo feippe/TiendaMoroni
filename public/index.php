@@ -47,6 +47,14 @@ Session::start();
 
 /*
 |--------------------------------------------------------------------------
+| Middleware
+|--------------------------------------------------------------------------
+*/
+use TiendaMoroni\Core\MaintenanceMiddleware;
+MaintenanceMiddleware::handle();
+
+/*
+|--------------------------------------------------------------------------
 | Routes
 |--------------------------------------------------------------------------
 */
@@ -64,6 +72,13 @@ $router->get('/buscar',              ['TiendaMoroni\Controllers\ProductControlle
 
 // Categories
 $router->get('/categoria/{slug}',    ['TiendaMoroni\Controllers\CategoryController', 'show']);
+
+// Vendors
+$router->get('/vendedor/{slug}',     ['TiendaMoroni\Controllers\VendorController',  'show']);
+
+// Publicar gratis (artisan landing)
+$router->get('/publicar-gratis',     ['TiendaMoroni\Controllers\PublishController', 'show']);
+$router->post('/publicar-gratis',    ['TiendaMoroni\Controllers\PublishController', 'store']);
 
 // Cart
 $router->get('/carrito',             ['TiendaMoroni\Controllers\CartController',     'show']);
@@ -122,7 +137,24 @@ $router->post('/admin/preguntas/{id}/responder',     ['TiendaMoroni\Controllers\
 $router->post('/admin/preguntas/{id}/eliminar',      ['TiendaMoroni\Controllers\Admin\QuestionController', 'delete']);
 
 // Admin — Vendors
-$router->get('/admin/vendedores', ['TiendaMoroni\Controllers\Admin\VendorController', 'index']);
+$router->get('/admin/vendedores',                          ['TiendaMoroni\Controllers\Admin\VendorController', 'index']);
+$router->get('/admin/vendedores/nuevo',                    ['TiendaMoroni\Controllers\Admin\VendorController', 'create']);
+$router->post('/admin/vendedores/guardar',                 ['TiendaMoroni\Controllers\Admin\VendorController', 'store']);
+$router->get('/admin/vendedores/{id}/editar',              ['TiendaMoroni\Controllers\Admin\VendorController', 'edit']);
+$router->post('/admin/vendedores/{id}/actualizar',         ['TiendaMoroni\Controllers\Admin\VendorController', 'update']);
+$router->post('/admin/vendedores/{id}/eliminar',           ['TiendaMoroni\Controllers\Admin\VendorController', 'delete']);
+
+// Admin — Users
+$router->get('/admin/usuarios',                          ['TiendaMoroni\Controllers\Admin\UsersController', 'index']);
+$router->get('/admin/usuarios/{id}',                     ['TiendaMoroni\Controllers\Admin\UsersController', 'show']);
+$router->get('/admin/usuarios/{id}/editar',              ['TiendaMoroni\Controllers\Admin\UsersController', 'edit']);
+$router->post('/admin/usuarios/{id}/editar',             ['TiendaMoroni\Controllers\Admin\UsersController', 'update']);
+$router->post('/admin/usuarios/{id}/toggle-status',      ['TiendaMoroni\Controllers\Admin\UsersController', 'toggleStatus']);
+$router->post('/admin/usuarios/{id}/eliminar',           ['TiendaMoroni\Controllers\Admin\UsersController', 'delete']);
+
+// Admin — Settings
+$router->get('/admin/configuracion',         ['TiendaMoroni\Controllers\Admin\SettingsController', 'index']);
+$router->post('/admin/configuracion/toggle', ['TiendaMoroni\Controllers\Admin\SettingsController', 'toggle']);
 
 // Admin — Media library
 $router->get('/admin/media',              ['TiendaMoroni\Controllers\Admin\MediaController', 'index']);

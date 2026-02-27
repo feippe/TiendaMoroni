@@ -39,7 +39,7 @@
 <div class="bg-white rounded-2xl border border-warm-200 overflow-hidden">
   <div class="flex items-center justify-between px-6 py-4 border-b border-warm-200">
     <h2 class="font-bold text-warm-900">Últimos pedidos</h2>
-    <a href="/admin/pedidos" class="text-sm text-brand-700 hover:text-brand-900 transition font-medium">Ver todos →</a>
+    <a href="/admin/pedidos" class="text-sm text-brand-800 hover:text-brand-900 transition font-medium">Ver todos →</a>
   </div>
   <?php if (empty($recentOrders)): ?>
   <div class="text-center py-10 text-warm-400 text-sm">Todavía no hay pedidos.</div>
@@ -86,7 +86,7 @@
           <td class="px-6 py-3.5 text-warm-500"><?= date('d/m/Y', strtotime($order['created_at'])) ?></td>
           <td class="px-6 py-3.5">
             <a href="/admin/ordenes/<?= (int)$order['id'] ?>"
-               class="text-brand-700 hover:text-brand-900 font-medium transition text-xs">Ver →</a>
+               class="text-brand-800 hover:text-brand-900 font-medium transition text-xs">Ver →</a>
           </td>
         </tr>
         <?php endforeach; ?>

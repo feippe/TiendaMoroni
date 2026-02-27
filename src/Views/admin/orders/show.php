@@ -57,7 +57,7 @@ $statusLabels = [
         <tfoot class="bg-warm-50">
           <tr>
             <td colspan="3" class="px-5 py-3 text-right font-bold text-warm-900">Total</td>
-            <td class="px-5 py-3 text-right font-bold text-lg text-brand-700"><?= formatPrice($order['total']) ?></td>
+            <td class="px-5 py-3 text-right font-bold text-lg text-brand-800"><?= formatPrice($order['total']) ?></td>
           </tr>
         </tfoot>
       </table>
@@ -103,7 +103,7 @@ $statusLabels = [
           <?php endforeach; ?>
         </select>
         <button type="submit"
-                class="w-full bg-brand-700 text-white py-2.5 rounded-xl text-sm font-bold hover:bg-brand-800 transition">
+                class="w-full bg-brand-800 text-white py-2.5 rounded-xl text-sm font-bold hover:bg-brand-700 transition">
           Guardar estado
         </button>
       </form>

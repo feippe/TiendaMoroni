@@ -9,6 +9,7 @@
 document.addEventListener('alpine:init', () => {
   Alpine.store('cart', {
     count: (typeof __CART_COUNT !== 'undefined') ? __CART_COUNT : 0,
+    toast: false,
     increment(by = 1) { this.count += by; },
     set(n)            { this.count = n; },
   });
@@ -65,6 +66,44 @@ async function addToCart(productId, triggerEl, qty = 1) {
     }
   } catch (err) {
     console.error('addToCart error:', err);
+    if (btn) { btn.innerHTML = original; btn.disabled = false; }
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+ * buyNow(productId, triggerEl, qty = 1)
+ * Adds the product to cart then redirects to checkout.
+ * ───────────────────────────────────────────────────────────────────────── */
+async function buyNow(productId, triggerEl, qty = 1) {
+  const btn      = triggerEl instanceof Element ? triggerEl : document.querySelector(triggerEl);
+  const original = btn ? btn.innerHTML : '';
+
+  if (btn) {
+    btn.disabled  = true;
+    btn.innerHTML = '<span class="spinner"></span> Procesando...';
+  }
+
+  try {
+    const res  = await fetch('/carrito/agregar', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body:    new URLSearchParams({
+        product_id: productId,
+        qty:        qty,
+        _csrf:      document.querySelector('meta[name="csrf-token"]')?.content ?? '',
+      }),
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      window.location.href = '/checkout';
+    } else {
+      alert(data.message ?? 'No se pudo procesar la compra.');
+      if (btn) { btn.innerHTML = original; btn.disabled = false; }
+    }
+  } catch (err) {
+    console.error('buyNow error:', err);
     if (btn) { btn.innerHTML = original; btn.disabled = false; }
   }
 }

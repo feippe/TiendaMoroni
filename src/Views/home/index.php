@@ -26,40 +26,57 @@ $jsonLD  = json_encode([
 ?>
 
 <!-- ── Hero ────────────────────────────────────────────────────────────────── -->
-<section class="relative overflow-hidden bg-gradient-to-br from-brand-900 via-brand-700 to-brand-500 text-white"
-         style="background:#4c1d95">
-  <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32 text-center">
-    <h1 class="text-4xl md:text-6xl font-extrabold leading-tight tracking-tight mb-6"
-        x-data x-intersect.once="$el.style.opacity='1';$el.style.transform='none'"
-        style="opacity:0;transform:translateY(24px);transition:opacity .5s ease,transform .5s ease;">
-      Todo lo que necesitás,<br class="hidden md:block"> en un solo lugar.
+<section class="relative overflow-hidden text-white flex items-center justify-center"
+         style="min-height:85vh;background:linear-gradient(135deg,#090f17 0%,#0F1E2E 100%)">
+
+  <!-- Dot texture overlay -->
+  <div class="hero-dots absolute inset-0 pointer-events-none" aria-hidden="true"></div>
+
+  <!-- Subtle radial light behind headline -->
+  <div class="absolute inset-0 pointer-events-none" aria-hidden="true"
+       style="background:radial-gradient(ellipse 70% 50% at 50% 40%, rgba(198,167,94,0.08) 0%, transparent 70%)"></div>
+
+  <div class="relative w-full max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center">
+
+    <!-- Headline -->
+    <h1 class="hero-headline hero-item-1 font-serif text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight tracking-tight mb-6"
+        style="font-family:'Playfair Display',Georgia,serif">
+      Artesanías únicas<br class="hidden sm:block"> para tu fe
     </h1>
-    <p class="text-lg md:text-xl text-brand-100 max-w-2xl mx-auto mb-8"
-       x-data x-intersect.once="$el.style.opacity='1';$el.style.transform='none';$el.style.color='#ede9fe'"
-       style="opacity:0;transform:translateY(24px);transition:opacity .5s .1s ease,transform .5s .1s ease;color:#ede9fe">
-      Electrónica, moda, hogar y mucho más — al mejor precio, con entrega rápida.
+
+    <!-- Subheadline -->
+    <p class="hero-item-2 text-base sm:text-lg md:text-xl max-w-xl mx-auto mb-10 leading-relaxed"
+       style="color:rgba(255,255,255,0.78)">
+      Productos creados por y para nuestra comunidad —
+      tapas de libreos, llaveros, aceiteros, adornos y más.
     </p>
-    <div class="flex flex-col sm:flex-row gap-3 justify-center"
-         x-data x-intersect.once="$el.style.opacity='1';$el.style.transform='none'"
-         style="opacity:0;transform:translateY(24px);transition:opacity .5s .2s ease,transform .5s .2s ease;">
+
+    <!-- CTAs -->
+    <div class="hero-item-3 flex flex-col sm:flex-row gap-4 justify-center items-center">
       <a href="/productos"
-         class="px-8 py-3.5 bg-white text-brand-700 font-bold rounded-xl text-base hover:bg-brand-50 transition shadow-lg"
-         style="color:#6d28d9">
-        Ver productos
+         class="inline-flex items-center gap-2 px-8 py-3 font-bold rounded-full text-sm sm:text-base transition duration-200 hover:scale-105 shadow-md"
+         style="background:#C6A75E;color:#090f17">
+        Explorar productos
+        <i data-lucide="arrow-right" class="w-4 h-4"></i>
       </a>
-      <a href="/auth/register"
-         class="px-8 py-3.5 border-2 border-white text-white font-bold rounded-xl text-base hover:bg-white/10 transition">
-        Crear cuenta gratis
+      <a href="/publicar-gratis"
+         class="inline-flex items-center gap-2 px-8 py-3 border-2 font-semibold rounded-full text-sm sm:text-base transition duration-200"
+         style="border-color:#F8F6F2;color:#F8F6F2"
+         onmouseover="this.style.background='#F8F6F2';this.style.color='#0F1E2E'"
+         onmouseout="this.style.background='transparent';this.style.color='#F8F6F2'">
+        ¿Creás productos? Publicá gratis
       </a>
     </div>
+
   </div>
 </section>
+
 <!-- ── Trust bar ───────────────────────────────────────────────────────────────── -->
-<div style="background:#C9A84C" class="text-brand-900">
-  <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap justify-center gap-6 md:gap-12 text-xs font-semibold">
-    <span>✓ Artesanos verificados de nuestra comunidad</span>
-    <span>✓ Productos únicos hechos a mano</span>
-    <span>✓ Contacto directo con el vendedor</span>
+<div style="background:#C6A75E" class="text-brand-900">
+  <div class="max-w-5xl mx-auto px-4 py-3 flex flex-wrap justify-center gap-6 md:gap-10 text-xs font-semibold tracking-wide">
+    <span>✦ Artesanos verificados de nuestra comunidad</span>
+    <span>✦ Productos únicos hechos a mano</span>
+    <span>✦ Contacto directo con el vendedor</span>
   </div>
 </div>
 <!-- ── Categories ──────────────────────────────────────────────────────────── -->
@@ -93,7 +110,7 @@ $jsonLD  = json_encode([
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex items-center justify-between mb-8">
       <h2 class="text-2xl font-bold text-warm-800 font-serif" style="font-family:'Playfair Display',Georgia,serif">Productos destacados</h2>
-      <a href="/productos" class="text-sm font-semibold text-brand-700 hover:text-brand-900 transition">
+      <a href="/productos" class="text-sm font-semibold text-brand-800 hover:text-brand-900 transition">
         Ver todos →
       </a>
     </div>
@@ -123,7 +140,7 @@ $jsonLD  = json_encode([
          x-data x-intersect.once="$el.style.opacity='1';$el.style.transform='none'"
          style="opacity:0;transform:translateY(16px);transition:opacity .4s ease,transform .4s ease;">
       <div class="w-16 h-16 bg-brand-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-        <i data-lucide="<?= $step['icon'] ?>" class="w-8 h-8 text-brand-700"></i>
+        <i data-lucide="<?= $step['icon'] ?>" class="w-8 h-8 text-brand-800"></i>
       </div>
       <span class="text-xs font-bold text-brand-400 tracking-widest"><?= $step['num'] ?></span>
       <h3 class="text-xl font-bold text-warm-900 mt-1 mb-2"><?= $step['title'] ?></h3>
@@ -139,7 +156,7 @@ $jsonLD  = json_encode([
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex items-center justify-between mb-8">
       <h2 class="text-2xl font-bold text-warm-800 font-serif" style="font-family:'Playfair Display',Georgia,serif">Recién llegados</h2>
-      <a href="/productos?orden=newest" class="text-sm font-semibold text-brand-700 hover:text-brand-900 transition">
+      <a href="/productos?orden=newest" class="text-sm font-semibold text-brand-800 hover:text-brand-900 transition">
         Ver todos →
       </a>
     </div>
@@ -151,3 +168,4 @@ $jsonLD  = json_encode([
   </div>
 </section>
 <?php endif; ?>
+<?= partial('partials/home-fe') ?>

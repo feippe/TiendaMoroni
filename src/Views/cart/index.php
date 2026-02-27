@@ -10,7 +10,7 @@
     <i data-lucide="shopping-cart" class="w-16 h-16 mx-auto text-warm-300 mb-4"></i>
     <p class="text-xl font-semibold text-warm-700">Tu carrito está vacío</p>
     <p class="mt-2 text-sm text-warm-500">¡Descubrí los productos de nuestra comunidad!</p>
-    <a href="/productos" class="mt-4 inline-block px-6 py-2.5 bg-brand-700 text-white rounded-xl text-sm font-semibold hover:bg-brand-800 transition">
+    <a href="/productos" class="mt-4 inline-block px-6 py-2.5 bg-brand-800 text-white rounded-xl text-sm font-semibold hover:bg-brand-700 transition">
       Ver productos
     </a>
   </div>
@@ -67,10 +67,10 @@
           <span id="cart-total-2"><?= formatPrice($subtotal) ?></span>
         </div>
         <a href="/checkout"
-           class="block w-full text-center bg-brand-700 text-white py-3.5 rounded-xl font-bold text-base hover:bg-brand-800 transition">
+           class="block w-full text-center bg-brand-800 text-white py-3.5 rounded-xl font-bold text-base hover:bg-brand-700 transition">
           Finalizar compra →
         </a>
-        <a href="/productos" class="block text-center text-sm text-warm-500 hover:text-brand-700 mt-3 transition">
+        <a href="/productos" class="block text-center text-sm text-warm-500 hover:text-brand-800 mt-3 transition">
           Seguir comprando
         </a>
       </div>

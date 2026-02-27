@@ -15,15 +15,18 @@
         <?= e($product['category_name']) ?>
       </span>
       <?php endif; ?>
-      <h3 class="mt-1 font-semibold text-warm-900 text-sm leading-snug line-clamp-2 group-hover:text-brand-700 transition">
+      <h3 class="mt-1 font-semibold text-warm-900 text-sm leading-snug line-clamp-2 group-hover:text-brand-800 transition">
         <?= e($product['name']) ?>
       </h3>
+      <?php if (!empty($product['vendor_name'])): ?>
+      <p class="mt-1 text-xs text-warm-400"><?= e($product['vendor_name']) ?></p>
+      <?php endif; ?>
       <?php if (!empty($product['short_description'])): ?>
       <p class="mt-1 text-xs text-warm-500 line-clamp-2"><?= e($product['short_description']) ?></p>
       <?php endif; ?>
       <div class="mt-3 flex items-center justify-between">
         <span class="text-lg font-bold text-warm-900"><?= formatPrice($product['price']) ?></span>
-        <span class="text-xs font-semibold text-brand-700 bg-brand-50 px-3 py-1 rounded-full">
+        <span class="text-xs font-semibold text-brand-800 bg-brand-50 px-3 py-1 rounded-full">
           Ver más →
         </span>
       </div>
@@ -33,8 +36,8 @@
   <div class="px-4 pb-4">
     <button
       onclick="addToCart(<?= (int) $product['id'] ?>, this)"
-      class="w-full py-2 bg-brand-700 text-white text-sm font-semibold rounded-xl
-             hover:bg-brand-800 active:scale-95 transition-all duration-150">
+      class="w-full py-2 bg-brand-800 text-white text-sm font-semibold rounded-xl
+             hover:bg-brand-700 active:scale-95 transition-all duration-150">
       Agregá al carrito
     </button>
   </div>

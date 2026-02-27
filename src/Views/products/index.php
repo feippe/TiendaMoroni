@@ -43,11 +43,16 @@
               <span class="text-warm-700">Todas</span>
             </label>
             <?php foreach ($categories as $cat): ?>
-            <label class="flex items-center gap-2 cursor-pointer text-sm">
+            <?php
+              $depth  = (int)($cat['depth'] ?? 0);
+              $indent = $depth * 16; // px
+              $prefix = $depth > 0 ? str_repeat('&nbsp;', $depth * 2) . '&#x2514;&nbsp;' : '';
+            ?>
+            <label class="flex items-center gap-2 cursor-pointer text-sm" style="padding-left: <?= $indent ?>px">
               <input type="radio" name="categoria" value="<?= (int)$cat['id'] ?>"
                      <?= (int)($filters['category_id'] ?? 0) === (int)$cat['id'] ? 'checked' : '' ?>
-                     class="text-brand-600">
-              <span class="text-warm-700"><?= e($cat['name']) ?></span>
+                     class="text-brand-600 flex-shrink-0">
+              <span class="text-warm-700<?= $depth > 0 ? ' text-warm-500' : '' ?>"><?= $prefix ?><?= e($cat['name']) ?></span>
             </label>
             <?php endforeach; ?>
           </div>
@@ -80,7 +85,7 @@
         </div>
 
         <button type="submit"
-                class="w-full bg-brand-700 text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-800 transition">
+                class="w-full bg-brand-800 text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-700 transition">
           Aplicar filtros
         </button>
 
@@ -101,7 +106,7 @@
         </svg>
         <p class="text-lg font-medium">No encontramos productos con ese filtro.</p>
         <p class="mt-1 text-sm text-warm-500">Probá con otra búsqueda o explorá todas las categorías.</p>
-        <a href="/productos" class="mt-3 inline-block text-sm text-brand-700 hover:underline">Ver todos los productos →</a>
+        <a href="/productos" class="mt-3 inline-block text-sm text-brand-800 hover:underline">Ver todos los productos →</a>
       </div>
       <?php else: ?>
       <p class="text-sm text-warm-500 mb-4"><?= $pagination['total'] ?> producto<?= $pagination['total'] !== 1 ? 's' : '' ?> encontrado<?= $pagination['total'] !== 1 ? 's' : '' ?></p>

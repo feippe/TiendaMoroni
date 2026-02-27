@@ -14,7 +14,7 @@ $current = $status ?? '';
   <?php foreach ($statuses as $val => $label): ?>
   <a href="/admin/pedidos<?= $val ? '?status=' . $val : '' ?>"
      class="px-4 py-1.5 rounded-full text-sm font-medium transition
-            <?= $current === $val ? 'bg-brand-700 text-white' : 'bg-white border border-warm-200 text-warm-600 hover:border-brand-400' ?>">
+            <?= $current === $val ? 'bg-brand-800 text-white' : 'bg-white border border-warm-200 text-warm-600 hover:border-brand-400' ?>">
     <?= $label ?>
   </a>
   <?php endforeach; ?>

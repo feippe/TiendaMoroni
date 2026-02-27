@@ -3,7 +3,13 @@
     <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
       <!-- Brand -->
       <div class="md:col-span-1">
-        <a href="/" class="text-white font-extrabold text-lg font-serif"><?= SITE_NAME ?></a>
+        <a href="/" class="inline-flex items-center gap-2">
+          <img src="/assets/img/Logo-Dark.svg"
+               alt="Tienda Moroni"
+               class="h-8 w-auto flex-shrink-0"
+               width="32" height="32">
+          
+        </a>
         <p class="mt-1 text-xs text-brand-400 tracking-wide">La tienda de nuestra comunidad</p>
         <p class="mt-3 text-sm leading-relaxed">
           Un espacio creado con amor, para que los artesanos y vendedores SUD de Uruguay puedan compartir sus creaciones con toda la comunidad.
@@ -12,7 +18,7 @@
 
       <!-- Links -->
       <div>
-        <h4 class="text-white font-semibold mb-3 text-sm">Artesanías</h4>
+        <h4 class="text-white font-semibold mb-3 text-sm">Productos</h4>
         <ul class="space-y-2 text-sm">
           <li><a href="/productos" class="hover:text-white transition">Ver todo</a></li>
           <li><a href="/buscar"    class="hover:text-white transition">Buscar</a></li>
@@ -41,7 +47,13 @@
       </div>
     </div>
 
-    <div class="mt-10 pt-6 border-t border-brand-800 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-warm-500">
+    <div class="text-center px-6 py-4 border-t border-warm-800/20 mt-10">
+      <p class="text-xs text-warm-400 leading-relaxed max-w-xl mx-auto">
+        Tienda Moroni es un emprendimiento independiente y no es un sitio oficial de <a href="https://www.churchofjesuschrist.org/?lang=spa" class="hover:text-white transition" target="_blank">La Iglesia de Jesucristo de los Santos de los Últimos Días</a>.
+      </p>
+    </div>
+
+    <div class="pt-6 border-t border-brand-800 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-warm-500">
       <p>&copy; <?= date('Y') ?> <?= SITE_NAME ?>. Todos los derechos reservados. Desarrollado por <a href="https://feippe.com" class="hover:text-white transition underline" target="_blank">Feippe</a>.</p>
       <p>Hecho con ❤️ en Uruguay</p>
     </div>

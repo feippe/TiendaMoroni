@@ -71,7 +71,7 @@
       Explorar más artesanías
     </a>
     <a href="/mi-cuenta"
-       class="px-6 py-3 bg-brand-700 text-white rounded-xl font-semibold text-sm hover:bg-brand-800 transition">
+       class="px-6 py-3 bg-brand-800 text-white rounded-xl font-semibold text-sm hover:bg-brand-700 transition">
       Ver mi cuenta →
     </a>
   </div>

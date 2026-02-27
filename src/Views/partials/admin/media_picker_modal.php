@@ -24,14 +24,14 @@
         <!-- Breadcrumb -->
         <nav class="flex items-center gap-1 text-xs text-warm-400 mt-1 flex-wrap">
           <button @click="navigate(null)"
-                  class="hover:text-brand-700 transition font-medium">
+                  class="hover:text-brand-800 transition font-medium">
             Inicio
           </button>
           <template x-for="crumb in breadcrumb" :key="crumb.id">
             <span class="flex items-center gap-1">
               <span class="opacity-40">/</span>
               <button @click="navigate(crumb.id)"
-                      class="hover:text-brand-700 transition font-medium"
+                      class="hover:text-brand-800 transition font-medium"
                       x-text="crumb.name"></button>
             </span>
           </template>
@@ -46,7 +46,7 @@
 
     <!-- Toolbar -->
     <div class="flex items-center gap-3 px-6 py-3 border-b border-warm-100 flex-shrink-0 flex-wrap">
-      <label class="flex items-center gap-2 cursor-pointer px-4 py-2 bg-brand-700 text-white rounded-lg text-sm font-semibold hover:bg-brand-800 transition"
+      <label class="flex items-center gap-2 cursor-pointer px-4 py-2 bg-brand-800 text-white rounded-lg text-sm font-semibold hover:bg-brand-700 transition"
              :class="uploading && 'opacity-60 pointer-events-none'">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>

@@ -19,7 +19,7 @@ $base = '?' . http_build_query($params) . '&page=';
   <a href="<?= $base . $i ?>"
      class="px-3 py-2 text-sm rounded-lg border transition
             <?= $i === $pagination['page']
-                ? 'bg-brand-700 border-brand-700 text-white font-semibold'
+                ? 'bg-brand-800 border-brand-800 text-white font-semibold'
                 : 'border-warm-300 text-warm-700 hover:bg-warm-100' ?>">
     <?= $i ?>
   </a>

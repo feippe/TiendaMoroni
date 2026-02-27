@@ -27,11 +27,29 @@ $crumbs[] = ['name' => $category['name'], 'url' => SITE_URL . '/categoria/' . $c
     </div>
   </div>
 
+  <!-- Subcategories -->
+  <?php if (!empty($subcategories)): ?>
+  <div class="mb-8">
+    <h2 class="text-sm font-semibold text-warm-500 uppercase tracking-wider mb-3">Subcategorías</h2>
+    <div class="flex flex-wrap gap-2">
+      <?php foreach ($subcategories as $sub): ?>
+      <a href="/categoria/<?= e($sub['slug']) ?>"
+         class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-warm-200 rounded-full text-sm text-warm-700 hover:border-brand-400 hover:text-brand-800 transition shadow-sm">
+        <?php if ($sub['image_url']): ?>
+        <img src="<?= e($sub['image_url']) ?>" alt="" class="w-5 h-5 rounded-full object-cover">
+        <?php endif; ?>
+        <?= e($sub['name']) ?>
+      </a>
+      <?php endforeach; ?>
+    </div>
+  </div>
+  <?php endif; ?>
+
   <!-- Products -->
   <?php if (empty($products)): ?>
   <div class="text-center py-20 text-warm-400">
     <p class="text-lg font-medium">No hay productos en esta categoría todavía.</p>
-    <a href="/productos" class="mt-2 text-sm text-brand-700 hover:underline">Ver todos →</a>
+    <a href="/productos" class="mt-2 text-sm text-brand-800 hover:underline">Ver todos →</a>
   </div>
   <?php else: ?>
   <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
