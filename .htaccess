@@ -1,11 +1,11 @@
-# Root .htaccess — redirect all traffic to /public
+# Root .htaccess — redirect all traffic to /public_html
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
-    # Serve requests that already point inside /public directly
-    RewriteRule ^public/(.*)$ public/$1 [L]
+    # Serve requests that already point inside /public_html directly
+    RewriteRule ^public_html/(.*)$ public_html/$1 [L]
 
-    # Everything else → public/
-    RewriteCond %{REQUEST_URI} !^/public
-    RewriteRule ^(.*)$ public/$1 [L]
+    # Everything else → public_html/
+    RewriteCond %{REQUEST_URI} !^/public_html
+    RewriteRule ^(.*)$ public_html/$1 [L]
 </IfModule>

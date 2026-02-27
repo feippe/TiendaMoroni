@@ -10,7 +10,7 @@
             aria-label="Paisaje sereno que evoca paz y espiritualidad"
             class="relative overflow-hidden h-56 lg:h-full m-0"
             :class="visible ? 'fe-slide-in-left' : 'fe-hidden-left'">
-      <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80"
+      <img src="/assets/img/paisaje.webp"
            alt="Paisaje sereno al amanecer que refleja paz y espiritualidad, representando los valores de la comunidad de Tienda Moroni"
            loading="lazy"
            decoding="async"

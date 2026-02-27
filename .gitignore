@@ -2,8 +2,8 @@
 config/config.php
 
 # Uploads
-public/assets/uploads/*
-!public/assets/uploads/.gitkeep
+public_html/assets/uploads/*
+!public_html/assets/uploads/.gitkeep
 
 # OS & IDE
 .DS_Store

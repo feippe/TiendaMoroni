@@ -1,0 +1,68 @@
+name: Deploy a Produccion
+
+on:
+  push:
+    branches:
+      - produccion
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Subir archivos al servidor
+
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Deploy public_html
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASS }}
+          local-dir: ./public_html/
+          server-dir: /home/tiendamoroni/public_html/
+          exclude: |
+            **/assets/uploads/**
+
+      - name: Deploy src
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASS }}
+          local-dir: ./src/
+          server-dir: /home/tiendamoroni/src/
+
+      - name: Deploy config
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASS }}
+          local-dir: ./config/
+          server-dir: /home/tiendamoroni/config/
+          exclude: |
+            **/config.php
+
+      - name: Deploy database
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASS }}
+          local-dir: ./database/
+          server-dir: /home/tiendamoroni/database/
+```
+
+---
+
+## Antes del Paso 5, verificá tu `.gitignore`
+
+Abrí el `.gitignore` y confirmá que tiene estas líneas. Si no las tiene, agregálas:
+```
+config/config.php
+public_html/assets/uploads/*
+!public_html/assets/uploads/.gitkeep

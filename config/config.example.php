@@ -45,7 +45,7 @@ define('SMTP_FROM',   'noreply@tiendamoroni.com');
 define('SMTP_FROM_NAME', 'Tienda Moroni');
 
 // ── File Uploads ──────────────────────────────────────────────────────────────
-define('UPLOAD_PATH', dirname(__DIR__) . '/public/assets/uploads/');
+define('UPLOAD_PATH', dirname(__DIR__) . '/public_html/assets/uploads/');
 define('UPLOAD_URL',  SITE_URL . '/assets/uploads/');
 define('UPLOAD_MAX_SIZE', 5 * 1024 * 1024);   // 5 MB
 

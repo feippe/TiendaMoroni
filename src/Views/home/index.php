@@ -26,17 +26,17 @@ $jsonLD  = json_encode([
 ?>
 
 <!-- ── Hero ────────────────────────────────────────────────────────────────── -->
-<section class="relative overflow-hidden text-white flex items-center justify-center"
-         style="min-height:85vh;background:linear-gradient(135deg,#090f17 0%,#0F1E2E 100%)">
+<section class="hero-bg relative overflow-hidden text-white flex items-center justify-center"
+         style="min-height:85vh">
 
-  <!-- Dot texture overlay -->
+  <!-- Dark overlay for text legibility -->
+  <div class="absolute inset-0 pointer-events-none" aria-hidden="true"
+       style="background:linear-gradient(135deg,rgba(15,30,46,0.82) 0%,rgba(22,46,74,0.70) 100%)"></div>
+
+  <!-- Dot texture on top of overlay -->
   <div class="hero-dots absolute inset-0 pointer-events-none" aria-hidden="true"></div>
 
-  <!-- Subtle radial light behind headline -->
-  <div class="absolute inset-0 pointer-events-none" aria-hidden="true"
-       style="background:radial-gradient(ellipse 70% 50% at 50% 40%, rgba(198,167,94,0.08) 0%, transparent 70%)"></div>
-
-  <div class="relative w-full max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center">
+  <div class="relative z-10 w-full max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center">
 
     <!-- Headline -->
     <h1 class="hero-headline hero-item-1 font-serif text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight tracking-tight mb-6"
