@@ -131,7 +131,7 @@ class AuthController
         $_SESSION['oauth_state'] = $state;
 
         $queryString = http_build_query([
-            'client_id'     => ],
+            'client_id'     => GOOGLE_CLIENT_ID,
             'redirect_uri'  => GOOGLE_REDIRECT_URI,
             'response_type' => 'code',
             'scope'         => 'openid email profile',

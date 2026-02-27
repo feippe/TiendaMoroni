@@ -23,7 +23,7 @@ jobs:
           username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASS }}
           local-dir: ./public_html/
-          server-dir: /home/tiendamoroni/public_html/
+          server-dir: /public_html/
           exclude: |
             **/assets/uploads/**
 
@@ -34,7 +34,7 @@ jobs:
           username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASS }}
           local-dir: ./src/
-          server-dir: /home/tiendamoroni/src/
+          server-dir: /src/
 
       - name: Deploy config
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
@@ -43,7 +43,7 @@ jobs:
           username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASS }}
           local-dir: ./config/
-          server-dir: /home/tiendamoroni/config/
+          server-dir: /config/
           exclude: |
             **/config.php
 
@@ -54,15 +54,4 @@ jobs:
           username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASS }}
           local-dir: ./database/
-          server-dir: /home/tiendamoroni/database/
-```
-
----
-
-## Antes del Paso 5, verificá tu `.gitignore`
-
-Abrí el `.gitignore` y confirmá que tiene estas líneas. Si no las tiene, agregálas:
-```
-config/config.php
-public_html/assets/uploads/*
-!public_html/assets/uploads/.gitkeep
+          server-dir: /database/
