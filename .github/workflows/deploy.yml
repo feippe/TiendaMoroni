@@ -55,14 +55,3 @@ jobs:
           password: ${{ secrets.FTP_PASS }}
           local-dir: ./database/
           server-dir: /home/tiendamoroni/database/
-```
-
----
-
-## Antes del Paso 5, verificá tu `.gitignore`
-
-Abrí el `.gitignore` y confirmá que tiene estas líneas. Si no las tiene, agregálas:
-```
-config/config.php
-public_html/assets/uploads/*
-!public_html/assets/uploads/.gitkeep
