@@ -36,7 +36,7 @@
 <?php else: ?>
 
     <div class="text-center mb-8">
-      <h1 class="text-3xl font-bold text-warm-800 font-serif" style="font-family:'Playfair Display',Georgia,serif">Uníte a Tienda Moroni</h1>
+      <h1 class="text-3xl font-bold text-warm-800" style="font-family:'Playfair Display',Georgia,serif">Uníte a Tienda Moroni</h1>
       <p class="mt-2 text-warm-500 text-sm">¿Ya tenés cuenta?
         <a href="/auth/login" class="text-brand-800 font-semibold hover:text-brand-900 transition">Ingresá</a>
       </p>

@@ -79,7 +79,8 @@ class Mailer
             }
 
             self::smtpExpect($socket, 220);
-            self::smtpCmd($socket, 'EHLO ' . ($_SERVER['HTTP_HOST'] ?? 'localhost'), 250);
+            $ehlo = defined('SMTP_FROM') ? substr(strrchr(SMTP_FROM, '@'), 1) : 'tiendamoroni.com';
+            self::smtpCmd($socket, 'EHLO ' . $ehlo, 250);
             self::smtpCmd($socket, 'AUTH LOGIN', 334);
             self::smtpCmd($socket, base64_encode(SMTP_USER), 334);
             self::smtpCmd($socket, base64_encode(SMTP_PASS), 235);
