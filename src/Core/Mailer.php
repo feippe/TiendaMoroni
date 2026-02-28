@@ -66,21 +66,41 @@ class Mailer
         string $textBody
     ): bool {
         try {
-            $socket = fsockopen(
-                'ssl://' . SMTP_HOST,
-                SMTP_PORT,
+            $useStartTls = (SMTP_PORT === 587);
+            $ctx = stream_context_create([
+                'ssl' => [
+                    'verify_peer'       => false,
+                    'verify_peer_name'  => false,
+                ],
+            ]);
+
+            // Port 465 → direct SSL; port 587 → plain then STARTTLS
+            $prefix = $useStartTls ? '' : 'ssl://';
+            $socket = stream_socket_client(
+                $prefix . SMTP_HOST . ':' . SMTP_PORT,
                 $errno,
                 $errstr,
-                10
+                10,
+                STREAM_CLIENT_CONNECT,
+                $ctx
             );
 
             if (!$socket) {
                 throw new \RuntimeException("SMTP connect failed: $errstr ($errno)");
             }
 
-            self::smtpExpect($socket, 220);
             $ehlo = defined('SMTP_FROM') ? substr(strrchr(SMTP_FROM, '@'), 1) : 'tiendamoroni.com';
+
+            self::smtpExpect($socket, 220);
             self::smtpCmd($socket, 'EHLO ' . $ehlo, 250);
+
+            if ($useStartTls) {
+                self::smtpCmd($socket, 'STARTTLS', 220);
+                stream_socket_enable_crypto($socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT);
+                // Re-send EHLO after TLS upgrade (required by RFC)
+                self::smtpCmd($socket, 'EHLO ' . $ehlo, 250);
+            }
+
             self::smtpCmd($socket, 'AUTH LOGIN', 334);
             self::smtpCmd($socket, base64_encode(SMTP_USER), 334);
             self::smtpCmd($socket, base64_encode(SMTP_PASS), 235);

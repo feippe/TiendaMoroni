@@ -103,11 +103,14 @@ try {
 // ── Direct SMTP helper (bypasses MAIL_DRIVER constant) ───────────────────────
 function sendSmtpDirect(string $to, string $toName, string $subject, string $html, string $text): bool
 {
-    $boundary = md5(uniqid((string)time(), true));
+    $boundary    = md5(uniqid((string)time(), true));
+    $useStartTls = (SMTP_PORT === 587);
+    $prefix      = $useStartTls ? '' : 'ssl://';
 
-    echo "  Conectando a ssl://" . SMTP_HOST . ":" . SMTP_PORT . " ...\n";
+    echo "  Conectando a " . ($useStartTls ? 'STARTTLS' : 'SSL') . "://" . SMTP_HOST . ":" . SMTP_PORT . " ...\n";
 
-    $socket = @fsockopen('ssl://' . SMTP_HOST, SMTP_PORT, $errno, $errstr, 10);
+    $ctx = stream_context_create(['ssl' => ['verify_peer' => false, 'verify_peer_name' => false]]);
+    $socket = @stream_socket_client($prefix . SMTP_HOST . ':' . SMTP_PORT, $errno, $errstr, 10, STREAM_CLIENT_CONNECT, $ctx);
     if (!$socket) {
         throw new \RuntimeException("No se pudo conectar: $errstr ($errno)");
     }
@@ -128,9 +131,18 @@ function sendSmtpDirect(string $to, string $toName, string $subject, string $htm
         fwrite($socket, $cmd);
     };
 
-    $read(); // greeting
     $ehlo = defined('SMTP_FROM') ? substr(strrchr(SMTP_FROM, '@'), 1) : 'tiendamoroni.com';
+
+    $read(); // greeting
     $write("EHLO " . $ehlo . "\r\n"); $read();
+
+    if ($useStartTls) {
+        $write("STARTTLS\r\n"); $read();
+        stream_socket_enable_crypto($socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT);
+        echo "  [TLS activo]\n";
+        $write("EHLO " . $ehlo . "\r\n"); $read();
+    }
+
     $write("AUTH LOGIN\r\n"); $read();
     $write(base64_encode(SMTP_USER) . "\r\n"); $read();
     $write(base64_encode(SMTP_PASS) . "\r\n"); $read();
@@ -145,9 +157,9 @@ function sendSmtpDirect(string $to, string $toName, string $subject, string $htm
     $msg .= "Content-Type: multipart/alternative; boundary=\"$boundary\"\r\n";
     $msg .= "\r\n";
     $msg .= "--$boundary\r\n";
-    $msg .= "Content-Type: text/plain; charset=UTF-8\r\n\r\n" . $text . "\r\n\r\n";
+    $msg .= "Content-Type: text/plain; charset=UTF-8\r\nContent-Transfer-Encoding: base64\r\n\r\n" . chunk_split(base64_encode($text), 76, "\r\n") . "\r\n";
     $msg .= "--$boundary\r\n";
-    $msg .= "Content-Type: text/html; charset=UTF-8\r\n\r\n" . $html . "\r\n\r\n";
+    $msg .= "Content-Type: text/html; charset=UTF-8\r\nContent-Transfer-Encoding: base64\r\n\r\n" . chunk_split(base64_encode($html), 76, "\r\n") . "\r\n";
     $msg .= "--$boundary--\r\n";
     $msg .= ".\r\n";
 

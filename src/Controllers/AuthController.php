@@ -439,17 +439,14 @@ class AuthController
         $resetUrl   = SITE_URL . '/auth/reset-password?token=' . $token;
         $userName   = htmlspecialchars($user['name'] ?? '', ENT_QUOTES);
         $siteName   = SITE_NAME;
-        $logoUrl    = SITE_URL . '/assets/img/isotipo.png';
 
         $htmlBody = '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"></head>'
             . '<body style="margin:0;padding:0;background:#F8F6F2;font-family:\'Helvetica Neue\',Arial,sans-serif;">'
             . '<table width="100%" cellpadding="0" cellspacing="0" style="background:#F8F6F2;padding:40px 0;">'
             . '<tr><td align="center">'
             . '<table width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.06);">'
-            . '<tr><td style="background:#0F1E2E;padding:32px 40px;text-align:center;">'
-            . '<img src="' . $logoUrl . '" alt="' . $siteName . '" width="40" height="40" style="display:block;margin:0 auto 12px;">'
-            . '<p style="margin:0;color:#C6A75E;font-size:11px;letter-spacing:2px;text-transform:uppercase;">TIENDA</p>'
-            . '<p style="margin:4px 0 0;color:#F8F6F2;font-size:20px;font-weight:700;">Moroni</p>'
+            . '<tr><td style="background:#0F1E2E;padding:28px 40px;text-align:center;">'
+            . '<img src="' . APP_URL . '/assets/img/Logo-white.svg" alt="' . $siteName . '" width="220" style="display:block;margin:0 auto;max-width:100%;height:auto;">'
             . '</td></tr>'
             . '<tr><td style="padding:40px 40px 32px;">'
             . '<h1 style="margin:0 0 8px;font-size:22px;font-weight:700;color:#0F1E2E;">Reseteo de contraseña</h1>'
@@ -588,17 +585,14 @@ class AuthController
         // Send confirmation email
         $siteName = SITE_NAME;
         $userName = htmlspecialchars($user['name'] ?? '', ENT_QUOTES);
-        $logoUrl  = SITE_URL . '/assets/img/isotipo.png';
 
         $htmlConfirm = '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"></head>'
             . '<body style="margin:0;padding:0;background:#F8F6F2;font-family:\'Helvetica Neue\',Arial,sans-serif;">'
             . '<table width="100%" cellpadding="0" cellspacing="0" style="background:#F8F6F2;padding:40px 0;">'
             . '<tr><td align="center">'
             . '<table width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.06);">'
-            . '<tr><td style="background:#0F1E2E;padding:32px 40px;text-align:center;">'
-            . '<img src="' . $logoUrl . '" alt="' . $siteName . '" width="40" height="40" style="display:block;margin:0 auto 12px;">'
-            . '<p style="margin:0;color:#C6A75E;font-size:11px;letter-spacing:2px;text-transform:uppercase;">TIENDA</p>'
-            . '<p style="margin:4px 0 0;color:#F8F6F2;font-size:20px;font-weight:700;">Moroni</p>'
+            . '<tr><td style="background:#0F1E2E;padding:28px 40px;text-align:center;">'
+            . '<img src="' . APP_URL . '/assets/img/Logo-white.svg" alt="' . $siteName . '" width="220" style="display:block;margin:0 auto;max-width:100%;height:auto;">'
             . '</td></tr>'
             . '<tr><td style="padding:40px 40px 32px;">'
             . '<h1 style="margin:0 0 8px;font-size:22px;font-weight:700;color:#0F1E2E;">Contraseña actualizada</h1>'
@@ -637,7 +631,6 @@ class AuthController
         $verifyUrl  = SITE_URL . '/auth/verify-email?token=' . $token;
         $siteName   = SITE_NAME;
         $userName   = htmlspecialchars($name, ENT_QUOTES);
-        $logoUrl    = SITE_URL . '/assets/img/isotipo.png';
         $expiryFmt  = date('d/m/Y \a \l\a\s H:i', strtotime($expiresAt));
 
         $htmlBody = '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"></head>'
@@ -645,10 +638,8 @@ class AuthController
             . '<table width="100%" cellpadding="0" cellspacing="0" style="background:#F8F6F2;padding:40px 0;">'
             . '<tr><td align="center">'
             . '<table width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.06);">'
-            . '<tr><td style="background:#0F1E2E;padding:32px 40px;text-align:center;">'
-            . '<img src="' . $logoUrl . '" alt="' . $siteName . '" width="40" height="40" style="display:block;margin:0 auto 12px;">'
-            . '<p style="margin:0;color:#C6A75E;font-size:11px;letter-spacing:2px;text-transform:uppercase;">TIENDA</p>'
-            . '<p style="margin:4px 0 0;color:#F8F6F2;font-size:20px;font-weight:700;">Moroni</p>'
+            . '<tr><td style="background:#0F1E2E;padding:28px 40px;text-align:center;">'
+            . '<img src="' . APP_URL . '/assets/img/Logo-white.svg" alt="' . $siteName . '" width="220" style="display:block;margin:0 auto;max-width:100%;height:auto;">'
             . '</td></tr>'
             . '<tr><td style="padding:40px 40px 32px;">'
             . '<h1 style="margin:0 0 8px;font-size:24px;font-weight:700;color:#0F1E2E;">¡Ya casi estás!</h1>'
