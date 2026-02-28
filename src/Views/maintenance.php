@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#090f17">
   <title>Sitio en mantenimiento — Tienda Moroni</title>
 
   <link rel="icon" href="/assets/img/isotipo.ico" type="image/x-icon">
@@ -24,49 +25,91 @@
           },
           colors: {
             brand: {
-              50: '#f5f7fa', 100: '#e8edf4', 200: '#c8d4e4', 300: '#9ab1cc',
-              400: '#C6A75E', 500: '#b5923f', 600: '#1B3A5C', 700: '#162E4A',
               800: '#0F1E2E', 900: '#090f17',
             },
             warm: {
-              50: '#F8F6F2', 100: '#f0ede6', 200: '#e2ddd4', 300: '#cdc7bb',
-              400: '#a8a092', 500: '#7a7268', 600: '#5a5450', 700: '#44403c',
-              800: '#2C2A27', 900: '#1a1916',
+              300: '#cdc7bb',
             },
-            accent: { DEFAULT: '#C6A75E', light: '#d4b97a', dark: '#a88840' },
           },
         },
       },
     }
   </script>
+
+  <style>
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pulse-gold {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.5; }
+    }
+    .anim-1 { animation: fadeInUp 0.6s ease 0ms   both; }
+    .anim-2 { animation: fadeInUp 0.6s ease 150ms both; }
+    .anim-3 { animation: fadeInUp 0.6s ease 300ms both; }
+    .anim-4 { animation: fadeInUp 0.6s ease 450ms both; }
+    .dot-grid {
+      background-image: radial-gradient(circle, rgba(255,255,255,0.12) 1px, transparent 1px);
+      background-size: 28px 28px;
+    }
+    .pulse-dot { animation: pulse-gold 2s ease-in-out infinite; }
+  </style>
 </head>
-<body class="bg-brand-800 font-sans antialiased min-h-screen flex items-center justify-center px-4">
+<body class="font-sans antialiased min-h-screen flex items-center justify-center px-4 relative overflow-hidden"
+      style="background:linear-gradient(150deg,#090f17 0%,#0F1E2E 60%,#0d1a28 100%)">
 
-  <div class="max-w-md w-full text-center px-8 py-12">
+  <!-- Dot grid texture -->
+  <div class="dot-grid absolute inset-0 pointer-events-none" aria-hidden="true" style="opacity:0.035"></div>
 
-    <!-- Logo mark -->
-    <div class="flex flex-col items-center mb-6">
-      <img src="/assets/img/isotipo.svg"
+  <!-- Gold radial glow -->
+  <div class="absolute inset-0 pointer-events-none" aria-hidden="true"
+       style="background:radial-gradient(ellipse 60% 50% at 50% 45%, rgba(198,167,94,0.07) 0%, transparent 70%)"></div>
+
+  <!-- Card -->
+  <div class="relative z-10 max-w-sm w-full text-center">
+
+    <!-- Logo -->
+    <div class="anim-1 flex justify-center mb-10">
+      <img src="/assets/img/Logo.svg"
            alt="Tienda Moroni"
-           width="48" height="48"
-           class="w-12 h-12 mb-3"
-           style="filter: brightness(0) saturate(100%) invert(70%) sepia(40%) saturate(600%) hue-rotate(5deg) brightness(95%);">
-      <p class="font-sans font-light tracking-widest text-xs uppercase" style="color:#C6A75E">TIENDA</p>
-      <p class="font-serif font-bold text-2xl" style="color:#F8F6F2">Moroni</p>
+           class="h-12 w-auto"
+           style="filter:brightness(0) invert(1);">
     </div>
 
-    <!-- Divider -->
-    <div class="w-12 h-px mx-auto my-8" style="background:#C6A75E"></div>
+    <!-- Gold divider top -->
+    <div class="anim-2 w-10 h-px mx-auto mb-10" style="background:#C6A75E"></div>
+
+    <!-- Icon: wrench / tools -->
+    <div class="anim-2 flex justify-center mb-6">
+      <span class="pulse-dot inline-flex items-center justify-center w-14 h-14 rounded-full"
+            style="background:rgba(198,167,94,0.1);border:1px solid rgba(198,167,94,0.3)">
+        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24"
+             fill="none" stroke="#C6A75E" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+        </svg>
+      </span>
+    </div>
 
     <!-- Headline -->
-    <h1 class="font-serif italic text-2xl leading-snug mb-4" style="color:#F8F6F2">
-      Estamos mejorando la tienda
+    <h1 class="anim-3 font-serif italic text-2xl sm:text-3xl leading-snug mb-4"
+        style="color:#F8F6F2">
+      Estamos mejorando<br>la tienda para vos
     </h1>
 
     <!-- Body -->
-    <p class="font-sans font-light text-sm leading-relaxed text-warm-300 mb-8">
-      Estamos realizando tareas de mantenimiento para brindarte una mejor experiencia.
-      Volvé a visitarnos en unos momentos.
+    <p class="anim-3 font-light text-sm leading-relaxed mb-10"
+       style="color:rgba(205,199,187,0.8)">
+      Estamos realizando tareas de mantenimiento para brindarte<br class="hidden sm:block">
+      una mejor experiencia. Volvé a visitarnos en unos momentos.
+    </p>
+
+    <!-- Gold divider bottom -->
+    <div class="anim-4 w-10 h-px mx-auto mb-8" style="background:#C6A75E"></div>
+
+    <!-- Footer note -->
+    <p class="anim-4 font-light text-xs tracking-widest uppercase" style="color:rgba(198,167,94,0.55)">
+      Volvemos pronto
     </p>
 
   </div>

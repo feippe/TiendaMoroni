@@ -7,6 +7,7 @@
   <link rel="icon" href="/assets/img/isotipo.ico" type="image/x-icon">
   <link rel="shortcut icon" href="/assets/img/isotipo.ico" type="image/x-icon">
   <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#0F1E2E">
   <meta name="csrf-token" content="<?= csrfToken() ?>">
   <style>[x-cloak]{display:none!important}</style>
 
