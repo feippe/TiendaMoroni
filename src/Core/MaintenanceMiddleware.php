@@ -15,6 +15,10 @@ class MaintenanceMiddleware
         '/admin',
         '/auth/login',
         '/auth/logout',
+        '/auth/forgot-password',
+        '/auth/reset-password',
+        '/auth/verify-email',
+        '/auth/resend-verification',
         '/auth/google',
         '/auth/google/callback',
     ];

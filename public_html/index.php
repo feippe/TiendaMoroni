@@ -92,14 +92,21 @@ $router->post('/checkout/procesar',  ['TiendaMoroni\Controllers\CheckoutControll
 $router->get('/checkout/confirmacion', ['TiendaMoroni\Controllers\CheckoutController', 'confirmation']);
 
 // Auth
-$router->get('/mi-cuenta',           ['TiendaMoroni\Controllers\AuthController', 'account']);
-$router->get('/auth/login',          ['TiendaMoroni\Controllers\AuthController', 'loginForm']);
-$router->post('/auth/login',         ['TiendaMoroni\Controllers\AuthController', 'loginPost']);
-$router->get('/auth/logout',         ['TiendaMoroni\Controllers\AuthController', 'logout']);
-$router->get('/auth/register',       ['TiendaMoroni\Controllers\AuthController', 'registerForm']);
-$router->post('/auth/register',      ['TiendaMoroni\Controllers\AuthController', 'registerPost']);
-$router->get('/auth/google',         ['TiendaMoroni\Controllers\AuthController', 'googleRedirect']);
-$router->get('/auth/google/callback',['TiendaMoroni\Controllers\AuthController', 'googleCallback']);
+$router->get('/mi-cuenta',                ['TiendaMoroni\Controllers\AuthController', 'account']);
+$router->get('/auth/login',               ['TiendaMoroni\Controllers\AuthController', 'loginForm']);
+$router->post('/auth/login',              ['TiendaMoroni\Controllers\AuthController', 'loginPost']);
+$router->get('/auth/logout',              ['TiendaMoroni\Controllers\AuthController', 'logout']);
+$router->get('/auth/register',            ['TiendaMoroni\Controllers\AuthController', 'registerForm']);
+$router->post('/auth/register',           ['TiendaMoroni\Controllers\AuthController', 'registerPost']);
+$router->get('/auth/forgot-password',     ['TiendaMoroni\Controllers\AuthController', 'forgotPassword']);
+$router->post('/auth/forgot-password',    ['TiendaMoroni\Controllers\AuthController', 'forgotPasswordSubmit']);
+$router->get('/auth/reset-password',      ['TiendaMoroni\Controllers\AuthController', 'resetPassword']);
+$router->post('/auth/reset-password',     ['TiendaMoroni\Controllers\AuthController', 'resetPasswordSubmit']);
+$router->get('/auth/verify-email',        ['TiendaMoroni\Controllers\AuthController', 'verifyEmail']);
+$router->get('/auth/resend-verification', ['TiendaMoroni\Controllers\AuthController', 'resendVerification']);
+$router->post('/auth/resend-verification',['TiendaMoroni\Controllers\AuthController', 'resendVerificationSubmit']);
+$router->get('/auth/google',              ['TiendaMoroni\Controllers\AuthController', 'googleRedirect']);
+$router->get('/auth/google/callback',     ['TiendaMoroni\Controllers\AuthController', 'googleCallback']);
 
 // API
 $router->get('/api/products',        ['TiendaMoroni\Controllers\ApiController', 'products']);

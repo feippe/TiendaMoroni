@@ -7,9 +7,8 @@
         
         <img src="/assets/img/Logo.svg"
              alt="<?= e(SITE_NAME) ?>"
-             class="hidden sm:block h-9 w-auto"
+             class="h-9 w-auto"
              height="32">
-        <span class="sm:hidden"><?= e(SITE_NAME) ?></span>
       </a>
 
       <!-- Search (desktop) -->

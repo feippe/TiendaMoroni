@@ -6,10 +6,14 @@
 
   <title><?= e($pageTitle ?? SITE_NAME) ?></title>
   <meta name="description" content="<?= e($metaDesc ?? '') ?>">
+  <?php if (!empty($noindex)): ?>
+  <meta name="robots" content="noindex, nofollow">
+  <?php endif; ?>
   <link rel="canonical" href="<?= e($canonical ?? currentUrl()) ?>">
   <link rel="icon" href="/assets/img/isotipo.ico" type="image/x-icon">
   <link rel="shortcut icon" href="/assets/img/isotipo.ico" type="image/x-icon">
   <link rel="preload" as="image" href="/assets/img/hero.webp" fetchpriority="high">
+  <meta name="theme-color" content="#ffffff">
 
   <!-- Open Graph -->
   <?php if (isset($ogImage)): ?>

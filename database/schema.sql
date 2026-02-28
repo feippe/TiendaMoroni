@@ -183,3 +183,23 @@ CREATE TABLE IF NOT EXISTS site_settings (
 
 INSERT IGNORE INTO site_settings (setting_key, value)
 VALUES ('maintenance_mode', '0');
+
+-- ── Password Resets ───────────────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS `password_resets` (
+  `id`         INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `email`      VARCHAR(150)  NOT NULL,
+  `token_hash` VARCHAR(128)  NOT NULL,
+  `expires_at` DATETIME      NOT NULL,
+  `used`       TINYINT(1)    NOT NULL DEFAULT 0,
+  `created_at` DATETIME      DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_pr_token (token_hash),
+  INDEX idx_pr_email (email)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ── Password Reset Attempts (rate limiting) ───────────────────────────────────
+CREATE TABLE IF NOT EXISTS `password_reset_attempts` (
+  `id`         INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `ip_address` VARCHAR(45) NOT NULL,
+  `created_at` DATETIME    DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_pra_ip (ip_address)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

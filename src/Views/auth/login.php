@@ -16,6 +16,12 @@
     </div>
     <?php endif; ?>
 
+    <?php if (!empty($errorHtml)): ?>
+    <div class="mb-5 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl px-4 py-3 text-sm">
+      <?= $errorHtml /* Already safely constructed in controller */ ?>
+    </div>
+    <?php endif; ?>
+
     <!-- Google OAuth -->
     <a href="/auth/google"
        class="flex items-center justify-center gap-3 w-full border border-warm-300 rounded-xl py-3 text-sm font-medium text-warm-700 hover:bg-warm-50 transition mb-5">
@@ -46,7 +52,10 @@
                class="w-full border border-warm-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 transition">
       </div>
       <div>
-        <label class="block text-sm font-medium text-warm-700 mb-1">Contraseña</label>
+        <div class="flex items-center justify-between mb-1.5">
+          <label class="block text-sm font-medium text-warm-700">Contraseña</label>
+          <a href="/auth/forgot-password" class="text-xs hover:underline" style="color:#C6A75E">¿Olvidaste tu contraseña?</a>
+        </div>
         <input type="password" name="password" required autocomplete="current-password"
                class="w-full border border-warm-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 transition">
       </div>

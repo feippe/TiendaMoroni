@@ -65,8 +65,7 @@ function usersUrl(array $merge = []): string {
       </span>
       <input type="text" name="q" value="<?= e($filters['q']) ?>"
              placeholder="Buscar por nombre o email..."
-             class="w-full pl-9 pr-3 py-2 text-sm border border-warm-200 rounded-xl bg-white focus:outline-none focus:ring-2"
-             style="focus:ring-color:#C6A75E"
+             class="w-full pl-9 pr-3 py-2 text-sm border border-warm-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-brand-400"
              @input="debounce(() => $el.form.submit(), 400)">
     </div>
     <!-- Role filter -->

@@ -3,6 +3,38 @@
 <div class="min-h-[calc(100vh-200px)] flex items-center justify-center px-4 py-12">
   <div class="w-full max-w-md">
 
+<?php if (get('status') === 'pending'): ?>
+
+    <!-- ── Pending verification state ───────────────────────────────────────── -->
+    <div class="bg-brand-800 text-warm-50 rounded-2xl p-8 text-center shadow-xl">
+      <div class="flex justify-center mb-5">
+        <div class="bg-brand-400/20 rounded-full p-4">
+          <i data-lucide="mail" class="w-10 h-10" style="color:#C6A75E"></i>
+        </div>
+      </div>
+      <h1 class="text-2xl font-bold mb-3" style="font-family:'Playfair Display',Georgia,serif">
+        Revisá tu email
+      </h1>
+      <?php $pe = $pendingEmail ?? ''; ?>
+      <p class="text-warm-300 text-sm mb-6">
+        Te enviamos un link de activación
+        <?php if ($pe): ?> a <strong class="text-warm-100"><?= e($pe) ?></strong><?php endif; ?>.
+        El link expira en 24 horas. Revisá también tu carpeta de spam.
+      </p>
+      <a href="/auth/resend-verification"
+         class="inline-flex items-center gap-2 text-brand-400 text-sm hover:text-brand-300 underline underline-offset-2 transition">
+        <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+        ¿No recibiste el email? Solicitá uno nuevo
+      </a>
+      <div class="mt-6 border-t border-brand-700 pt-5">
+        <a href="/auth/login" class="text-warm-400 text-xs hover:text-warm-200 transition">
+          ← Volver al inicio de sesión
+        </a>
+      </div>
+    </div>
+
+<?php else: ?>
+
     <div class="text-center mb-8">
       <h1 class="text-3xl font-bold text-warm-800 font-serif" style="font-family:'Playfair Display',Georgia,serif">Uníte a Tienda Moroni</h1>
       <p class="mt-2 text-warm-500 text-sm">¿Ya tenés cuenta?
@@ -67,6 +99,8 @@
         Al registrarte formás parte de nuestra comunidad de artesanos y compradores.
       </p>
     </form>
+
+<?php endif; ?>
 
   </div>
 </div>
