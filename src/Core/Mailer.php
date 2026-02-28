@@ -88,9 +88,11 @@ class Mailer
             self::smtpCmd($socket, 'RCPT TO:<' . $to . '>', 250);
             self::smtpCmd($socket, 'DATA', 354);
 
-            $boundary = md5(uniqid((string) time(), true));
-            $plain    = $textBody ?: strip_tags($htmlBody);
-            $date     = date('r');
+            $boundary  = md5(uniqid((string) time(), true));
+            $plain     = $textBody ?: strip_tags($htmlBody);
+            $date      = date('r');
+            $plainB64  = chunk_split(base64_encode($plain), 76, "\r\n");
+            $htmlB64   = chunk_split(base64_encode($htmlBody), 76, "\r\n");
 
             $msg  = "Date: $date\r\n";
             $msg .= "From: =?UTF-8?B?" . base64_encode(SMTP_FROM_NAME) . "?= <" . SMTP_FROM . ">\r\n";
@@ -98,8 +100,8 @@ class Mailer
             $msg .= "Subject: =?UTF-8?B?" . base64_encode($subject) . "?=\r\n";
             $msg .= "MIME-Version: 1.0\r\n";
             $msg .= "Content-Type: multipart/alternative; boundary=\"$boundary\"\r\n\r\n";
-            $msg .= "--$boundary\r\nContent-Type: text/plain; charset=UTF-8\r\n\r\n$plain\r\n\r\n";
-            $msg .= "--$boundary\r\nContent-Type: text/html; charset=UTF-8\r\n\r\n$htmlBody\r\n\r\n";
+            $msg .= "--$boundary\r\nContent-Type: text/plain; charset=UTF-8\r\nContent-Transfer-Encoding: base64\r\n\r\n$plainB64\r\n";
+            $msg .= "--$boundary\r\nContent-Type: text/html; charset=UTF-8\r\nContent-Transfer-Encoding: base64\r\n\r\n$htmlB64\r\n";
             $msg .= "--$boundary--\r\n.\r\n";
 
             fwrite($socket, $msg);
