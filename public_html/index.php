@@ -160,14 +160,18 @@ $router->post('/admin/usuarios/{id}/toggle-status',      ['TiendaMoroni\Controll
 $router->post('/admin/usuarios/{id}/eliminar',           ['TiendaMoroni\Controllers\Admin\UsersController', 'delete']);
 
 // Admin — Settings
-$router->get('/admin/configuracion',         ['TiendaMoroni\Controllers\Admin\SettingsController', 'index']);
-$router->post('/admin/configuracion/toggle', ['TiendaMoroni\Controllers\Admin\SettingsController', 'toggle']);
+$router->get('/admin/configuracion',              ['TiendaMoroni\Controllers\Admin\SettingsController', 'index']);
+$router->post('/admin/configuracion/toggle',      ['TiendaMoroni\Controllers\Admin\SettingsController', 'toggle']);
+$router->post('/admin/configuracion/smtp',        ['TiendaMoroni\Controllers\Admin\SettingsController', 'saveSmtp']);
+$router->post('/admin/configuracion/smtp/test',   ['TiendaMoroni\Controllers\Admin\SettingsController', 'testMail']);
 
 // Admin — Media library
-$router->get('/admin/media',              ['TiendaMoroni\Controllers\Admin\MediaController', 'index']);
-$router->post('/admin/media/subir',       ['TiendaMoroni\Controllers\Admin\MediaController', 'upload']);
-$router->post('/admin/media/carpeta',     ['TiendaMoroni\Controllers\Admin\MediaController', 'createFolder']);
-$router->post('/admin/media/eliminar',    ['TiendaMoroni\Controllers\Admin\MediaController', 'deleteFile']);
+$router->get('/admin/repositorio',            ['TiendaMoroni\Controllers\Admin\MediaController', 'manager']);
+$router->get('/admin/media',                  ['TiendaMoroni\Controllers\Admin\MediaController', 'index']);
+$router->post('/admin/media/subir',           ['TiendaMoroni\Controllers\Admin\MediaController', 'upload']);
+$router->post('/admin/media/carpeta',         ['TiendaMoroni\Controllers\Admin\MediaController', 'createFolder']);
+$router->post('/admin/media/carpeta/eliminar',['TiendaMoroni\Controllers\Admin\MediaController', 'deleteFolder']);
+$router->post('/admin/media/eliminar',        ['TiendaMoroni\Controllers\Admin\MediaController', 'deleteFile']);
 
 // Admin — Product image management
 $router->post('/admin/productos/{id}/imagenes/agregar', ['TiendaMoroni\Controllers\Admin\ProductController', 'addImage']);

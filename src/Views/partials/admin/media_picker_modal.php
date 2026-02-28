@@ -190,7 +190,11 @@ function mediaPicker() {
         fd.append('_csrf',     document.querySelector('meta[name="csrf-token"]')?.content ?? '');
 
         try {
-          const res  = await fetch('/admin/media/subir', { method: 'POST', body: fd });
+          const res  = await fetch('/admin/media/subir', {
+            method: 'POST',
+            body: fd,
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+          });
           const data = await res.json();
           if (data.success) {
             this.files.unshift(data.file);
@@ -215,10 +219,21 @@ function mediaPicker() {
       fd.append('parent_id', this.folderId ?? '');
       fd.append('_csrf',     document.querySelector('meta[name="csrf-token"]')?.content ?? '');
 
-      const res  = await fetch('/admin/media/carpeta', { method: 'POST', body: fd });
-      const data = await res.json();
-      if (data.success) {
-        this.folders.push(data.folder);
+      try {
+        const res  = await fetch('/admin/media/carpeta', {
+          method: 'POST',
+          body: fd,
+          headers: { 'X-Requested-With': 'XMLHttpRequest' },
+        });
+        const data = await res.json();
+        if (data.success) {
+          this.folders.push(data.folder);
+        } else {
+          alert('Error al crear carpeta: ' + (data.message ?? 'error desconocido'));
+        }
+      } catch (e) {
+        alert('Error de red al crear la carpeta. Revisá la consola del navegador.');
+        console.error('promptNewFolder error:', e);
       }
     },
 

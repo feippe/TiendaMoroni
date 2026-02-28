@@ -3,6 +3,10 @@
  * Supplemental custom styles loaded alongside Tailwind CDN.
  */
 
+/* ── Toggle switch thumb positions ── */
+.switch-thumb-on  { transform: translateX(26px); }
+.switch-thumb-off { transform: translateX(3px); }
+
 /* ── Alpine.js cloak (hide elements until Alpine initializes) ── */
 [x-cloak] { display: none !important; }
 

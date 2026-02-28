@@ -83,25 +83,38 @@ $statusColors = ['pending'=>'bg-yellow-100 text-yellow-800','confirmed'=>'bg-blu
            class="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium border border-warm-200 hover:border-brand-400 transition text-warm-700">
           <i data-lucide="pencil" class="w-4 h-4"></i> Editar usuario
         </a>
-        <button type="button"
-                :disabled="busy"
-                class="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium border transition"
-                :class="active
-                  ? 'border-red-200 text-red-600 hover:bg-red-50'
-                  : 'border-green-200 text-green-600 hover:bg-green-50'"
-                @click="
-                  busy=true;
-                  fetch('/admin/usuarios/<?= $user['id'] ?>/toggle-status',{method:'POST',
-                    headers:{'Content-Type':'application/json','X-CSRF-Token':document.querySelector('meta[name=csrf-token]')?.content??''}
-                  })
-                  .then(r=>r.json())
-                  .then(d=>{ if(d.success){ active=d.active===1; } })
-                  .catch(()=>{})
-                  .finally(()=>{ busy=false; })
-                ">
-          <i :data-lucide="active ? 'user-x' : 'user-check'" class="w-4 h-4"></i>
-          <span x-text="active ? 'Desactivar' : 'Activar'"></span>
-        </button>
+        <div class="flex items-center justify-between gap-4 px-4 py-3 bg-white border border-warm-200 rounded-xl">
+          <div>
+            <p class="text-xs font-semibold text-warm-700">Estado de la cuenta</p>
+            <p class="text-xs text-warm-400 mt-0.5" x-text="active ? 'El usuario puede ingresar' : 'Acceso bloqueado'"></p>
+          </div>
+          <div class="flex items-center gap-2.5 flex-shrink-0">
+            <span class="text-xs font-semibold"
+                  :class="active ? 'text-green-500' : 'text-red-500'"
+                  x-text="active ? 'Activo' : 'Inactivo'"></span>
+            <button type="button"
+                    role="switch"
+                    :aria-checked="active.toString()"
+                    aria-label="Activar o desactivar usuario"
+                    :disabled="busy"
+                    class="relative inline-flex rounded-full transition-colors duration-200 ease-in-out focus:outline-none disabled:opacity-60 flex-shrink-0"
+                    :class="active ? 'bg-green-500' : 'bg-red-500'"
+                    style="width:52px;height:28px;padding:3px;"
+                    @click="
+                      busy=true;
+                      fetch('/admin/usuarios/<?= $user['id'] ?>/toggle-status',{method:'POST',
+                        headers:{'Content-Type':'application/json','X-CSRF-Token':document.querySelector('meta[name=csrf-token]')?.content??''}
+                      })
+                      .then(r=>r.json())
+                      .then(d=>{ if(d.success){ active=d.active===1; } })
+                      .catch(()=>{})
+                      .finally(()=>{ busy=false; })
+                    ">
+              <span class="block rounded-full bg-white transition-transform duration-200 ease-in-out"
+                    :style="{ transform: active ? 'translateX(24px)' : 'translateX(0)', width: '22px', height: '22px', boxShadow: '0 1px 3px rgba(0,0,0,0.25)' }"></span>
+            </button>
+          </div>
+        </div>
         <!-- Delete -->
         <div x-data="{
                modalOpen: false,

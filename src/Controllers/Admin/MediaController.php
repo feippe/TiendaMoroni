@@ -8,6 +8,43 @@ use TiendaMoroni\Core\Database as DB;
 
 class MediaController
 {
+    // ── GET /admin/repositorio  →  HTML page ─────────────────────────────────
+
+    public function manager(array $params = []): void
+    {
+        Session::requireAdmin();
+
+        $folderId = (int) get('folder_id', 0) ?: null;
+
+        $folders = DB::fetchAll(
+            'SELECT * FROM media_folders WHERE parent_id ' . ($folderId ? '= ?' : 'IS NULL') . ' ORDER BY name',
+            $folderId ? [$folderId] : []
+        );
+
+        $files = DB::fetchAll(
+            'SELECT * FROM media_files WHERE folder_id ' . ($folderId ? '= ?' : 'IS NULL') . ' ORDER BY created_at DESC',
+            $folderId ? [$folderId] : []
+        );
+
+        $breadcrumb = $folderId ? self::buildBreadcrumb($folderId) : [];
+
+        // Total counts for stats
+        $totalFiles   = (int) DB::fetchOne('SELECT COUNT(*) AS n FROM media_files')['n'];
+        $totalFolders = (int) DB::fetchOne('SELECT COUNT(*) AS n FROM media_folders')['n'];
+        $totalSize    = (int) (DB::fetchOne('SELECT COALESCE(SUM(size),0) AS n FROM media_files')['n'] ?? 0);
+
+        view('admin/media/index', [
+            'pageTitle'    => 'Repositorio de imágenes',
+            'folders'      => $folders,
+            'files'        => $files,
+            'breadcrumb'   => $breadcrumb,
+            'folderId'     => $folderId,
+            'totalFiles'   => $totalFiles,
+            'totalFolders' => $totalFolders,
+            'totalSize'    => $totalSize,
+        ]);
+    }
+
     // ── GET /admin/media?folder_id=X  →  JSON ────────────────────────────────
 
     public function index(array $params = []): void
@@ -43,14 +80,24 @@ class MediaController
 
         $folderId = (int) post('folder_id', 0) ?: null;
 
-        if (empty($_FILES['file']['tmp_name'])) {
+        if (!isset($_FILES['file']) || $_FILES['file']['error'] === UPLOAD_ERR_NO_FILE) {
             jsonResponse(['success' => false, 'message' => 'No se recibió ningún archivo.'], 400);
         }
 
         $file = $_FILES['file'];
 
+        $uploadErrors = [
+            UPLOAD_ERR_INI_SIZE   => 'El archivo supera el límite de PHP (upload_max_filesize = ' . ini_get('upload_max_filesize') . ').',
+            UPLOAD_ERR_FORM_SIZE  => 'El archivo supera el límite definido en el formulario.',
+            UPLOAD_ERR_PARTIAL    => 'El archivo se subió de forma incompleta.',
+            UPLOAD_ERR_NO_TMP_DIR => 'Falta el directorio temporal en el servidor.',
+            UPLOAD_ERR_CANT_WRITE => 'No se pudo escribir el archivo en disco.',
+            UPLOAD_ERR_EXTENSION  => 'Una extensión de PHP bloqueó la subida.',
+        ];
+
         if ($file['error'] !== UPLOAD_ERR_OK) {
-            jsonResponse(['success' => false, 'message' => 'Error en la subida (código ' . $file['error'] . ').'], 400);
+            $msg = $uploadErrors[$file['error']] ?? 'Error en la subida (código ' . $file['error'] . ').';
+            jsonResponse(['success' => false, 'message' => $msg], 400);
         }
 
         if ($file['size'] > UPLOAD_MAX_SIZE) {
@@ -133,7 +180,9 @@ class MediaController
         $diskPath .= $suffix;
         $safeDirName .= $suffix;
 
-        mkdir($diskPath, 0755, true);
+        if (!mkdir($diskPath, 0755, true) && !is_dir($diskPath)) {
+            jsonResponse(['success' => false, 'message' => 'No se pudo crear el directorio en disco. Verificá los permisos de la carpeta uploads/.'], 500);
+        }
 
         DB::query(
             'INSERT INTO media_folders (name, parent_id) VALUES (?, ?)',
@@ -170,7 +219,48 @@ class MediaController
         jsonResponse(['success' => true]);
     }
 
+    // ── POST /admin/media/carpeta/eliminar ───────────────────────────────────
+
+    public function deleteFolder(array $params = []): void
+    {
+        Session::requireAdmin();
+        verifyCsrf();
+
+        $id     = (int) post('id', 0);
+        $folder = DB::fetchOne('SELECT * FROM media_folders WHERE id = ?', [$id]);
+
+        if (!$folder) {
+            jsonResponse(['success' => false, 'message' => 'Carpeta no encontrada.'], 404);
+        }
+
+        // Delete all files inside (recursively via FK CASCADE on folders,
+        // but we also clean disk files manually)
+        self::deleteFolderRecursive($id);
+
+        DB::query('DELETE FROM media_folders WHERE id = ?', [$id]);
+
+        jsonResponse(['success' => true]);
+    }
+
     // ── Private helpers ───────────────────────────────────────────────────────
+
+    private static function deleteFolderRecursive(int $folderId): void
+    {
+        // Delete disk files inside this folder
+        $files = DB::fetchAll('SELECT disk_path FROM media_files WHERE folder_id = ?', [$folderId]);
+        foreach ($files as $f) {
+            if (file_exists($f['disk_path'])) {
+                unlink($f['disk_path']);
+            }
+        }
+        DB::query('DELETE FROM media_files WHERE folder_id = ?', [$folderId]);
+
+        // Recurse into subfolders
+        $subFolders = DB::fetchAll('SELECT id FROM media_folders WHERE parent_id = ?', [$folderId]);
+        foreach ($subFolders as $sub) {
+            self::deleteFolderRecursive((int) $sub['id']);
+        }
+    }
 
     private static function getFolderDiskPath(int $folderId): string
     {

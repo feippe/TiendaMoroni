@@ -154,28 +154,32 @@ function usersUrl(array $merge = []): string {
             <?php if ($isSelf): ?>
             <span class="text-xs text-warm-400 italic">Tú</span>
             <?php else: ?>
-            <button type="button"
-                    role="switch"
-                    :aria-checked="active.toString()"
-                    aria-label="Activar o desactivar usuario"
-                    :disabled="busy"
-                    :class="active ? 'bg-accent' : 'bg-warm-300'"
-                    class="relative inline-flex items-center rounded-full transition-colors duration-200 disabled:opacity-50 focus-visible:outline focus-visible:outline-2"
-                    style="width:40px;height:22px;"
-                    @click="
-                      busy = true;
-                      fetch('/admin/usuarios/<?= $u['id'] ?>/toggle-status', { method:'POST',
-                        headers:{'Content-Type':'application/json','X-CSRF-Token':document.querySelector('meta[name=csrf-token]')?.content??''}
-                      })
-                      .then(r=>r.json())
-                      .then(d=>{ if(d.success){ active = d.active===1; } })
-                      .catch(()=>{})
-                      .finally(()=>{ busy=false; })
-                    ">
-              <span class="absolute left-0.5 top-0.5 inline-block rounded-full bg-white shadow transition-transform duration-200"
-                    :style="active ? 'transform:translateX(18px)' : 'transform:translateX(0)'"
-                    style="width:18px;height:18px;"></span>
-            </button>
+            <div class="flex items-center gap-2.5">
+              <span class="text-xs font-semibold"
+                    :class="active ? 'text-green-500' : 'text-red-500'"
+                    x-text="active ? 'Activo' : 'Inactivo'"></span>
+              <button type="button"
+                      role="switch"
+                      :aria-checked="active.toString()"
+                      aria-label="Activar o desactivar usuario"
+                      :disabled="busy"
+                      class="relative inline-flex rounded-full transition-colors duration-200 ease-in-out focus:outline-none flex-shrink-0 disabled:opacity-60"
+                      :class="active ? 'bg-green-500' : 'bg-red-500'"
+                      style="width:52px;height:28px;padding:3px;"
+                      @click="
+                        busy = true;
+                        fetch('/admin/usuarios/<?= $u['id'] ?>/toggle-status', { method:'POST',
+                          headers:{'Content-Type':'application/json','X-CSRF-Token':document.querySelector('meta[name=csrf-token]')?.content??''}
+                        })
+                        .then(r=>r.json())
+                        .then(d=>{ if(d.success){ active = d.active===1; } })
+                        .catch(()=>{})
+                        .finally(()=>{ busy=false; })
+                      ">
+                <span class="block rounded-full bg-white transition-transform duration-200 ease-in-out"
+                      :style="{ transform: active ? 'translateX(24px)' : 'translateX(0)', width: '22px', height: '22px', boxShadow: '0 1px 3px rgba(0,0,0,0.25)' }"></span>
+              </button>
+            </div>
             <?php endif; ?>
           </td>
           <!-- Registration date -->

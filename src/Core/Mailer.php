@@ -8,6 +8,19 @@ namespace TiendaMoroni\Core;
  */
 class Mailer
 {
+    /**
+     * Read a setting from DB (via SettingModel) if available,
+     * otherwise fall back to the PHP constant.
+     */
+    private static function cfg(string $constant, string $settingKey): string
+    {
+        try {
+            $v = \TiendaMoroni\Models\SettingModel::get($settingKey);
+            if ($v !== null && $v !== '') return $v;
+        } catch (\Throwable) {}
+        return defined($constant) ? (string) constant($constant) : '';
+    }
+
     public static function send(
         string $to,
         string $toName,
@@ -15,7 +28,8 @@ class Mailer
         string $htmlBody,
         string $textBody = ''
     ): bool {
-        if (MAIL_DRIVER === 'smtp') {
+        $driver = self::cfg('MAIL_DRIVER', 'smtp_driver');
+        if ($driver === 'smtp') {
             return self::sendSmtp($to, $toName, $subject, $htmlBody, $textBody);
         }
 
@@ -32,8 +46,8 @@ class Mailer
         string $textBody
     ): bool {
         $boundary = md5(uniqid((string) time(), true));
-        $from     = SMTP_FROM;
-        $fromName = SMTP_FROM_NAME;
+        $from     = self::cfg('SMTP_FROM',      'smtp_from');
+        $fromName = self::cfg('SMTP_FROM_NAME', 'smtp_from_name');
 
         $headers  = "MIME-Version: 1.0\r\n";
         $headers .= "Content-Type: multipart/alternative; boundary=\"$boundary\"\r\n";
@@ -66,7 +80,14 @@ class Mailer
         string $textBody
     ): bool {
         try {
-            $useStartTls = (SMTP_PORT === 587);
+            $smtpHost = self::cfg('SMTP_HOST', 'smtp_host');
+            $smtpPort = (int) self::cfg('SMTP_PORT', 'smtp_port');
+            $smtpUser = self::cfg('SMTP_USER', 'smtp_user');
+            $smtpPass = self::cfg('SMTP_PASS', 'smtp_pass');
+            $smtpFrom = self::cfg('SMTP_FROM', 'smtp_from');
+            $smtpFromName = self::cfg('SMTP_FROM_NAME', 'smtp_from_name');
+
+            $useStartTls = ($smtpPort === 587);
             $ctx = stream_context_create([
                 'ssl' => [
                     'verify_peer'       => false,
@@ -77,7 +98,7 @@ class Mailer
             // Port 465 → direct SSL; port 587 → plain then STARTTLS
             $prefix = $useStartTls ? '' : 'ssl://';
             $socket = stream_socket_client(
-                $prefix . SMTP_HOST . ':' . SMTP_PORT,
+                $prefix . $smtpHost . ':' . $smtpPort,
                 $errno,
                 $errstr,
                 10,
@@ -89,7 +110,7 @@ class Mailer
                 throw new \RuntimeException("SMTP connect failed: $errstr ($errno)");
             }
 
-            $ehlo = defined('SMTP_FROM') ? substr(strrchr(SMTP_FROM, '@'), 1) : 'tiendamoroni.com';
+            $ehlo = $smtpFrom ? substr(strrchr($smtpFrom, '@'), 1) : 'tiendamoroni.com';
 
             self::smtpExpect($socket, 220);
             self::smtpCmd($socket, 'EHLO ' . $ehlo, 250);
@@ -102,9 +123,9 @@ class Mailer
             }
 
             self::smtpCmd($socket, 'AUTH LOGIN', 334);
-            self::smtpCmd($socket, base64_encode(SMTP_USER), 334);
-            self::smtpCmd($socket, base64_encode(SMTP_PASS), 235);
-            self::smtpCmd($socket, 'MAIL FROM:<' . SMTP_FROM . '>', 250);
+            self::smtpCmd($socket, base64_encode($smtpUser), 334);
+            self::smtpCmd($socket, base64_encode($smtpPass), 235);
+            self::smtpCmd($socket, 'MAIL FROM:<' . $smtpFrom . '>', 250);
             self::smtpCmd($socket, 'RCPT TO:<' . $to . '>', 250);
             self::smtpCmd($socket, 'DATA', 354);
 
@@ -115,7 +136,7 @@ class Mailer
             $htmlB64   = chunk_split(base64_encode($htmlBody), 76, "\r\n");
 
             $msg  = "Date: $date\r\n";
-            $msg .= "From: =?UTF-8?B?" . base64_encode(SMTP_FROM_NAME) . "?= <" . SMTP_FROM . ">\r\n";
+            $msg .= "From: =?UTF-8?B?" . base64_encode($smtpFromName) . "?= <" . $smtpFrom . ">\r\n";
             $msg .= "To: =?UTF-8?B?" . base64_encode($toName) . "?= <$to>\r\n";
             $msg .= "Subject: =?UTF-8?B?" . base64_encode($subject) . "?=\r\n";
             $msg .= "MIME-Version: 1.0\r\n";

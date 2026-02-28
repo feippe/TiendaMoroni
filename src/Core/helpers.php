@@ -120,11 +120,19 @@ function verifyCsrf(): void
     if (session_status() === PHP_SESSION_NONE) {
         session_start();
     }
-    $submitted = $_POST['_csrf'] ?? '';
+    $submitted = $_POST['_csrf'] ?? $_SERVER['HTTP_X_CSRF_TOKEN'] ?? '';
     $stored    = $_SESSION['csrf_token'] ?? '';
 
     if (!$stored || !hash_equals($stored, $submitted)) {
         http_response_code(403);
+        // Return JSON for AJAX requests so the client can show a proper alert
+        $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) ||
+                  str_contains($_SERVER['HTTP_ACCEPT'] ?? '', 'application/json');
+        if ($isAjax) {
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'message' => 'Sesión expirada. Por favor recargá la página e intentá de nuevo.']);
+            exit;
+        }
         die('Token de seguridad inválido. Por favor recargá la página e intentá de nuevo.');
     }
 }
