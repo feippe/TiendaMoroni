@@ -1,0 +1,10 @@
+User-agent: *
+Disallow: /admin/
+Disallow: /auth/
+Disallow: /carrito
+Disallow: /checkout
+Disallow: /mi-cuenta
+Disallow: /api/
+Allow: /assets/
+
+Sitemap: https://tiendamoroni.com/sitemap.xml

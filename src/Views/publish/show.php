@@ -11,14 +11,14 @@ $jsonLD = json_encode([
 
 <!-- ── Hero ──────────────────────────────────────────────────────────────────── -->
 <section class="relative overflow-hidden flex items-center justify-center text-white"
-         style="min-height:72vh;background:linear-gradient(135deg,#090f17 0%,#0F1E2E 100%)">
+         style="min-height:72vh;background:linear-gradient(135deg,var(--color-navy-deeper) 0%,var(--color-navy-dark) 100%)">
   <div class="hero-dots absolute inset-0 pointer-events-none" aria-hidden="true"></div>
   <div class="absolute inset-0 pointer-events-none" aria-hidden="true"
-       style="background:radial-gradient(ellipse 65% 55% at 50% 45%,rgba(198,167,94,0.07) 0%,transparent 70%)"></div>
+       style="background:radial-gradient(ellipse 65% 55% at 50% 45%,rgba(232,176,32,0.07) 0%,transparent 70%)"></div>
 
   <div class="relative w-full max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center">
     <div class="hero-item-1 inline-flex items-center gap-2 mb-6 text-xs font-semibold tracking-widest uppercase"
-         style="color:#C6A75E">
+         style="color:var(--color-gold)">
       <i data-lucide="store" class="w-4 h-4"></i>
       Para creadores y vendedores
     </div>
@@ -37,7 +37,7 @@ $jsonLD = json_encode([
     <div class="hero-item-3 mt-10">
       <a href="#formulario"
          class="inline-flex items-center gap-2 px-8 py-3 font-bold rounded-full text-sm sm:text-base transition duration-200 hover:scale-105 shadow-md"
-         style="background:#C6A75E;color:#090f17">
+         style="background:var(--color-gold);color:var(--color-navy-deeper)">
         Quiero publicar gratis
         <i data-lucide="arrow-down" class="w-4 h-4"></i>
       </a>
@@ -78,8 +78,8 @@ $jsonLD = json_encode([
                   hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
            style="transition-delay:<?= $i * 80 ?>ms">
         <div class="w-12 h-12 rounded-full flex items-center justify-center mb-4"
-             style="background:rgba(198,167,94,0.12)">
-          <i data-lucide="<?= $cat['icon'] ?>" class="w-6 h-6" style="color:#C6A75E"></i>
+             style="background:rgba(232,176,32,0.12)">
+          <i data-lucide="<?= $cat['icon'] ?>" class="w-6 h-6" style="color:var(--color-gold)"></i>
         </div>
         <h3 class="font-serif font-bold text-warm-800 mb-1 text-sm sm:text-base leading-tight"
             style="font-family:'Playfair Display',Georgia,serif">
@@ -93,7 +93,7 @@ $jsonLD = json_encode([
 </section>
 
 <!-- ── Why TiendaMoroni ──────────────────────────────────────────────────────── -->
-<section class="py-20" style="background:#0F1E2E">
+<section class="py-20" style="background:var(--color-navy-deeper)">
   <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
     <h2 class="font-serif text-3xl sm:text-4xl font-bold text-white text-center mb-14"
         style="font-family:'Playfair Display',Georgia,serif">
@@ -113,8 +113,8 @@ $jsonLD = json_encode([
       ?>
       <div class="flex flex-col items-center text-center gap-4">
         <div class="w-14 h-14 rounded-full flex items-center justify-center flex-shrink-0"
-             style="background:rgba(198,167,94,0.15)">
-          <i data-lucide="<?= $b['icon'] ?>" class="w-7 h-7" style="color:#C6A75E"></i>
+             style="background:rgba(232,176,32,0.15)">
+          <i data-lucide="<?= $b['icon'] ?>" class="w-7 h-7" style="color:var(--color-gold)"></i>
         </div>
         <div>
           <h3 class="font-serif font-bold text-white text-lg mb-2"
@@ -134,9 +134,9 @@ $jsonLD = json_encode([
 <!-- ── Quote ─────────────────────────────────────────────────────────────────── -->
 <section class="bg-warm-100 py-20">
   <div class="max-w-2xl mx-auto px-4 sm:px-6 text-center">
-    <div class="w-16 h-1 rounded-full mx-auto mb-8" style="background:#C6A75E"></div>
+    <div class="w-16 h-1 rounded-full mx-auto mb-8" style="background:var(--color-gold)"></div>
     <blockquote class="font-serif text-2xl sm:text-3xl font-semibold italic leading-snug mb-5"
-                style="font-family:'Playfair Display',Georgia,serif;color:#0F1E2E">
+                style="font-family:'Playfair Display',Georgia,serif;color:var(--color-navy-deeper)">
       "Cada pieza que creás es una forma de compartir tu testimonio."
     </blockquote>
     <p class="text-warm-500 text-sm font-semibold tracking-wide">— Equipo de Tienda Moroni</p>
@@ -149,9 +149,9 @@ $jsonLD = json_encode([
 
     <div class="text-center mb-10">
       <div class="flex items-center justify-center gap-3 mb-6">
-        <span class="block h-px w-12" style="background:#C6A75E;opacity:.5"></span>
-        <i data-lucide="send" class="w-5 h-5" style="color:#C6A75E"></i>
-        <span class="block h-px w-12" style="background:#C6A75E;opacity:.5"></span>
+        <span class="block h-px w-12" style="background:var(--color-gold);opacity:.5"></span>
+        <i data-lucide="send" class="w-5 h-5" style="color:var(--color-gold)"></i>
+        <span class="block h-px w-12" style="background:var(--color-gold);opacity:.5"></span>
       </div>
       <h2 class="font-serif text-3xl sm:text-4xl font-bold text-warm-900 mb-3"
           style="font-family:'Playfair Display',Georgia,serif">
@@ -177,7 +177,7 @@ $jsonLD = json_encode([
                  value="<?= e($old['name'] ?? '') ?>"
                  class="w-full rounded-xl border px-4 py-2.5 text-sm text-warm-800
                         focus:outline-none focus:ring-2 transition
-                        <?= isset($errors['name']) ? 'border-red-400 focus:ring-red-300 bg-red-50' : 'border-warm-300 focus:ring-brand-400' ?>">
+                        <?= isset($errors['name']) ? 'border-red-400 focus:ring-red-300 bg-red-50' : 'border-warm-300 focus:ring-gold' ?>">
           <?php if (isset($errors['name'])): ?>
             <p class="mt-1 text-red-500 text-xs"><?= e($errors['name']) ?></p>
           <?php endif; ?>
@@ -192,7 +192,7 @@ $jsonLD = json_encode([
                  value="<?= e($old['lastname'] ?? '') ?>"
                  class="w-full rounded-xl border px-4 py-2.5 text-sm text-warm-800
                         focus:outline-none focus:ring-2 transition
-                        <?= isset($errors['lastname']) ? 'border-red-400 focus:ring-red-300 bg-red-50' : 'border-warm-300 focus:ring-brand-400' ?>">
+                        <?= isset($errors['lastname']) ? 'border-red-400 focus:ring-red-300 bg-red-50' : 'border-warm-300 focus:ring-gold' ?>">
           <?php if (isset($errors['lastname'])): ?>
             <p class="mt-1 text-red-500 text-xs"><?= e($errors['lastname']) ?></p>
           <?php endif; ?>
@@ -208,7 +208,7 @@ $jsonLD = json_encode([
                  placeholder="099 000 000"
                  class="w-full rounded-xl border px-4 py-2.5 text-sm text-warm-800
                         focus:outline-none focus:ring-2 transition
-                        <?= isset($errors['phone']) ? 'border-red-400 focus:ring-red-300 bg-red-50' : 'border-warm-300 focus:ring-brand-400' ?>">
+                        <?= isset($errors['phone']) ? 'border-red-400 focus:ring-red-300 bg-red-50' : 'border-warm-300 focus:ring-gold' ?>">
           <?php if (isset($errors['phone'])): ?>
             <p class="mt-1 text-red-500 text-xs"><?= e($errors['phone']) ?></p>
           <?php endif; ?>
@@ -223,7 +223,7 @@ $jsonLD = json_encode([
                  value="<?= e($old['email'] ?? '') ?>"
                  class="w-full rounded-xl border px-4 py-2.5 text-sm text-warm-800
                         focus:outline-none focus:ring-2 transition
-                        <?= isset($errors['email']) ? 'border-red-400 focus:ring-red-300 bg-red-50' : 'border-warm-300 focus:ring-brand-400' ?>">
+                        <?= isset($errors['email']) ? 'border-red-400 focus:ring-red-300 bg-red-50' : 'border-warm-300 focus:ring-gold' ?>">
           <?php if (isset($errors['email'])): ?>
             <p class="mt-1 text-red-500 text-xs"><?= e($errors['email']) ?></p>
           <?php endif; ?>
@@ -239,7 +239,7 @@ $jsonLD = json_encode([
         <textarea id="pub-comments" name="comments" rows="4"
                   placeholder="Contanos sobre tus creaciones, materiales, inspiración..."
                   class="w-full rounded-xl border border-warm-300 px-4 py-2.5 text-sm text-warm-800
-                         focus:outline-none focus:ring-2 focus:ring-brand-400 transition resize-none"><?= e($old['comments'] ?? '') ?></textarea>
+                         focus:outline-none focus:ring-2 focus:ring-gold transition resize-none"><?= e($old['comments'] ?? '') ?></textarea>
       </div>
 
       <!-- Submit -->
@@ -248,7 +248,7 @@ $jsonLD = json_encode([
               class="w-full flex items-center justify-center gap-2 py-3 px-8 rounded-full
                      font-bold text-sm sm:text-base text-white transition duration-200
                      hover:opacity-90 disabled:opacity-60"
-              style="background:#0F1E2E">
+              style="background:var(--color-navy-deeper)">
         <template x-if="!submitting">
           <span class="flex items-center gap-2">
             <i data-lucide="send" class="w-4 h-4"></i>

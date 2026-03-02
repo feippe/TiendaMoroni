@@ -11,11 +11,11 @@
     </div>
     <div class="p-4">
       <?php if (!empty($product['category_name'])): ?>
-      <span class="text-xs font-medium text-brand-600 uppercase tracking-wider">
+      <span class="text-xs font-medium text-navy-mid uppercase tracking-wider">
         <?= e($product['category_name']) ?>
       </span>
       <?php endif; ?>
-      <h3 class="mt-1 font-semibold text-warm-900 text-sm leading-snug line-clamp-2 group-hover:text-brand-800 transition">
+      <h3 class="mt-1 font-semibold text-navy-deeper text-sm leading-snug line-clamp-2 group-hover:text-navy transition">
         <?= e($product['name']) ?>
       </h3>
       <?php if (!empty($product['vendor_name'])): ?>
@@ -25,8 +25,8 @@
       <p class="mt-1 text-xs text-warm-500 line-clamp-2"><?= e($product['short_description']) ?></p>
       <?php endif; ?>
       <div class="mt-3 flex items-center justify-between">
-        <span class="text-lg font-bold text-warm-900"><?= formatPrice($product['price']) ?></span>
-        <span class="text-xs font-semibold text-brand-800 bg-brand-50 px-3 py-1 rounded-full">
+        <span class="text-lg font-bold text-navy-deeper"><?= formatPrice($product['price']) ?></span>
+        <span class="text-xs font-semibold text-navy-deeper bg-gold-soft px-3 py-1 rounded-full">
           Ver más →
         </span>
       </div>
@@ -36,8 +36,8 @@
   <div class="px-4 pb-4">
     <button
       onclick="addToCart(<?= (int) $product['id'] ?>, this)"
-      class="w-full py-2 bg-brand-800 text-white text-sm font-semibold rounded-xl
-             hover:bg-brand-700 active:scale-95 transition-all duration-150">
+      class="w-full py-2 bg-navy text-white text-sm font-semibold rounded-xl
+             hover:bg-navy-dark active:scale-95 transition-all duration-150">
       Agregá al carrito
     </button>
   </div>

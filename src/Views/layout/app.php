@@ -16,13 +16,18 @@
   <meta name="theme-color" content="#ffffff">
 
   <!-- Open Graph -->
-  <?php if (isset($ogImage)): ?>
-  <meta property="og:type"        content="product">
-  <meta property="og:title"       content="<?= e($pageTitle ?? '') ?>">
-  <meta property="og:description" content="<?= e($metaDesc ?? '') ?>">
-  <meta property="og:image"       content="<?= e($ogImage) ?>">
-  <meta property="og:url"         content="<?= e($canonical ?? currentUrl()) ?>">
-  <?php endif; ?>
+  <meta property="og:site_name"    content="<?= e(SITE_NAME) ?>">
+  <meta property="og:type"         content="<?= e($ogType ?? 'website') ?>">
+  <meta property="og:title"        content="<?= e($pageTitle ?? SITE_NAME) ?>">
+  <meta property="og:description"  content="<?= e($metaDesc ?? '') ?>">
+  <meta property="og:image"        content="<?= e($ogImage ?? SITE_URL . '/assets/img/hero.webp') ?>">
+  <meta property="og:url"          content="<?= e($canonical ?? currentUrl()) ?>">
+
+  <!-- Twitter Cards -->
+  <meta name="twitter:card"        content="summary_large_image">
+  <meta name="twitter:title"       content="<?= e($pageTitle ?? SITE_NAME) ?>">
+  <meta name="twitter:description" content="<?= e($metaDesc ?? '') ?>">
+  <meta name="twitter:image"       content="<?= e($ogImage ?? SITE_URL . '/assets/img/hero.webp') ?>">
 
   <!-- Google Fonts: Playfair Display (títulos) + Lato (cuerpo) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -40,34 +45,47 @@
             serif: ['Playfair Display', 'Georgia', 'serif'],
           },
           colors: {
-            brand: {
-              50:  '#f5f7fa',
-              100: '#e8edf4',
-              200: '#c8d4e4',
-              300: '#9ab1cc',
-              400: '#C6A75E',   /* gold matte — primary accent */
-              500: '#b5923f',
-              600: '#1B3A5C',   /* mid navy — compatibility */
-              700: '#162E4A',   /* mid navy */
-              800: '#0F1E2E',   /* deep midnight navy — primary */
-              900: '#090f17',
+            /* ── Sistema de diseño ── */
+            gold: {
+              DEFAULT: '#E8B020',   /* primario */
+              dark:    '#C8920A',   /* hover primario */
+              soft:    '#F5C842',   /* badges */
+              light:   '#FEF9EC',
+              tint:    '#FDF0C4',
+              deeper:  '#9E6F05',
             },
+            navy: {
+              DEFAULT: '#1E3A6E',   /* secundario */
+              dark:    '#152B54',   /* hover / footer */
+              deeper:  '#0D1C38',   /* dark bg / texto oscuro */
+              light:   '#EEF1F8',   /* superficie clara */
+              mid:     '#4F6EA8',   /* texto mutado */
+            },
+            /* ── Neutrales ── */
             warm: {
-              50:  '#F8F6F2',   /* warm white */
+              50:  '#F8F6F2',
               100: '#f0ede6',
               200: '#e2ddd4',
               300: '#cdc7bb',
-              400: '#a8a092',
+              400: '#7c756c', /* ≥4.5:1 vs blanco — pasa WCAG AA */
               500: '#7a7268',
               600: '#5a5450',
               700: '#44403c',
-              800: '#2C2A27',   /* dark text */
+              800: '#2C2A27',
               900: '#1a1916',
             },
-            accent: {
-              DEFAULT: '#C6A75E', /* gold matte */
-              light:   '#d4b97a',
-              dark:    '#a88840',
+            /* ── Aliases de compatibilidad — mapean a paleta oficial ── */
+            brand: {
+              50:  '#F8F9FA',   /* --color-bg */
+              100: '#EEF1F8',   /* --color-navy-light */
+              200: '#EEF1F8',   /* --color-navy-light */
+              300: '#4F6EA8',   /* --color-navy-mid */
+              400: '#E8B020',   /* --color-gold */
+              500: '#C8920A',   /* --color-gold-dark */
+              600: '#1E3A6E',   /* --color-navy */
+              700: '#152B54',   /* --color-navy-dark */
+              800: '#0D1C38',   /* --color-navy-deeper */
+              900: '#0D1C38',   /* --color-navy-deeper */
             },
           },
           transitionDuration: { DEFAULT: '200ms' },
@@ -117,7 +135,7 @@
   <!-- Cart notification toast -->
   <div x-cloak x-show="$store.cart.toast"
        x-transition
-       class="fixed bottom-6 right-6 z-50 bg-brand-800 text-white px-5 py-3 rounded-xl shadow-xl text-sm font-medium">
+       class="fixed bottom-6 right-6 z-50 bg-navy text-white px-5 py-3 rounded-xl shadow-xl text-sm font-medium">
     ¡Agregado al carrito! 🛒
   </div>
 

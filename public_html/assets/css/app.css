@@ -3,6 +3,45 @@
  * Supplemental custom styles loaded alongside Tailwind CDN.
  */
 
+/* ── Design System — CSS Custom Properties ── */
+:root {
+  /* Primarios - Dorado */
+  --color-gold-light:    #FEF9EC;
+  --color-gold-tint:     #FDF0C4;
+  --color-gold-soft:     #F5C842;
+  --color-gold:          #E8B020;
+  --color-gold-dark:     #C8920A;
+  --color-gold-deeper:   #9E6F05;
+
+  /* Primarios - Azul Marino */
+  --color-navy-light:    #EEF1F8;
+  --color-navy-mid:      #4F6EA8;
+  --color-navy:          #1E3A6E;
+  --color-navy-dark:     #152B54;
+  --color-navy-deeper:   #0D1C38;
+
+  /* Neutros */
+  --color-white:         #FFFFFF;
+  --color-bg:            #F8F9FA;
+  --color-surface:       #EEF1F8;
+  --color-border:        #E9ECEF;
+  --color-text-muted:    #6C757D;
+  --color-text:          #343A40;
+  --color-text-dark:     #0D1C38;
+
+  /* Semánticos */
+  --color-success:       #2ECC71;
+  --color-error:         #E74C3C;
+  --color-warning:       #F39C12;
+  --color-info:          #3498DB;
+
+  /* Aliases de uso */
+  --color-primary:         var(--color-gold);
+  --color-primary-hover:   var(--color-gold-dark);
+  --color-secondary:       var(--color-navy);
+  --color-secondary-hover: var(--color-navy-dark);
+}
+
 /* ── Toggle switch thumb positions ── */
 .switch-thumb-on  { transform: translateX(26px); }
 .switch-thumb-off { transform: translateX(3px); }
@@ -12,7 +51,7 @@
 
 /* ── Focus ring (consistent across browsers) ── */
 *:focus-visible {
-  outline: 2px solid #C6A75E;
+  outline: 2px solid var(--color-gold);
   outline-offset: 2px;
 }
 
@@ -37,8 +76,8 @@
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: #C6A75E;
-  box-shadow: 0 2px 10px rgba(198,167,94,.55);
+  background: var(--color-gold);
+  box-shadow: 0 2px 10px rgba(232,176,32,.45);
   pointer-events: none;
   transition:
     top  0.65s cubic-bezier(.3, .6, .5, 1),
@@ -99,8 +138,8 @@
 
 /* ── Nuestra Fe section: CTA button hover ── */
 .fe-cta:hover {
-  background: #C6A75E;
-  color: #0F1E2E !important; /* !important overrides inline style="color:#C6A75E" */
+  background: var(--color-gold-dark);
+  color: var(--color-navy-deeper) !important;
 }
 
 /* ── Publicar page: staggered card animations ── */
@@ -121,7 +160,7 @@ html { scroll-behavior: smooth; }
 .rich-text ul     { list-style: disc inside; margin-bottom: 0.75em; }
 .rich-text ol     { list-style: decimal inside; margin-bottom: 0.75em; }
 .rich-text strong { font-weight: 600; }
-.rich-text a      { color: #0F1E2E; text-decoration: underline; }
+.rich-text a      { color: var(--color-navy); text-decoration: underline; }
 
 /* ── Product image gallery (aspect ratio fallback) ── */
 .img-gallery { aspect-ratio: 1 / 1; }
@@ -131,8 +170,8 @@ html { scroll-behavior: smooth; }
 .spinner {
   display: inline-block;
   width: 1.25rem; height: 1.25rem;
-  border: 3px solid rgba(109,40,217,0.2);
-  border-top-color: #0F1E2E;
+  border: 3px solid rgba(30,58,110,0.15);
+  border-top-color: var(--color-navy);
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
 }

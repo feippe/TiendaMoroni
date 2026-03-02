@@ -31,7 +31,7 @@ $jsonLD  = json_encode([
 
   <!-- Dark overlay for text legibility -->
   <div class="absolute inset-0 pointer-events-none" aria-hidden="true"
-       style="background:linear-gradient(135deg,rgba(15,30,46,0.82) 0%,rgba(22,46,74,0.70) 100%)"></div>
+       style="background:linear-gradient(135deg,rgba(13,28,56,0.85) 0%,rgba(30,58,110,0.72) 100%)"></div>
 
   <!-- Dot texture on top of overlay -->
   <div class="hero-dots absolute inset-0 pointer-events-none" aria-hidden="true"></div>
@@ -54,16 +54,12 @@ $jsonLD  = json_encode([
     <!-- CTAs -->
     <div class="hero-item-3 flex flex-col sm:flex-row gap-4 justify-center items-center">
       <a href="/productos"
-         class="inline-flex items-center gap-2 px-8 py-3 font-bold rounded-full text-sm sm:text-base transition duration-200 hover:scale-105 shadow-md"
-         style="background:#C6A75E;color:#090f17">
+         class="inline-flex items-center gap-2 px-8 py-3 bg-gold text-navy-deeper font-bold rounded-full text-sm sm:text-base transition duration-200 hover:bg-gold-dark hover:scale-105 shadow-md">
         Explorar productos
         <i data-lucide="arrow-right" class="w-4 h-4"></i>
       </a>
       <a href="/publicar-gratis"
-         class="inline-flex items-center gap-2 px-8 py-3 border-2 font-semibold rounded-full text-sm sm:text-base transition duration-200"
-         style="border-color:#F8F6F2;color:#F8F6F2"
-         onmouseover="this.style.background='#F8F6F2';this.style.color='#0F1E2E'"
-         onmouseout="this.style.background='transparent';this.style.color='#F8F6F2'">
+         class="inline-flex items-center gap-2 px-8 py-3 border-2 border-white/80 text-white font-semibold rounded-full text-sm sm:text-base transition duration-200 hover:bg-white hover:text-navy-deeper">
         ¿Creás productos? Publicá gratis
       </a>
     </div>
@@ -72,7 +68,7 @@ $jsonLD  = json_encode([
 </section>
 
 <!-- ── Trust bar ───────────────────────────────────────────────────────────────── -->
-<div style="background:#C6A75E" class="text-brand-900">
+<div class="bg-gold text-navy-deeper">
   <div class="max-w-5xl mx-auto px-4 py-3 flex flex-wrap justify-center gap-6 md:gap-10 text-xs font-semibold tracking-wide">
     <span>✦ Artesanos verificados de nuestra comunidad</span>
     <span>✦ Productos únicos hechos a mano</span>
@@ -81,7 +77,7 @@ $jsonLD  = json_encode([
 </div>
 <!-- ── Categories ──────────────────────────────────────────────────────────── -->
 <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-  <h2 class="text-2xl font-bold text-warm-800 mb-2 font-serif" style="font-family:'Playfair Display',Georgia,serif">Explorá por categoría</h2>
+  <h2 class="text-2xl font-bold text-navy-deeper mb-2 font-serif" style="font-family:'Playfair Display',Georgia,serif">Explorá por categoría</h2>
   <p class="text-warm-500 text-sm mb-8">Productos organizados con cariño para vos</p>
   <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-<?= min(count($categories), 4) ?> gap-4">
     <?php foreach ($categories as $cat): ?>
@@ -109,8 +105,8 @@ $jsonLD  = json_encode([
 <section class="bg-white py-16">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex items-center justify-between mb-8">
-      <h2 class="text-2xl font-bold text-warm-800 font-serif" style="font-family:'Playfair Display',Georgia,serif">Productos destacados</h2>
-      <a href="/productos" class="text-sm font-semibold text-brand-800 hover:text-brand-900 transition">
+      <h2 class="text-2xl font-bold text-navy-deeper font-serif" style="font-family:'Playfair Display',Georgia,serif">Productos destacados</h2>
+      <a href="/productos" class="text-sm font-semibold text-navy hover:text-navy-dark transition">
         Ver todos →
       </a>
     </div>
@@ -125,7 +121,7 @@ $jsonLD  = json_encode([
 
 <!-- ── How it works ────────────────────────────────────────────────────────── -->
 <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-  <h2 class="text-2xl font-bold text-warm-800 text-center mb-4 font-serif" style="font-family:'Playfair Display',Georgia,serif">¿Cómo funciona?</h2>
+  <h2 class="text-2xl font-bold text-navy-deeper text-center mb-4 font-serif" style="font-family:'Playfair Display',Georgia,serif">¿Cómo funciona?</h2>
   <p class="text-center text-warm-500 text-sm mb-12">Simple, cercano y sin complicaciones</p>
   <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
     <?php
@@ -139,11 +135,11 @@ $jsonLD  = json_encode([
     <div class="bg-white rounded-2xl shadow-sm border border-warm-100 text-center p-8"
          x-data x-intersect.once="$el.style.opacity='1';$el.style.transform='none'"
          style="opacity:0;transform:translateY(16px);transition:opacity .4s ease,transform .4s ease;">
-      <div class="w-16 h-16 bg-brand-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-        <i data-lucide="<?= $step['icon'] ?>" class="w-8 h-8 text-brand-800"></i>
+      <div class="w-16 h-16 bg-navy-light rounded-2xl flex items-center justify-center mx-auto mb-4">
+        <i data-lucide="<?= $step['icon'] ?>" class="w-8 h-8 text-navy"></i>
       </div>
-      <span class="text-xs font-bold text-brand-400 tracking-widest"><?= $step['num'] ?></span>
-      <h3 class="text-xl font-bold text-warm-900 mt-1 mb-2"><?= $step['title'] ?></h3>
+      <span class="text-xs font-bold text-navy-mid tracking-widest"><?= $step['num'] ?></span>
+      <h3 class="text-xl font-bold text-navy-deeper mt-1 mb-2"><?= $step['title'] ?></h3>
       <p class="text-warm-500 text-sm leading-relaxed"><?= $step['desc'] ?></p>
     </div>
     <?php endforeach; ?>
@@ -155,8 +151,8 @@ $jsonLD  = json_encode([
 <section class="bg-warm-100 py-16">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex items-center justify-between mb-8">
-      <h2 class="text-2xl font-bold text-warm-800 font-serif" style="font-family:'Playfair Display',Georgia,serif">Recién llegados</h2>
-      <a href="/productos?orden=newest" class="text-sm font-semibold text-brand-800 hover:text-brand-900 transition">
+      <h2 class="text-2xl font-bold text-navy-deeper font-serif" style="font-family:'Playfair Display',Georgia,serif">Recién llegados</h2>
+      <a href="/productos?orden=newest" class="text-sm font-semibold text-navy hover:text-navy-dark transition">
         Ver todos →
       </a>
     </div>

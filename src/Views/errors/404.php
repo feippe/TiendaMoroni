@@ -5,16 +5,16 @@
 
     <!-- Decorative top ornament -->
     <div class="flex items-center justify-center gap-3 mb-6">
-      <span class="block h-px w-16 bg-brand-300 opacity-60"></span>
-      <i data-lucide="triangle-alert" class="w-5 h-5 text-brand-400"></i>
-      <span class="block h-px w-16 bg-brand-300 opacity-60"></span>
+      <span class="block h-px w-16 bg-navy-mid opacity-60"></span>
+      <i data-lucide="triangle-alert" class="w-5 h-5 text-gold"></i>
+      <span class="block h-px w-16 bg-navy-mid opacity-60"></span>
     </div>
 
     <!-- 404 number with layered style -->
     <div class="relative inline-block select-none mb-4">
-      <span class="absolute inset-0 text-[9rem] font-black text-brand-100 translate-x-1 translate-y-1 leading-none" aria-hidden="true">404</span>
+      <span class="absolute inset-0 text-[9rem] font-black text-navy-light translate-x-1 translate-y-1 leading-none" aria-hidden="true">404</span>
       <span class="relative text-[9rem] font-black leading-none" style="
-        background: linear-gradient(135deg, #162E4A 0%, #C6A75E 100%);
+        background: linear-gradient(135deg, var(--color-navy-dark) 0%, var(--color-gold) 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
@@ -41,7 +41,7 @@
     <!-- Action buttons -->
     <div class="flex flex-col sm:flex-row gap-3 justify-center">
       <a href="/"
-         class="inline-flex items-center justify-center gap-2 px-7 py-3 bg-brand-800 text-white rounded-xl font-semibold text-sm hover:bg-brand-700 transition shadow-sm">
+         class="inline-flex items-center justify-center gap-2 px-7 py-3 bg-navy text-white rounded-xl font-semibold text-sm hover:bg-navy-dark transition shadow-sm">
         <i data-lucide="home" class="w-4 h-4"></i>
         Volver al inicio
       </a>
@@ -60,24 +60,24 @@
     <!-- Quick links -->
     <p class="mt-10 text-xs text-warm-400 uppercase tracking-widest font-semibold">También podés ir a</p>
     <div class="mt-3 flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
-      <a href="/auth/login"    class="text-sm text-warm-500 hover:text-brand-800 transition flex items-center gap-1">
+      <a href="/auth/login"    class="text-sm text-warm-500 hover:text-navy transition flex items-center gap-1">
         <i data-lucide="log-in" class="w-3.5 h-3.5"></i> Iniciar sesión
       </a>
       <span class="text-warm-200">|</span>
-      <a href="/carrito"       class="text-sm text-warm-500 hover:text-brand-800 transition flex items-center gap-1">
+      <a href="/carrito"       class="text-sm text-warm-500 hover:text-navy transition flex items-center gap-1">
         <i data-lucide="shopping-cart" class="w-3.5 h-3.5"></i> Mi carrito
       </a>
       <span class="text-warm-200">|</span>
-      <a href="/mi-cuenta"     class="text-sm text-warm-500 hover:text-brand-800 transition flex items-center gap-1">
+      <a href="/mi-cuenta"     class="text-sm text-warm-500 hover:text-navy transition flex items-center gap-1">
         <i data-lucide="user" class="w-3.5 h-3.5"></i> Mi cuenta
       </a>
     </div>
 
     <!-- Bottom ornament -->
     <div class="flex items-center justify-center gap-3 mt-12">
-      <span class="block h-px w-16 bg-brand-300 opacity-40"></span>
-      <span class="text-brand-400 text-lg" aria-hidden="true">✦</span>
-      <span class="block h-px w-16 bg-brand-300 opacity-40"></span>
+      <span class="block h-px w-16 bg-navy-mid opacity-40"></span>
+      <span class="text-gold text-lg" aria-hidden="true">✦</span>
+      <span class="block h-px w-16 bg-navy-mid opacity-40"></span>
     </div>
 
   </div>

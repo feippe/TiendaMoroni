@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
-  <meta name="theme-color" content="#090f17">
+  <meta name="theme-color" content="#0D1C38">
   <title>Sitio en mantenimiento — Tienda Moroni</title>
 
   <link rel="icon" href="/assets/img/isotipo.ico" type="image/x-icon">
@@ -13,6 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/css/app.css">
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -24,12 +25,9 @@
             serif: ['Playfair Display', 'Georgia', 'serif'],
           },
           colors: {
-            brand: {
-              800: '#0F1E2E', 900: '#090f17',
-            },
-            warm: {
-              300: '#cdc7bb',
-            },
+            gold: { DEFAULT: '#E8B020', dark: '#C8920A', soft: '#F5C842' },
+            navy: { DEFAULT: '#1E3A6E', dark: '#152B54', deeper: '#0D1C38' },
+            warm: { 300: '#cdc7bb' },
           },
         },
       },
@@ -57,14 +55,14 @@
   </style>
 </head>
 <body class="font-sans antialiased min-h-screen flex items-center justify-center px-4 relative overflow-hidden"
-      style="background:linear-gradient(150deg,#090f17 0%,#0F1E2E 60%,#0d1a28 100%)">
+      style="background:linear-gradient(150deg,var(--color-navy-deeper) 0%,var(--color-navy-dark) 60%,var(--color-navy-deeper) 100%)">
 
   <!-- Dot grid texture -->
   <div class="dot-grid absolute inset-0 pointer-events-none" aria-hidden="true" style="opacity:0.035"></div>
 
   <!-- Gold radial glow -->
   <div class="absolute inset-0 pointer-events-none" aria-hidden="true"
-       style="background:radial-gradient(ellipse 60% 50% at 50% 45%, rgba(198,167,94,0.07) 0%, transparent 70%)"></div>
+       style="background:radial-gradient(ellipse 60% 50% at 50% 45%, rgba(232,176,32,0.07) 0%, transparent 70%)"></div>
 
   <!-- Card -->
   <div class="relative z-10 max-w-sm w-full text-center">
@@ -78,14 +76,14 @@
     </div>
 
     <!-- Gold divider top -->
-    <div class="anim-2 w-10 h-px mx-auto mb-10" style="background:#C6A75E"></div>
+    <div class="anim-2 w-10 h-px mx-auto mb-10" style="background:var(--color-gold)"></div>
 
     <!-- Icon: wrench / tools -->
     <div class="anim-2 flex justify-center mb-6">
       <span class="pulse-dot inline-flex items-center justify-center w-14 h-14 rounded-full"
-            style="background:rgba(198,167,94,0.1);border:1px solid rgba(198,167,94,0.3)">
+            style="background:rgba(232,176,32,0.1);border:1px solid rgba(232,176,32,0.3)">
         <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24"
-             fill="none" stroke="#C6A75E" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+             fill="none" stroke="#E8B020" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
           <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
         </svg>
       </span>
@@ -93,22 +91,22 @@
 
     <!-- Headline -->
     <h1 class="anim-3 font-serif italic text-2xl sm:text-3xl leading-snug mb-4"
-        style="color:#F8F6F2">
+        style="color:var(--color-white)">
       Estamos mejorando<br>la tienda para vos
     </h1>
 
     <!-- Body -->
     <p class="anim-3 font-light text-sm leading-relaxed mb-10"
-       style="color:rgba(205,199,187,0.8)">
+       style="color:rgba(238,241,248,0.8)">
       Estamos realizando tareas de mantenimiento para brindarte<br class="hidden sm:block">
       una mejor experiencia. Volvé a visitarnos en unos momentos.
     </p>
 
     <!-- Gold divider bottom -->
-    <div class="anim-4 w-10 h-px mx-auto mb-8" style="background:#C6A75E"></div>
+    <div class="anim-4 w-10 h-px mx-auto mb-8" style="background:var(--color-gold)"></div>
 
     <!-- Footer note -->
-    <p class="anim-4 font-light text-xs tracking-widest uppercase" style="color:rgba(198,167,94,0.55)">
+    <p class="anim-4 font-light text-xs tracking-widest uppercase" style="color:rgba(232,176,32,0.55)">
       Volvemos pronto
     </p>
 

@@ -1,4 +1,37 @@
-<?php $layout = 'layout/app'; ?>
+<?php
+$layout = 'layout/app';
+
+/* ── JSON-LD: ItemList ── */
+if (!empty($products)) {
+    $listItems = [];
+    foreach ($products as $i => $p) {
+        $listItems[] = [
+            '@type'    => 'ListItem',
+            'position' => $i + 1,
+            'item'     => [
+                '@type'  => 'Product',
+                'name'   => $p['name'],
+                'url'    => SITE_URL . '/producto/' . $p['slug'],
+                'image'  => $p['main_image_url'] ?? '',
+                'offers' => [
+                    '@type'        => 'Offer',
+                    'price'        => number_format((float)$p['price'], 2, '.', ''),
+                    'priceCurrency'=> 'UYU',
+                    'availability' => 'https://schema.org/InStock',
+                ],
+            ],
+        ];
+    }
+    $jsonLD = json_encode([
+        '@context'        => 'https://schema.org',
+        '@type'           => 'ItemList',
+        'name'            => 'Productos — ' . SITE_NAME,
+        'url'             => SITE_URL . '/productos',
+        'numberOfItems'   => count($products),
+        'itemListElement' => $listItems,
+    ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+}
+?>
 
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 

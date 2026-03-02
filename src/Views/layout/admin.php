@@ -7,12 +7,13 @@
   <link rel="icon" href="/assets/img/isotipo.ico" type="image/x-icon">
   <link rel="shortcut icon" href="/assets/img/isotipo.ico" type="image/x-icon">
   <meta name="robots" content="noindex, nofollow">
-  <meta name="theme-color" content="#0F1E2E">
+  <meta name="theme-color" content="#0D1C38">
   <meta name="csrf-token" content="<?= csrfToken() ?>">
   <style>[x-cloak]{display:none!important}</style>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/css/app.css">
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -21,34 +22,50 @@
         extend: {
           fontFamily: { sans: ['Lato', 'sans-serif'], serif: ['Playfair Display', 'Georgia', 'serif'] },
           colors: {
+            gold: {
+              light:  '#FEF9EC',
+              tint:   '#FDF0C4',
+              soft:   '#F5C842',
+              DEFAULT:'#E8B020',
+              dark:   '#C8920A',
+              deeper: '#9E6F05',
+            },
+            navy: {
+              light:  '#EEF1F8',
+              mid:    '#4F6EA8',
+              DEFAULT:'#1E3A6E',
+              dark:   '#152B54',
+              deeper: '#0D1C38',
+            },
+            /* Aliases de compatibilidad — mapean a paleta oficial */
             brand: {
-              50:  '#f5f7fa',
-              100: '#e8edf4',
-              200: '#c8d4e4',
-              300: '#9ab1cc',
-              400: '#C6A75E',
-              500: '#b5923f',
-              600: '#1B3A5C',
-              700: '#162E4A',
-              800: '#0F1E2E',
-              900: '#090f17',
+              50:  '#F8F9FA',   /* --color-bg */
+              100: '#EEF1F8',   /* --color-navy-light */
+              200: '#EEF1F8',   /* --color-navy-light */
+              300: '#4F6EA8',   /* --color-navy-mid */
+              400: '#E8B020',   /* --color-gold */
+              500: '#C8920A',   /* --color-gold-dark */
+              600: '#1E3A6E',   /* --color-navy */
+              700: '#152B54',   /* --color-navy-dark */
+              800: '#0D1C38',   /* --color-navy-deeper */
+              900: '#0D1C38',   /* --color-navy-deeper */
+            },
+            accent: {
+              DEFAULT: '#E8B020',   /* --color-gold */
+              light:   '#F5C842',   /* --color-gold-soft */
+              dark:    '#C8920A',   /* --color-gold-dark */
             },
             warm: {
               50:  '#F8F6F2',
               100: '#f0ede6',
               200: '#e2ddd4',
               300: '#cdc7bb',
-              400: '#a8a092',
+              400: '#7c756c', /* ≥4.5:1 vs blanco — pasa WCAG AA */
               500: '#7a7268',
               600: '#5a5450',
               700: '#44403c',
               800: '#2C2A27',
               900: '#1a1916',
-            },
-            accent: {
-              DEFAULT: '#C6A75E',
-              light:   '#d4b97a',
-              dark:    '#a88840',
             },
           }
         }
@@ -73,7 +90,7 @@
   <!-- Sidebar -->
   <aside :class="sidebarOpen ? 'w-56' : 'w-14'"
          class="flex-shrink-0 text-warm-200 flex flex-col transition-all duration-200 overflow-hidden"
-         style="background:#0F1E2E;border-right:1px solid rgba(198,167,94,0.12)">
+         style="background:var(--color-navy-deeper);border-right:1px solid rgba(232,176,32,0.12)">
 
     <!-- Logo -->
     <div class="h-16 flex items-center px-4 border-b border-warm-700">
@@ -109,15 +126,15 @@
       <?php $active = ($item['href'] === '/admin' ? $current === '/admin' : str_starts_with($current, $item['href'])); ?>
       <a href="<?= $item['href'] ?>"
          class="flex items-center gap-3 px-4 py-2.5 text-sm transition relative"
-         style="<?= $active ? 'background:rgba(198,167,94,0.12);color:#C6A75E;border-left:3px solid #C6A75E;padding-left:13px' : 'color:#a8a092' ?>"
+         style="<?= $active ? 'background:rgba(232,176,32,0.12);color:var(--color-gold);border-left:3px solid var(--color-gold);padding-left:13px' : 'color:var(--color-text-muted)' ?>"
          onmouseover="if(!<?= $active ? 'true' : 'false' ?>){this.style.background='rgba(255,255,255,0.05)';this.style.color='#fff'}"
-         onmouseout="if(!<?= $active ? 'true' : 'false' ?>){this.style.background='transparent';this.style.color='#a8a092'}">
+         onmouseout="if(!<?= $active ? 'true' : 'false' ?>){this.style.background='transparent';this.style.color='var(--color-text-muted)'}">
         <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" d="<?= $item['icon'] ?>"/>
         </svg>
         <span x-show="sidebarOpen" class="truncate flex-1"><?= $item['label'] ?></span>
         <?php if (!empty($item['badge'])): ?>
-        <span x-show="sidebarOpen" class="ml-auto text-xs font-bold px-1.5 py-0.5 rounded" style="background:rgba(198,167,94,0.2);color:#C6A75E"><?= e($item['badge']) ?></span>
+        <span x-show="sidebarOpen" class="ml-auto text-xs font-bold px-1.5 py-0.5 rounded" style="background:rgba(232,176,32,0.2);color:var(--color-gold)"><?= e($item['badge']) ?></span>
         <?php elseif (!empty($item['statusBadge'])): ?>
         <span x-show="sidebarOpen"
               class="ml-auto text-xs font-bold px-1.5 py-0.5 rounded transition-colors"

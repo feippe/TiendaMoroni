@@ -51,7 +51,7 @@
                    autocomplete="new-password"
                    class="w-full pl-10 pr-10 py-3 border rounded-xl text-sm focus:outline-none focus:ring-2 transition
                           <?= !empty($errors['password']) ? 'border-red-400 bg-red-50' : 'border-warm-300' ?>"
-                   style="--tw-ring-color:#C6A75E">
+                   style="--tw-ring-color:var(--color-gold)">
             <button type="button" @click="showPass = !showPass"
                     class="absolute inset-y-0 right-3 flex items-center text-warm-400 hover:text-warm-600">
               <i data-lucide="eye"     class="w-4 h-4" x-show="!showPass"></i>
@@ -79,7 +79,7 @@
                    autocomplete="new-password"
                    class="w-full pl-10 pr-10 py-3 border rounded-xl text-sm focus:outline-none focus:ring-2 transition border-warm-300"
                    :class="mismatch ? 'border-red-400 bg-red-50' : '<?= !empty($errors['password_confirm']) ? 'border-red-400 bg-red-50' : '' ?>'"
-                   style="--tw-ring-color:#C6A75E">
+                   style="--tw-ring-color:var(--color-gold)">
             <button type="button" @click="showConfirm = !showConfirm"
                     class="absolute inset-y-0 right-3 flex items-center text-warm-400 hover:text-warm-600">
               <i data-lucide="eye"     class="w-4 h-4" x-show="!showConfirm"></i>
@@ -101,7 +101,7 @@
                 :disabled="!valid || loading"
                 :class="(!valid || loading) ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-90'"
                 class="w-full flex items-center justify-center gap-2 py-3 rounded-full font-bold text-sm transition"
-                style="background:#0F1E2E;color:#F8F6F2">
+                style="background:var(--color-navy-deeper);color:var(--color-white)">
           <span x-show="!loading">Guardar nueva contraseña</span>
           <span x-show="loading" class="flex items-center gap-2" x-cloak>
             <i data-lucide="loader" class="w-4 h-4 animate-spin"></i>
@@ -112,7 +112,7 @@
     </div>
 
     <p class="mt-6 text-center text-sm text-warm-400">
-      <a href="/auth/forgot-password" class="hover:text-brand-800 transition flex items-center justify-center gap-1">
+      <a href="/auth/forgot-password" class="hover:text-navy transition flex items-center justify-center gap-1">
         <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
         Solicitá un nuevo link
       </a>

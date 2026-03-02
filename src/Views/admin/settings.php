@@ -45,9 +45,10 @@
       <!-- Row: Modo mantenimiento -->
       <div class="flex items-center gap-6 px-6 py-5">
         <div class="flex-1 min-w-0">
-          <p class="font-medium text-warm-900 text-sm">Modo mantenimiento</p>
+          <p class="font-medium text-warm-900 text-sm">Estado del sitio web</p>
           <p class="text-xs text-warm-400 mt-0.5 leading-relaxed">
-            Cuando está activo, los visitantes ven una página de mantenimiento. Vos seguís navegando normalmente.
+            Este switch cambia el estado del sitio web entre online y offline.<br>
+            Cuando está offline los visitantes verán una página de mantenimiento, y solo tú podrás ver el sitio completo.
           </p>
         </div>
         <div class="flex items-center gap-3 flex-shrink-0">

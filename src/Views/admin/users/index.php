@@ -5,7 +5,7 @@ $hasFilters = !empty($filters['q']) || !empty($filters['role']);
 
 $roleLabels = ['admin' => 'Admin', 'buyer' => 'Comprador'];
 $roleColors = [
-    'admin' => 'background:#0F1E2E;color:#F8F6F2',
+    'admin' => 'background:var(--color-navy-deeper);color:var(--color-white)',
     'buyer' => 'background:#f0ede6;color:#5a5450',
 ];
 $statusColors = ['pending'=>'bg-yellow-100 text-yellow-800','confirmed'=>'bg-blue-100 text-blue-800',
@@ -123,7 +123,7 @@ function usersUrl(array $merge = []): string {
                    class="w-9 h-9 rounded-full object-cover flex-shrink-0">
               <?php else: ?>
               <div class="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0"
-                   style="background:#162E4A"><?= e($initials) ?></div>
+                   style="background:var(--color-navy-dark)"><?= e($initials) ?></div>
               <?php endif; ?>
               <div>
                 <a href="/admin/usuarios/<?= $u['id'] ?>"
@@ -235,7 +235,7 @@ function usersUrl(array $merge = []): string {
       <!-- Pages -->
       <?php for ($p = 1; $p <= $pager['total_pages']; $p++): ?>
         <?php if ($p === $pager['page']): ?>
-        <span class="px-3 py-1.5 rounded-lg text-sm font-bold text-white" style="background:#0F1E2E"><?= $p ?></span>
+        <span class="px-3 py-1.5 rounded-lg text-sm font-bold text-white" style="background:var(--color-navy-deeper)"><?= $p ?></span>
         <?php elseif ($p === 1 || $p === $pager['total_pages'] || abs($p - $pager['page']) <= 2): ?>
         <a href="<?= e(usersUrl(['page' => $p])) ?>"
            class="px-3 py-1.5 rounded-lg text-sm border border-warm-200 hover:border-brand-400 transition"><?= $p ?></a>

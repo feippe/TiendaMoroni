@@ -4,6 +4,41 @@
  */
 
 /* ─────────────────────────────────────────────────────────────────────────
+ * showToast(message, type)
+ * Accessible toast notification — replaces browser alert().
+ * type: 'error' | 'success' | 'info'
+ * ───────────────────────────────────────────────────────────────────────── */
+function showToast(message, type = 'error') {
+  const bgColor = type === 'success' ? '#16a34a' : type === 'info' ? '#1B3A5C' : '#dc2626';
+  const toast   = document.createElement('div');
+  toast.setAttribute('role', 'alert');
+  toast.setAttribute('aria-live', 'assertive');
+  toast.style.cssText = [
+    'position:fixed',
+    'bottom:1.5rem',
+    'left:50%',
+    'transform:translateX(-50%)',
+    'z-index:9999',
+    'background:' + bgColor,
+    'color:#fff',
+    'padding:0.75rem 1.25rem',
+    'border-radius:0.75rem',
+    'box-shadow:0 10px 25px rgba(0,0,0,.2)',
+    'font-size:0.875rem',
+    'font-weight:500',
+    'max-width:90vw',
+    'text-align:center',
+    'transition:opacity 0.3s',
+  ].join(';');
+  toast.textContent = message;
+  document.body.appendChild(toast);
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    setTimeout(() => toast.remove(), 300);
+  }, 4000);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
  * Alpine.js global cart store — initialised once per page
  * ───────────────────────────────────────────────────────────────────────── */
 document.addEventListener('alpine:init', () => {
@@ -61,7 +96,7 @@ async function addToCart(productId, triggerEl, qty = 1) {
         }, 1800);
       }
     } else {
-      alert(data.message ?? 'No se pudo agregar el producto.');
+      showToast(data.message ?? 'No se pudo agregar el producto.');
       if (btn) { btn.innerHTML = original; btn.disabled = false; }
     }
   } catch (err) {
@@ -99,7 +134,7 @@ async function buyNow(productId, triggerEl, qty = 1) {
     if (data.success) {
       window.location.href = '/checkout';
     } else {
-      alert(data.message ?? 'No se pudo procesar la compra.');
+      showToast(data.message ?? 'No se pudo procesar la compra.');
       if (btn) { btn.innerHTML = original; btn.disabled = false; }
     }
   } catch (err) {

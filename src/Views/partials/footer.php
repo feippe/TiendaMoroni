@@ -1,4 +1,4 @@
-<footer class="bg-brand-900 text-warm-400 mt-20">
+<footer class="bg-navy-deeper text-navy-light/70 mt-20">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
     <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
       <!-- Brand -->
@@ -8,9 +8,8 @@
                alt="Tienda Moroni"
                class="h-8 w-auto flex-shrink-0"
                width="32" height="32">
-          
         </a>
-        <p class="mt-1 text-xs text-brand-400 tracking-wide">La tienda de nuestra comunidad</p>
+        <p class="mt-1 text-xs text-gold tracking-wide">La tienda de nuestra comunidad</p>
         <p class="mt-3 text-sm leading-relaxed">
           Un espacio creado con amor, para que los artesanos y vendedores SUD de Uruguay puedan compartir sus creaciones con toda la comunidad.
         </p>
@@ -47,14 +46,14 @@
       </div>
     </div>
 
-    <div class="text-center px-6 py-4 border-t border-warm-800/20 mt-10">
-      <p class="text-xs text-warm-400 leading-relaxed max-w-xl mx-auto">
-        Tienda Moroni es un emprendimiento independiente y no es un sitio oficial de <a href="https://www.churchofjesuschrist.org/?lang=spa" class="hover:text-white transition" target="_blank">La Iglesia de Jesucristo de los Santos de los Últimos Días</a>.
+    <div class="text-center px-6 py-4 border-t border-navy-light/10 mt-10">
+      <p class="text-xs text-navy-light/50 leading-relaxed max-w-xl mx-auto">
+        Tienda Moroni es un emprendimiento independiente y no es un sitio oficial de <a href="https://www.churchofjesuschrist.org/?lang=spa" class="hover:text-white transition" target="_blank" rel="noopener noreferrer">La Iglesia de Jesucristo de los Santos de los Últimos Días</a>.
       </p>
     </div>
 
-    <div class="pt-6 border-t border-brand-800 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-warm-500">
-      <p>&copy; <?= date('Y') ?> <?= SITE_NAME ?>. Todos los derechos reservados. Desarrollado por <a href="https://feippe.com" class="hover:text-white transition underline" target="_blank">Feippe</a>.</p>
+    <div class="pt-6 border-t border-navy-light/10 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-navy-light/40">
+      <p>&copy; <?= date('Y') ?> <?= SITE_NAME ?>. Todos los derechos reservados. Desarrollado por <a href="https://feippe.com" class="hover:text-white transition underline" target="_blank" rel="noopener noreferrer">Feippe</a>.</p>
       <p>Hecho con ❤️ en Uruguay</p>
     </div>
   </div>

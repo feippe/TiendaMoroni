@@ -42,7 +42,7 @@ $statusColors = ['pending'=>'bg-yellow-100 text-yellow-800','confirmed'=>'bg-blu
            class="w-16 h-16 rounded-full object-cover mx-auto mb-4">
       <?php else: ?>
       <div class="w-16 h-16 rounded-full flex items-center justify-center text-lg font-bold text-white mx-auto mb-4"
-           style="background:#162E4A"><?= e($initials) ?></div>
+           style="background:var(--color-navy-dark)"><?= e($initials) ?></div>
       <?php endif; ?>
 
       <h2 class="text-xl font-serif font-bold text-warm-900 mb-1"><?= e($user['name']) ?></h2>
@@ -51,7 +51,7 @@ $statusColors = ['pending'=>'bg-yellow-100 text-yellow-800','confirmed'=>'bg-blu
       <!-- Badges -->
       <div class="flex flex-wrap gap-2 justify-center mb-5">
         <span class="text-xs font-medium px-2.5 py-1 rounded-full"
-              style="<?= $user['role'] === 'admin' ? 'background:#0F1E2E;color:#F8F6F2' : 'background:#f0ede6;color:#5a5450' ?>">
+              style="<?= $user['role'] === 'admin' ? 'background:var(--color-navy-deeper);color:var(--color-white)' : 'background:#f0ede6;color:#5a5450' ?>">
           <?= e($roleLabels[$user['role']] ?? $user['role']) ?>
         </span>
         <span class="text-xs px-2.5 py-1 rounded-full flex items-center gap-1

@@ -23,7 +23,7 @@
     <?php if (!empty($success)): ?>
     <!-- Success message -->
     <div class="mb-5 bg-warm-100 border border-warm-200 rounded-xl p-4 text-sm text-warm-700 flex items-start gap-3">
-      <i data-lucide="mail-check" class="w-5 h-5 mt-0.5 flex-shrink-0" style="color:#C6A75E"></i>
+      <i data-lucide="mail-check" class="w-5 h-5 mt-0.5 flex-shrink-0" style="color:var(--color-gold)"></i>
       <div>
         <p class="font-medium mb-0.5">Email enviado</p>
         <p><?= e($success) ?> Revisá también tu carpeta de spam.</p>
@@ -46,7 +46,7 @@
                    placeholder="tu@email.com"
                    class="w-full pl-10 pr-4 py-3 border border-warm-300 rounded-xl text-sm
                           focus:outline-none focus:ring-2 transition"
-                   style="--tw-ring-color:#C6A75E">
+                   style="--tw-ring-color:var(--color-gold)">
           </div>
         </div>
 
@@ -54,7 +54,7 @@
                 :disabled="loading"
                 :class="loading ? 'opacity-70 cursor-not-allowed' : 'hover:opacity-90'"
                 class="w-full flex items-center justify-center gap-2 py-3 rounded-full font-bold text-sm transition"
-                style="background:#0F1E2E;color:#F8F6F2">
+                style="background:var(--color-navy-deeper);color:var(--color-white)">
           <span x-show="!loading">Enviar link de reseteo</span>
           <span x-show="loading" class="flex items-center gap-2" x-cloak>
             <i data-lucide="loader" class="w-4 h-4 animate-spin"></i>
@@ -66,7 +66,7 @@
 
     <!-- Back link -->
     <p class="mt-6 text-center text-sm text-warm-400">
-      <a href="/auth/login" class="hover:text-brand-800 transition flex items-center justify-center gap-1">
+      <a href="/auth/login" class="hover:text-navy transition flex items-center justify-center gap-1">
         <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
         Volver al inicio de sesión
       </a>

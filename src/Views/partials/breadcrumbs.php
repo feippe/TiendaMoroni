@@ -10,7 +10,7 @@
       <?php if ($isLast): ?>
       <span class="text-warm-700 font-medium"><?= e($crumb['name']) ?></span>
       <?php else: ?>
-      <a href="<?= e($crumb['url']) ?>" class="hover:text-brand-800 transition"><?= e($crumb['name']) ?></a>
+      <a href="<?= e($crumb['url']) ?>" class="hover:text-navy transition"><?= e($crumb['name']) ?></a>
       <svg class="w-3 h-3 text-warm-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
       </svg>

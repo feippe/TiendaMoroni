@@ -110,6 +110,7 @@ class ProductController
             'metaDesc'      => $product['meta_description'] ?: $product['short_description'],
             'canonical'     => SITE_URL . '/producto/' . $product['slug'],
             'ogImage'       => $product['main_image_url'],
+            'ogType'        => 'product',
         ]);
     }
 

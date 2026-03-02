@@ -81,7 +81,7 @@
   <div x-show="dragover"
        x-cloak
        class="fixed inset-0 z-50 flex items-center justify-center pointer-events-none"
-       style="background:rgba(15,30,46,0.7)">
+       style="background:rgba(13,28,56,0.7)">
     <div class="bg-white rounded-2xl p-10 text-center shadow-2xl">
       <svg class="w-14 h-14 text-brand-400 mx-auto mb-3" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
