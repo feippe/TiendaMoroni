@@ -10,8 +10,8 @@
   <meta name="robots" content="noindex, nofollow">
   <?php endif; ?>
   <link rel="canonical" href="<?= e($canonical ?? currentUrl()) ?>">
-  <link rel="icon" href="/assets/img/isotipo.ico" type="image/x-icon">
-  <link rel="shortcut icon" href="/assets/img/isotipo.ico" type="image/x-icon">
+  <link rel="icon" href="/assets/img/isotipo.ico?v=2" type="image/x-icon">
+  <link rel="shortcut icon" href="/assets/img/isotipo.ico?v=2" type="image/x-icon">
   <link rel="preload" as="image" href="/assets/img/hero.webp" fetchpriority="high">
   <meta name="theme-color" content="#ffffff">
 
