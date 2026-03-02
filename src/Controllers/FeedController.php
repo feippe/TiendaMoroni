@@ -7,9 +7,9 @@ use TiendaMoroni\Core\Database as DB;
 
 class FeedController
 {
-    public function productos(array $params = []): void
+    public function productosXml(array $params = []): void
     {
-        // Clean any buffered output (notices, warnings) before sending the feed
+        // Clean any buffered output before sending the feed
         while (ob_get_level()) {
             ob_end_clean();
         }
@@ -21,42 +21,36 @@ class FeedController
              ORDER BY id ASC"
         );
 
-        header('Content-Type: text/csv; charset=UTF-8');
-        // No Content-Disposition: Meta's crawler needs to parse the response inline
+        header('Content-Type: application/xml; charset=UTF-8');
 
-        $out = fopen('php://output', 'w');
-
-        // UTF-8 BOM — required by Meta Commerce Manager
-        fwrite($out, "\xEF\xBB\xBF");
-
-        // Header row (exact column order required by Meta)
-        fputcsv($out, ['id', 'title', 'description', 'availability', 'condition', 'price', 'link', 'image_link', 'brand'], ',', '"', '\\');
+        echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
+        echo '<rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">' . "\n";
+        echo '  <channel>' . "\n";
+        echo '    <title>' . htmlspecialchars(SITE_NAME, ENT_XML1, 'UTF-8') . '</title>' . "\n";
+        echo '    <link>' . htmlspecialchars(SITE_URL, ENT_XML1, 'UTF-8') . '</link>' . "\n";
+        echo '    <description>Catálogo de productos ' . htmlspecialchars(SITE_NAME, ENT_XML1, 'UTF-8') . '</description>' . "\n";
 
         foreach ($products as $p) {
             $availability = ((int)$p['stock'] > 0) ? 'in stock' : 'out of stock';
+            $price        = number_format((float)$p['price'], 2, '.', '') . ' UYU';
+            $link         = SITE_URL . '/producto/' . $p['slug'];
+            $imageLink    = $p['main_image_url'] ?? '';
+            $description  = strip_tags($p['description'] ?? '');
 
-            $price = number_format((float)$p['price'], 2, '.', '') . ' UYU';
-
-            $link = SITE_URL . '/producto/' . $p['slug'];
-
-            $imageLink = $p['main_image_url'] ?? '';
-
-            // Strip HTML tags from description — Meta requires plain text
-            $description = strip_tags($p['description'] ?? '');
-
-            fputcsv($out, [
-                (string)$p['id'],
-                htmlspecialchars((string)$p['name'],   ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
-                htmlspecialchars($description,          ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
-                $availability,
-                'new',
-                $price,
-                $link,
-                (string)$imageLink,
-                'Tienda Moroni',
-            ], ',', '"', '\\');
+            echo '    <item>' . "\n";
+            echo '      <g:id>'          . htmlspecialchars((string)$p['id'], ENT_XML1, 'UTF-8') . '</g:id>' . "\n";
+            echo '      <g:title><![CDATA[' . $p['name'] . ']]></g:title>' . "\n";
+            echo '      <g:description><![CDATA[' . $description . ']]></g:description>' . "\n";
+            echo '      <g:availability>' . $availability . '</g:availability>' . "\n";
+            echo '      <g:condition>new</g:condition>' . "\n";
+            echo '      <g:price>'       . htmlspecialchars($price, ENT_XML1, 'UTF-8') . '</g:price>' . "\n";
+            echo '      <g:link>'        . htmlspecialchars($link, ENT_XML1, 'UTF-8') . '</g:link>' . "\n";
+            echo '      <g:image_link>'  . htmlspecialchars($imageLink, ENT_XML1, 'UTF-8') . '</g:image_link>' . "\n";
+            echo '      <g:brand>Tienda Moroni</g:brand>' . "\n";
+            echo '    </item>' . "\n";
         }
 
-        fclose($out);
+        echo '  </channel>' . "\n";
+        echo '</rss>';
     }
 }

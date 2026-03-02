@@ -13,12 +13,7 @@
     <!-- 404 number with layered style -->
     <div class="relative inline-block select-none mb-4">
       <span class="absolute inset-0 text-[9rem] font-black text-navy-light translate-x-1 translate-y-1 leading-none" aria-hidden="true">404</span>
-      <span class="relative text-[9rem] font-black leading-none" style="
-        background: linear-gradient(135deg, var(--color-navy-dark) 0%, var(--color-gold) 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-      ">404</span>
+      <span class="relative text-[9rem] font-black leading-none" style="background:linear-gradient(135deg,#152B54 0%,#E8B020 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">404</span>
     </div>
 
     <!-- Heading -->
