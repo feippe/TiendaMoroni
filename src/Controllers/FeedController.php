@@ -9,6 +9,11 @@ class FeedController
 {
     public function productos(array $params = []): void
     {
+        // Clean any buffered output (notices, warnings) before sending the feed
+        while (ob_get_level()) {
+            ob_end_clean();
+        }
+
         $products = DB::fetchAll(
             "SELECT id, name, description, stock, price, slug, main_image_url
              FROM products
@@ -17,11 +22,7 @@ class FeedController
         );
 
         header('Content-Type: text/csv; charset=UTF-8');
-        header('Content-Disposition: attachment; filename="productos.csv"');
-        // Disable output buffering so headers take effect cleanly
-        if (ob_get_level()) {
-            ob_end_clean();
-        }
+        // No Content-Disposition: Meta's crawler needs to parse the response inline
 
         $out = fopen('php://output', 'w');
 
@@ -40,15 +41,18 @@ class FeedController
 
             $imageLink = $p['main_image_url'] ?? '';
 
+            // Strip HTML tags from description — Meta requires plain text
+            $description = strip_tags($p['description'] ?? '');
+
             fputcsv($out, [
-                htmlspecialchars((string)$p['id'],          ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
-                htmlspecialchars((string)$p['name'],        ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
-                htmlspecialchars((string)($p['description'] ?? ''), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+                (string)$p['id'],
+                htmlspecialchars((string)$p['name'],   ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+                htmlspecialchars($description,          ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
                 $availability,
                 'new',
                 $price,
                 $link,
-                htmlspecialchars((string)$imageLink,        ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+                (string)$imageLink,
                 'Tienda Moroni',
             ], ',', '"', '\\');
         }
