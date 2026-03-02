@@ -4,7 +4,7 @@
 
       <!-- Logo -->
       <a href="/" class="flex items-center">
-        <img src="/assets/img/Logo-Dark.svg"
+        <img src="/assets/img/Logo-Dark.svg?v=2"
              alt="<?= e(SITE_NAME) ?>"
              class="h-9 w-auto"
              height="32">

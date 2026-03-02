@@ -4,7 +4,7 @@
       <!-- Brand -->
       <div class="md:col-span-1">
         <a href="/" class="inline-flex items-center gap-2">
-          <img src="/assets/img/Logo-Dark.svg"
+          <img src="/assets/img/Logo-Dark.svg?v=2"
                alt="Tienda Moroni"
                class="h-8 w-auto flex-shrink-0"
                width="32" height="32">
