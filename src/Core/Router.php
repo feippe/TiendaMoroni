@@ -35,8 +35,12 @@ class Router
             $uri = rtrim($uri, '/');
         }
 
+        // HEAD requests are served by the matching GET route;
+        // Apache suppresses the body automatically.
+        $lookupMethod = (strtoupper($method) === 'HEAD') ? 'GET' : strtoupper($method);
+
         foreach ($this->routes as $route) {
-            if ($route['method'] !== strtoupper($method)) {
+            if ($route['method'] !== $lookupMethod) {
                 continue;
             }
 
