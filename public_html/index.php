@@ -64,7 +64,7 @@ $router = new Router();
 
 $router->get('/',                    ['TiendaMoroni\Controllers\HomeController',     'index']);
 $router->get('/sitemap.xml',         ['TiendaMoroni\Controllers\SitemapController',  'index']);
-$router->get('/feed/productos.csv',  ['TiendaMoroni\Controllers\FeedController',     'productos']);
+$router->get('/feed/productos.xml',  ['TiendaMoroni\Controllers\FeedController',     'productosXml']);
 
 // Products
 $router->get('/productos',           ['TiendaMoroni\Controllers\ProductController',  'index']);
