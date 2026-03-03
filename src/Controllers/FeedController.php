@@ -15,10 +15,14 @@ class FeedController
         }
 
         $products = DB::fetchAll(
-            "SELECT id, name, description, stock, price, slug, main_image_url
-             FROM products
-             WHERE status = 'active'
-             ORDER BY id ASC"
+            "SELECT p.id, p.name, p.description, p.stock, p.price, p.slug, p.main_image_url,
+                    c.name AS category_name,
+                    v.business_name AS vendor_name
+             FROM products p
+             LEFT JOIN categories c ON c.id = p.category_id
+             LEFT JOIN vendors v ON v.id = p.vendor_id
+             WHERE p.status = 'active'
+             ORDER BY p.id ASC"
         );
 
         header('Content-Type: application/xml; charset=UTF-8');
@@ -46,7 +50,10 @@ class FeedController
             echo '      <g:price>'       . htmlspecialchars($price, ENT_XML1, 'UTF-8') . '</g:price>' . "\n";
             echo '      <g:link>'        . htmlspecialchars($link, ENT_XML1, 'UTF-8') . '</g:link>' . "\n";
             echo '      <g:image_link>'  . htmlspecialchars($imageLink, ENT_XML1, 'UTF-8') . '</g:image_link>' . "\n";
-            echo '      <g:brand>Tienda Moroni</g:brand>' . "\n";
+            echo '      <g:brand>'       . htmlspecialchars($p['vendor_name'] ?? 'Tienda Moroni', ENT_XML1, 'UTF-8') . '</g:brand>' . "\n";
+            if (!empty($p['category_name'])) {
+                echo '      <g:product_type>' . htmlspecialchars($p['category_name'], ENT_XML1, 'UTF-8') . '</g:product_type>' . "\n";
+            }
             echo '    </item>' . "\n";
         }
 
