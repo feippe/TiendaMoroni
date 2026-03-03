@@ -90,7 +90,7 @@
   <!-- Sidebar -->
   <aside :class="sidebarOpen ? 'w-56' : 'w-14'"
          class="flex-shrink-0 text-warm-200 flex flex-col transition-all duration-200 overflow-hidden"
-         style="background:var(--color-navy-deeper);border-right:1px solid rgba(232,176,32,0.12)">
+         style="background:#0D1C38;border-right:1px solid rgba(232,176,32,0.12)">
 
     <!-- Logo -->
     <div class="h-16 flex items-center px-4 border-b border-warm-700">
@@ -126,9 +126,9 @@
       <?php $active = ($item['href'] === '/admin' ? $current === '/admin' : str_starts_with($current, $item['href'])); ?>
       <a href="<?= $item['href'] ?>"
          class="flex items-center gap-3 px-4 py-2.5 text-sm transition relative"
-         style="<?= $active ? 'background:rgba(232,176,32,0.12);color:var(--color-gold);border-left:3px solid var(--color-gold);padding-left:13px' : 'color:var(--color-text-muted)' ?>"
+         style="<?= $active ? 'background:rgba(232,176,32,0.12);color:#E8B020;border-left:3px solid #E8B020;padding-left:13px' : 'color:#8899AA' ?>"
          onmouseover="if(!<?= $active ? 'true' : 'false' ?>){this.style.background='rgba(255,255,255,0.05)';this.style.color='#fff'}"
-         onmouseout="if(!<?= $active ? 'true' : 'false' ?>){this.style.background='transparent';this.style.color='var(--color-text-muted)'}">
+         onmouseout="if(!<?= $active ? 'true' : 'false' ?>){this.style.background='transparent';this.style.color='#8899AA'}">
         <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" d="<?= $item['icon'] ?>"/>
         </svg>

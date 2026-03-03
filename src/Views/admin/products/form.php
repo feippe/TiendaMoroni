@@ -31,7 +31,7 @@
         <label class="block text-sm font-medium text-warm-700 mb-1">Nombre del producto *</label>
         <input type="text" name="name" required
                value="<?= e($product['name'] ?? '') ?>"
-               @input="updateSlug($event.target.value)"
+               @input="updateSlug($event.target.value); updateMetaTitle($event.target.value)"
                class="w-full border border-warm-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 transition">
       </div>
 
@@ -46,6 +46,7 @@
       <div>
         <label class="block text-sm font-medium text-warm-700 mb-1">Descripción corta</label>
         <textarea name="short_description" rows="2" maxlength="500"
+                  @input="updateMetaDescription($event.target.value)"
                   class="w-full border border-warm-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 transition resize-none"
         ><?= e($product['short_description'] ?? '') ?></textarea>
       </div>
@@ -213,14 +214,17 @@
       <div>
         <label class="block text-sm font-medium text-warm-700 mb-1">Meta título</label>
         <input type="text" name="meta_title" maxlength="160"
-               value="<?= e($product['meta_title'] ?? '') ?>"
+               x-model="metaTitle"
+               @input="metaTitleDirty = true"
                class="w-full border border-warm-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 transition">
       </div>
       <div>
         <label class="block text-sm font-medium text-warm-700 mb-1">Meta descripción</label>
         <textarea name="meta_description" rows="2" maxlength="320"
+                  x-model="metaDescription"
+                  @input="metaDescriptionDirty = true"
                   class="w-full border border-warm-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 transition resize-none"
-        ><?= e($product['meta_description'] ?? '') ?></textarea>
+        ></textarea>
       </div>
     </div>
 
@@ -314,6 +318,11 @@
 function productForm() {
   return {
     slug: '<?= e($product['slug'] ?? '') ?>',
+    metaTitle: '<?= e($product['meta_title'] ?? '') ?>',
+    metaDescription: '<?= e($product['meta_description'] ?? '') ?>',
+    metaTitleDirty: <?= $product ? 'true' : 'false' ?>,
+    metaDescriptionDirty: <?= $product ? 'true' : 'false' ?>,
+
     updateSlug(name) {
       this.slug = name
         .toLowerCase()
@@ -321,7 +330,17 @@ function productForm() {
         .replace(/[^a-z0-9\s-]/g, '')
         .replace(/[\s-]+/g, '-')
         .trim();
-    }
+    },
+    updateMetaTitle(name) {
+      if (!this.metaTitleDirty) {
+        this.metaTitle = name ? name + ' - Tienda Moroni' : '';
+      }
+    },
+    updateMetaDescription(desc) {
+      if (!this.metaDescriptionDirty) {
+        this.metaDescription = desc;
+      }
+    },
   };
 }
 
