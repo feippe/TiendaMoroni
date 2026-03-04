@@ -588,22 +588,22 @@ class MessageRouter
                         [
                             'id'          => 'menu_categorias',
                             'title'       => 'Ver por categoría',
-                            'description' => 'Filtrá por tipo de producto',
+                            //'description' => 'Filtrá por tipo de producto',
                         ],
                         [
                             'id'          => 'menu_vendedores',
                             'title'       => 'Ver por vendedor',
-                            'description' => 'Explorá por artesano',
+                            //'description' => 'Explorá por artesano o vendedor',
                         ],
                         [
                             'id'          => 'menu_buscar',
                             'title'       => 'Buscar producto',
-                            'description' => 'Escribí una palabra clave',
+                            //'description' => 'Escribí una palabra clave',
                         ],
                         [
                             'id'          => 'menu_inicio',
                             'title'       => 'Volver al inicio',
-                            'description' => 'Ver pantalla inicial',
+                            //'description' => 'Ver pantalla inicial',
                         ],
                     ],
                 ],
