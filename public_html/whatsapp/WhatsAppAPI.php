@@ -126,11 +126,15 @@ class WhatsAppAPI
                 if ($totalRows >= 10) {
                     break 2; // Respetar límite de 10 rows totales
                 }
-                $rows[] = [
-                    'id'          => (string)$row['id'],
-                    'title'       => wa_truncate((string)$row['title'], 24),
-                    'description' => wa_truncate((string)($row['description'] ?? ''), 72),
+                $rowData = [
+                    'id'    => (string)$row['id'],
+                    'title' => wa_truncate((string)$row['title'], 24),
                 ];
+                $desc = wa_truncate((string)($row['description'] ?? ''), 72);
+                if ($desc !== '') {
+                    $rowData['description'] = $desc;
+                }
+                $rows[] = $rowData;
                 $totalRows++;
             }
             if (!empty($rows)) {
