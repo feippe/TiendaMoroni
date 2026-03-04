@@ -105,12 +105,36 @@ class ConversationManager
     /**
      * Verifica si la conversación superó el tiempo máximo de inactividad.
      *
+     * Protege contra fechas inválidas de MySQL ('0000-00-00' u otros valores
+     * anómalos) que harían que strtotime devuelva un timestamp muy antiguo y
+     * dispararían un falso timeout inmediato.
+     *
      * @param array $conversation  Fila devuelta por getOrCreate().
      */
     public function isTimedOut(array $conversation): bool
     {
-        $lastTs = strtotime($conversation['last_interaction'] ?? '');
-        return $lastTs !== false && (time() - $lastTs) > $this->timeout;
+        $raw = $conversation['last_interaction'] ?? '';
+
+        // Ignorar fechas claramente inválidas (MySQL puede retornar '0000-00-00 00:00:00')
+        if (empty($raw) || str_starts_with((string)$raw, '0000')) {
+            return false;
+        }
+
+        $lastTs = strtotime((string)$raw);
+
+        // Si la fecha no se pudo parsear, asumir que NO expiró (no resetear por error)
+        if ($lastTs === false) {
+            return false;
+        }
+
+        $elapsed = time() - $lastTs;
+
+        // Si el resultado es negativo (reloj del servidor desfasado), no expira
+        if ($elapsed < 0) {
+            return false;
+        }
+
+        return $elapsed > $this->timeout;
     }
 
     /**
