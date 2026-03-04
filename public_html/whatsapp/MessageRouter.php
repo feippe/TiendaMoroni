@@ -2,45 +2,46 @@
 /**
  * MessageRouter – Lógica central de la máquina de estados del bot IVR.
  *
- * Recibe el mensaje entrante + estado actual de la conversación y decide
- * qué acción tomar y a qué estado transicionar.
- *
  * ─── Diagrama de transiciones ────────────────────────────────────────────────
  *
  *  WELCOME
- *    → cualquier mensaje             → muestra bienvenida (permanece en WELCOME)
- *    → btn "btn_ver_web"             → envía CTA URL → permanece en WELCOME
- *    → btn "btn_ver_whatsapp"        → BROWSE_MENU
+ *    → button_reply "btn_ver_web"        → envía CTA URL → permanece en WELCOME
+ *    → button_reply "btn_ver_whatsapp"   → BROWSE_MENU
+ *    → cualquier otro mensaje            → muestra bienvenida (permanece en WELCOME)
  *
- *  BROWSE_MENU
- *    → list "menu_categorias"        → SELECT_CATEGORY (pág. 1)
- *    → list "menu_vendedores"        → SELECT_SELLER   (pág. 1)
- *    → list "menu_buscar"            → SEARCH_PROMPT
- *    → list/btn "menu_inicio"        → WELCOME
+ *  BROWSE_MENU  (espera list_reply)
+ *    → list_reply "menu_categorias"      → SELECT_CATEGORY (pág. 1)
+ *    → list_reply "menu_vendedores"      → SELECT_SELLER   (pág. 1)
+ *    → list_reply "menu_buscar"          → SEARCH_PROMPT
+ *    → list_reply "menu_inicio"          → WELCOME
+ *    → cualquier otro input              → reenvía el menú (NO resetea)
  *
- *  SELECT_CATEGORY
- *    → list "cat_{id}"               → SHOW_PRODUCTS (filter: category)
- *    → list "nav_mas_cats"           → SELECT_CATEGORY (pág. siguiente)
- *    → list "nav_volver"             → BROWSE_MENU
+ *  SELECT_CATEGORY  (espera list_reply)
+ *    → list_reply "cat_{id}"             → SHOW_PRODUCTS (filter: category)
+ *    → list_reply "nav_mas_cats"         → SELECT_CATEGORY (pág. siguiente)
+ *    → list_reply "nav_volver"           → BROWSE_MENU
+ *    → cualquier otro input              → reenvía la lista
  *
- *  SELECT_SELLER
- *    → list "sel_{id}"               → SHOW_PRODUCTS (filter: vendor)
- *    → list "nav_mas_sels"           → SELECT_SELLER (pág. siguiente)
- *    → list "nav_volver"             → BROWSE_MENU
+ *  SELECT_SELLER  (espera list_reply)
+ *    → list_reply "sel_{id}"             → SHOW_PRODUCTS (filter: vendor)
+ *    → list_reply "nav_mas_sels"         → SELECT_SELLER (pág. siguiente)
+ *    → list_reply "nav_volver"           → BROWSE_MENU
+ *    → cualquier otro input              → reenvía la lista
  *
- *  SEARCH_PROMPT
- *    → texto libre                   → SHOW_PRODUCTS (filter: search) | sin resultados → BROWSE_MENU
- *    → otro tipo de mensaje          → re-solicita texto
+ *  SEARCH_PROMPT  (espera text)
+ *    → text libre                        → SHOW_PRODUCTS (filter: search) | sin resultados → BROWSE_MENU
+ *    → cualquier otro tipo               → re-solicita texto
  *
- *  SHOW_PRODUCTS
- *    → btn "nav_menu"                → BROWSE_MENU
- *    → btn "nav_buscar"              → SEARCH_PROMPT
- *    → btn "nav_mas"                 → SHOW_PRODUCTS (pág. siguiente)
- *    → order message                 → PRODUCT_INTEREST
+ *  SHOW_PRODUCTS  (espera button_reply)
+ *    → button_reply "nav_menu"           → BROWSE_MENU
+ *    → button_reply "nav_buscar"         → SEARCH_PROMPT
+ *    → button_reply "nav_mas"            → SHOW_PRODUCTS (pág. siguiente)
+ *    → order message                     → PRODUCT_INTEREST
+ *    → cualquier otro input              → reenvía botones de navegación
  *
- *  PRODUCT_INTEREST
- *    → btn "pi_seguir"               → BROWSE_MENU
- *    → cualquier otro mensaje        → WELCOME
+ *  PRODUCT_INTEREST  (espera button_reply)
+ *    → button_reply "pi_seguir"          → BROWSE_MENU
+ *    → button_reply "menu_inicio" / otro → WELCOME
  *
  * ─────────────────────────────────────────────────────────────────────────────
  */
@@ -85,23 +86,26 @@ class MessageRouter
         // 1. Obtener o crear conversación
         $conversation = $this->conv->getOrCreate($phone);
 
-        // 2. Registrar mensaje entrante
+        // 2. Registrar mensaje entrante en BD
         $this->logger->logIncoming($phone, $message['type'] ?? 'unknown', $message);
 
-        // 3. Si la conversación expiró → resetear a WELCOME
+        // 3. Logging detallado para diagnóstico
+        $this->logIn($phone, $conversation['current_state'], $message);
+
+        // 4. Si la conversación expiró → resetear a WELCOME
         if ($this->conv->isTimedOut($conversation)) {
-            $this->logger->info("Timeout para {$phone}, reseteando a WELCOME");
+            $this->logTrans($phone, $conversation['current_state'], 'WELCOME', 'timeout');
             $this->conv->reset($phone);
             $conversation = $this->conv->getOrCreate($phone);
         }
 
-        // 4. Los order messages se procesan en cualquier estado
+        // 5. Los order messages se procesan independientemente del estado
         if (($message['type'] ?? '') === 'order') {
             $this->handleOrderMessage($phone, $message, $conversation);
             return;
         }
 
-        // 5. Despachar según el estado actual
+        // 6. Despachar según el estado actual
         $state = $conversation['current_state'];
         switch ($state) {
             case 'WELCOME':
@@ -127,6 +131,7 @@ class MessageRouter
                 break;
             default:
                 // Estado desconocido → resetear
+                $this->logTrans($phone, $state, 'WELCOME', 'estado-desconocido');
                 $this->conv->reset($phone);
                 $this->sendWelcomeMessage($phone);
         }
@@ -135,77 +140,123 @@ class MessageRouter
     // ── Manejadores de estado ─────────────────────────────────────────────────
 
     /**
-     * WELCOME: muestra bienvenida con los dos botones principales.
+     * WELCOME: espera button_reply con los dos botones de inicio.
+     *
+     * Tipo esperado: button_reply
+     * IDs esperados: "btn_ver_web" | "btn_ver_whatsapp"
      */
     private function handleWelcome(string $phone, array $message, array $conversation): void
     {
         $btnId = $this->getButtonReplyId($message);
 
         if ($btnId === 'btn_ver_web') {
-            // Redirigir a la web → volver al inicio
+            $this->logTrans($phone, 'WELCOME', 'WELCOME', 'cta-web');
             $this->api->sendCtaUrl(
                 $phone,
                 'Visitá nuestra tienda online para ver todos los productos con fotos en alta calidad.',
                 'Ir a TiendaMoroni.com',
                 $this->config['app']['base_url']
             );
-            $this->conv->reset($phone);
+            // Volver a WELCOME después de redirigir
+            $this->conv->setState($phone, 'WELCOME');
             return;
         }
 
         if ($btnId === 'btn_ver_whatsapp') {
+            $this->logTrans($phone, 'WELCOME', 'BROWSE_MENU', 'btn_ver_whatsapp');
             $this->conv->setState($phone, 'BROWSE_MENU');
             $this->sendBrowseMenu($phone);
             return;
         }
 
-        // Cualquier otro mensaje (primer contacto, hola, etc.) → mostrar bienvenida
-        $this->sendWelcomeMessage($phone);
+        // Cualquier otro mensaje (primer contacto, saludo, lista inesperada, etc.)
+        // → mostrar bienvenida y asegurar que el estado sea WELCOME
+        $this->logger->info(
+            "WELCOME [{$phone}] input inesperado tipo=" . ($message['type'] ?? 'unknown')
+            . " btnId=" . ($btnId ?? 'null') . " → mostrando bienvenida"
+        );
         $this->conv->setState($phone, 'WELCOME');
+        $this->sendWelcomeMessage($phone);
     }
 
     /**
-     * BROWSE_MENU: menú principal de navegación.
+     * BROWSE_MENU: espera una list_reply del menú de navegación.
+     *
+     * Tipo esperado: list_reply
+     * IDs esperados: "menu_categorias" | "menu_vendedores" | "menu_buscar" | "menu_inicio"
+     *
+     * FIX: el `default` ya NO resetea al inicio — reenvía el menú para evitar
+     * que cualquier input inesperado (texto libre, ID desconocido) destruya el flujo.
      */
     private function handleBrowseMenu(string $phone, array $message, array $conversation): void
     {
-        // Acepta tanto list_reply como button_reply (para navegación desde otros estados)
+        // BROWSE_MENU usa lista interactiva → esperar list_reply.
+        // También acepta button_reply por si otros estados derivan aquí con botones.
         $replyId = $this->getListReplyId($message) ?? $this->getButtonReplyId($message);
+
+        $this->logger->info(
+            "BROWSE_MENU [{$phone}] replyId=" . ($replyId ?? 'null')
+            . " msgType=" . ($message['type'] ?? 'unknown')
+            . " interactiveType=" . ($message['interactive']['type'] ?? 'none')
+        );
 
         switch ($replyId) {
             case 'menu_categorias':
+                $this->logTrans($phone, 'BROWSE_MENU', 'SELECT_CATEGORY', $replyId);
                 $this->conv->setState($phone, 'SELECT_CATEGORY', ['cat_page' => 1]);
                 $this->sendCategoryList($phone, 1);
                 break;
 
             case 'menu_vendedores':
+                $this->logTrans($phone, 'BROWSE_MENU', 'SELECT_SELLER', $replyId);
                 $this->conv->setState($phone, 'SELECT_SELLER', ['sel_page' => 1]);
                 $this->sendSellerList($phone, 1);
                 break;
 
             case 'menu_buscar':
             case 'search_retry':
+                $this->logTrans($phone, 'BROWSE_MENU', 'SEARCH_PROMPT', $replyId);
                 $this->conv->setState($phone, 'SEARCH_PROMPT');
                 $this->api->sendText($phone, 'Escribí el nombre o palabra clave del producto que buscás:');
                 break;
 
             case 'menu_inicio':
-            default:
+                // El usuario eligió explícitamente volver al inicio
+                $this->logTrans($phone, 'BROWSE_MENU', 'WELCOME', 'menu_inicio');
                 $this->conv->reset($phone);
                 $this->sendWelcomeMessage($phone);
+                break;
+
+            default:
+                // Input no reconocido (texto libre, ID desconocido, notificación de lectura, etc.)
+                // NO resetear a WELCOME: reenviar el menú para mantener al usuario en contexto.
+                $this->logger->info(
+                    "BROWSE_MENU [{$phone}] replyId inesperado='"
+                    . ($replyId ?? 'null') . "' → reenviando menú"
+                );
+                $this->sendBrowseMenu($phone);
                 break;
         }
     }
 
     /**
-     * SELECT_CATEGORY: el cliente elige una categoría de la lista interactiva.
+     * SELECT_CATEGORY: espera list_reply con el ID de la categoría elegida.
+     *
+     * Tipo esperado: list_reply
+     * IDs esperados: "cat_{id}" | "nav_mas_cats" | "nav_volver"
      */
     private function handleSelectCategory(string $phone, array $message, array $conversation): void
     {
         $replyId = $this->getListReplyId($message);
         $ctx     = $conversation['context'];
 
+        $this->logger->info(
+            "SELECT_CATEGORY [{$phone}] replyId=" . ($replyId ?? 'null')
+            . " cat_page=" . ($ctx['cat_page'] ?? 1)
+        );
+
         if ($replyId === 'nav_volver') {
+            $this->logTrans($phone, 'SELECT_CATEGORY', 'BROWSE_MENU', 'nav_volver');
             $this->conv->setState($phone, 'BROWSE_MENU');
             $this->sendBrowseMenu($phone);
             return;
@@ -213,32 +264,47 @@ class MessageRouter
 
         if ($replyId === 'nav_mas_cats') {
             $nextPage = ((int)($ctx['cat_page'] ?? 1)) + 1;
+            $this->logTrans($phone, 'SELECT_CATEGORY', 'SELECT_CATEGORY', "pag-{$nextPage}");
             $this->conv->setState($phone, 'SELECT_CATEGORY', ['cat_page' => $nextPage]);
             $this->sendCategoryList($phone, $nextPage);
             return;
         }
 
-        if ($replyId && str_starts_with($replyId, 'cat_')) {
+        if ($replyId !== null && str_starts_with($replyId, 'cat_')) {
             $categoryId = (int)substr($replyId, 4);
             $newCtx = ['filter_type' => 'category', 'filter_id' => $categoryId, 'page' => 1];
+            $this->logTrans($phone, 'SELECT_CATEGORY', 'SHOW_PRODUCTS', "cat_id={$categoryId}");
             $this->conv->setState($phone, 'SHOW_PRODUCTS', $newCtx);
             $this->sendProductsDisplay($phone, $newCtx);
             return;
         }
 
-        // Respuesta inesperada → reenviar la misma lista
+        // Input inesperado (texto libre, button_reply, etc.) → reenviar la misma lista
+        $this->logger->info(
+            "SELECT_CATEGORY [{$phone}] replyId inesperado='"
+            . ($replyId ?? 'null') . "' → reenviando lista"
+        );
         $this->sendCategoryList($phone, (int)($ctx['cat_page'] ?? 1));
     }
 
     /**
-     * SELECT_SELLER: el cliente elige un vendedor de la lista interactiva.
+     * SELECT_SELLER: espera list_reply con el ID del vendedor elegido.
+     *
+     * Tipo esperado: list_reply
+     * IDs esperados: "sel_{id}" | "nav_mas_sels" | "nav_volver"
      */
     private function handleSelectSeller(string $phone, array $message, array $conversation): void
     {
         $replyId = $this->getListReplyId($message);
         $ctx     = $conversation['context'];
 
+        $this->logger->info(
+            "SELECT_SELLER [{$phone}] replyId=" . ($replyId ?? 'null')
+            . " sel_page=" . ($ctx['sel_page'] ?? 1)
+        );
+
         if ($replyId === 'nav_volver') {
+            $this->logTrans($phone, 'SELECT_SELLER', 'BROWSE_MENU', 'nav_volver');
             $this->conv->setState($phone, 'BROWSE_MENU');
             $this->sendBrowseMenu($phone);
             return;
@@ -246,37 +312,49 @@ class MessageRouter
 
         if ($replyId === 'nav_mas_sels') {
             $nextPage = ((int)($ctx['sel_page'] ?? 1)) + 1;
+            $this->logTrans($phone, 'SELECT_SELLER', 'SELECT_SELLER', "pag-{$nextPage}");
             $this->conv->setState($phone, 'SELECT_SELLER', ['sel_page' => $nextPage]);
             $this->sendSellerList($phone, $nextPage);
             return;
         }
 
-        if ($replyId && str_starts_with($replyId, 'sel_')) {
+        if ($replyId !== null && str_starts_with($replyId, 'sel_')) {
             $vendorId = (int)substr($replyId, 4);
             $newCtx = ['filter_type' => 'vendor', 'filter_id' => $vendorId, 'page' => 1];
+            $this->logTrans($phone, 'SELECT_SELLER', 'SHOW_PRODUCTS', "vendor_id={$vendorId}");
             $this->conv->setState($phone, 'SHOW_PRODUCTS', $newCtx);
             $this->sendProductsDisplay($phone, $newCtx);
             return;
         }
 
-        // Respuesta inesperada → reenviar la misma lista
+        // Input inesperado → reenviar la misma lista
+        $this->logger->info(
+            "SELECT_SELLER [{$phone}] replyId inesperado='"
+            . ($replyId ?? 'null') . "' → reenviando lista"
+        );
         $this->sendSellerList($phone, (int)($ctx['sel_page'] ?? 1));
     }
 
     /**
      * SEARCH_PROMPT: el siguiente mensaje de texto libre es el término de búsqueda.
+     *
+     * Tipo esperado: text
      */
     private function handleSearchPrompt(string $phone, array $message, array $conversation): void
     {
         $text = $this->getMessageText($message);
 
-        // Si no es texto libre, recordar al cliente lo que debe hacer
+        $this->logger->info(
+            "SEARCH_PROMPT [{$phone}] msgType=" . ($message['type'] ?? 'unknown')
+            . " hasText=" . ($text !== null ? 'si' : 'no')
+        );
+
+        // Si no es texto libre, re-solicitar al usuario
         if ($text === null) {
             $this->api->sendText($phone, 'Escribí el nombre o palabra clave del producto que buscás:');
             return;
         }
 
-        // Sanitizar y limitar longitud del término de búsqueda
         $term = mb_substr(trim($text), 0, 100);
 
         if ($term === '') {
@@ -284,10 +362,12 @@ class MessageRouter
             return;
         }
 
+        $this->logger->info("SEARCH_PROMPT [{$phone}] buscando término='{$term}'");
+
         $count = $this->products->countSearchProducts($term);
 
         if ($count === 0) {
-            // Sin resultados → ofrecer volver al menú o buscar de nuevo
+            $this->logTrans($phone, 'SEARCH_PROMPT', 'BROWSE_MENU', "sin-resultados:{$term}");
             $this->api->sendReplyButtons(
                 $phone,
                 "No encontré productos con \"*{$term}*\". Intentá con otra palabra.",
@@ -296,31 +376,44 @@ class MessageRouter
                     ['id' => 'menu_inicio', 'title' => 'Volver al menú'],
                 ]
             );
-            // Volver a BROWSE_MENU para que los botones anteriores funcionen
+            // Ir a BROWSE_MENU para que los botones de arriba funcionen
             $this->conv->setState($phone, 'BROWSE_MENU');
             return;
         }
 
         $newCtx = ['filter_type' => 'search', 'search_term' => $term, 'page' => 1];
+        $this->logTrans($phone, 'SEARCH_PROMPT', 'SHOW_PRODUCTS', "resultados={$count}");
         $this->conv->setState($phone, 'SHOW_PRODUCTS', $newCtx);
         $this->sendProductsDisplay($phone, $newCtx);
     }
 
     /**
-     * SHOW_PRODUCTS: navega por páginas de productos o vuelve al menú.
+     * SHOW_PRODUCTS: navega por páginas de productos o regresa al menú.
+     *
+     * Tipo esperado: button_reply
+     * IDs esperados: "nav_menu" | "nav_buscar" | "nav_mas"
+     * También maneja: order message (carrito de WhatsApp)
      */
     private function handleShowProducts(string $phone, array $message, array $conversation): void
     {
         $btnId = $this->getButtonReplyId($message);
         $ctx   = $conversation['context'];
 
+        $this->logger->info(
+            "SHOW_PRODUCTS [{$phone}] btnId=" . ($btnId ?? 'null')
+            . " filter=" . ($ctx['filter_type'] ?? 'none')
+            . " page=" . ($ctx['page'] ?? 1)
+        );
+
         if ($btnId === 'nav_menu' || $btnId === 'menu_inicio') {
+            $this->logTrans($phone, 'SHOW_PRODUCTS', 'BROWSE_MENU', $btnId);
             $this->conv->setState($phone, 'BROWSE_MENU');
             $this->sendBrowseMenu($phone);
             return;
         }
 
         if ($btnId === 'nav_buscar') {
+            $this->logTrans($phone, 'SHOW_PRODUCTS', 'SEARCH_PROMPT', 'nav_buscar');
             $this->conv->setState($phone, 'SEARCH_PROMPT');
             $this->api->sendText($phone, 'Escribí el nombre o palabra clave del producto que buscás:');
             return;
@@ -329,36 +422,48 @@ class MessageRouter
         if ($btnId === 'nav_mas') {
             $nextPage = ((int)($ctx['page'] ?? 1)) + 1;
             $newCtx   = array_merge($ctx, ['page' => $nextPage]);
+            $this->logTrans($phone, 'SHOW_PRODUCTS', 'SHOW_PRODUCTS', "pag-{$nextPage}");
             $this->conv->setState($phone, 'SHOW_PRODUCTS', $newCtx);
             $this->sendProductsDisplay($phone, $newCtx);
             return;
         }
 
-        // Respuesta inesperada → reenviar botones de navegación
+        // Input no reconocido → reenviar botones de navegación sin cambiar estado
+        $this->logger->info(
+            "SHOW_PRODUCTS [{$phone}] btnId inesperado='"
+            . ($btnId ?? 'null') . "' → reenviando botones"
+        );
         $this->api->sendReplyButtons(
             $phone,
             '¿Qué querés hacer?',
             [
-                ['id' => 'nav_menu',    'title' => 'Volver al menú'],
-                ['id' => 'nav_buscar',  'title' => 'Nueva búsqueda'],
+                ['id' => 'nav_menu',   'title' => 'Volver al menú'],
+                ['id' => 'nav_buscar', 'title' => 'Nueva búsqueda'],
             ]
         );
     }
 
     /**
-     * PRODUCT_INTEREST: después de un order message procesado.
+     * PRODUCT_INTEREST: después de procesar un order message.
+     *
+     * Tipo esperado: button_reply
+     * IDs esperados: "pi_seguir" | "menu_inicio"
      */
     private function handleProductInterest(string $phone, array $message, array $conversation): void
     {
         $btnId = $this->getButtonReplyId($message);
 
+        $this->logger->info("PRODUCT_INTEREST [{$phone}] btnId=" . ($btnId ?? 'null'));
+
         if ($btnId === 'pi_seguir') {
+            $this->logTrans($phone, 'PRODUCT_INTEREST', 'BROWSE_MENU', 'pi_seguir');
             $this->conv->setState($phone, 'BROWSE_MENU');
             $this->sendBrowseMenu($phone);
             return;
         }
 
-        // "Volver al inicio" o cualquier otro mensaje
+        // "menu_inicio" o cualquier otro mensaje → volver al inicio
+        $this->logTrans($phone, 'PRODUCT_INTEREST', 'WELCOME', $btnId ?? 'otro');
         $this->conv->reset($phone);
         $this->sendWelcomeMessage($phone);
     }
@@ -372,6 +477,10 @@ class MessageRouter
         $orderData = $message['order'] ?? [];
         $catalogId = (string)($orderData['catalog_id'] ?? '');
         $items     = $orderData['product_items'] ?? [];
+
+        $this->logger->info(
+            "ORDER [{$phone}] catalogId={$catalogId} items=" . count($items)
+        );
 
         if (empty($items)) {
             $this->api->sendText(
@@ -413,9 +522,9 @@ class MessageRouter
         }
 
         foreach ($vendorGroups as $group) {
-            $vendorPhone  = (string)($group['vendor']['vendor_phone'] ?? '');
-            $vendorName   = (string)($group['vendor']['vendor_name']  ?? 'el artesano');
-            $productList  = implode(', ', $group['product_names']);
+            $vendorPhone = (string)($group['vendor']['vendor_phone'] ?? '');
+            $vendorName  = (string)($group['vendor']['vendor_name']  ?? 'el artesano');
+            $productList = implode(', ', $group['product_names']);
 
             if ($vendorPhone) {
                 $waText = rawurlencode(
@@ -436,6 +545,7 @@ class MessageRouter
         }
 
         // Botones post-pedido
+        $this->logTrans($phone, $conversation['current_state'], 'PRODUCT_INTEREST', 'order-message');
         $this->conv->setState($phone, 'PRODUCT_INTEREST');
         $this->api->sendReplyButtons(
             $phone,
@@ -449,9 +559,6 @@ class MessageRouter
 
     // ── Constructores de mensajes ─────────────────────────────────────────────
 
-    /**
-     * Envía el mensaje de bienvenida con los dos botones de inicio.
-     */
     private function sendWelcomeMessage(string $phone): void
     {
         $this->api->sendReplyButtons(
@@ -466,9 +573,6 @@ class MessageRouter
         );
     }
 
-    /**
-     * Envía el menú principal de navegación como lista interactiva.
-     */
     private function sendBrowseMenu(string $phone): void
     {
         $this->api->sendList(
@@ -507,9 +611,6 @@ class MessageRouter
         );
     }
 
-    /**
-     * Envía la lista paginada de categorías con productos activos.
-     */
     private function sendCategoryList(string $phone, int $page): void
     {
         $perPage = ProductService::ITEMS_PER_LIST_PAGE;
@@ -556,9 +657,6 @@ class MessageRouter
         );
     }
 
-    /**
-     * Envía la lista paginada de vendedores con productos activos.
-     */
     private function sendSellerList(string $phone, int $page): void
     {
         $perPage = ProductService::ITEMS_PER_LIST_PAGE;
@@ -605,14 +703,6 @@ class MessageRouter
         );
     }
 
-    /**
-     * Muestra la lista de productos según el filtro activo del contexto.
-     * Usa product_list (multi-product message) para mostrar los productos
-     * con imagen, nombre y precio del catálogo de Meta.
-     *
-     * @param string $phone  Número del cliente.
-     * @param array  $ctx    Contexto con 'filter_type', 'filter_id'/'search_term', 'page'.
-     */
     private function sendProductsDisplay(string $phone, array $ctx): void
     {
         $filter = $ctx['filter_type'] ?? 'search';
@@ -663,7 +753,6 @@ class MessageRouter
         $hasMore   = ($offset + $limit) < $total;
         $catalogId = $this->config['whatsapp']['catalog_id'];
 
-        // Enviar el product_list (WhatsApp toma imagen/precio del catálogo de Meta)
         $this->api->sendProductList(
             $phone,
             wa_truncate($title, 60),
@@ -681,20 +770,16 @@ class MessageRouter
             ]
         );
 
-        // Botones de navegación enviados justo después del product_list
-        $navButtons = [
-            ['id' => 'nav_menu', 'title' => 'Volver al menú'],
-        ];
+        $navButtons = [['id' => 'nav_menu', 'title' => 'Volver al menú']];
         if ($hasMore) {
             array_unshift($navButtons, ['id' => 'nav_mas', 'title' => 'Ver más']);
         }
         $navButtons[] = ['id' => 'nav_buscar', 'title' => 'Nueva búsqueda'];
 
-        $shown   = count($products);
+        $shown    = count($products);
         $pageInfo = $page > 1 ? " (pág. {$page})" : '';
-        $navText = "Mostrando {$shown} de {$total} productos{$pageInfo}.";
+        $navText  = "Mostrando {$shown} de {$total} productos{$pageInfo}.";
 
-        // sendReplyButtons acepta máx. 3 botones
         $this->api->sendReplyButtons($phone, $navText, array_slice($navButtons, 0, 3));
     }
 
@@ -714,6 +799,7 @@ class MessageRouter
 
     /**
      * Extrae el ID del botón de respuesta rápida (interactive → button_reply).
+     * Devuelve null si el mensaje no es button_reply.
      */
     private function getButtonReplyId(array $message): ?string
     {
@@ -727,7 +813,8 @@ class MessageRouter
     }
 
     /**
-     * Extrae el ID de la fila seleccionada de una lista interactiva (interactive → list_reply).
+     * Extrae el ID de la fila seleccionada (interactive → list_reply).
+     * Devuelve null si el mensaje no es list_reply.
      */
     private function getListReplyId(array $message): ?string
     {
@@ -738,5 +825,36 @@ class MessageRouter
             return $message['interactive']['list_reply']['id'] ?? null;
         }
         return null;
+    }
+
+    // ── Helpers de logging ────────────────────────────────────────────────────
+
+    /**
+     * Registra los detalles del mensaje entrante para diagnóstico.
+     * Formato: IN phone=X state=Y type=Z btnId=W listId=V
+     */
+    private function logIn(string $phone, string $state, array $message): void
+    {
+        $type        = $message['type'] ?? 'unknown';
+        $intType     = $message['interactive']['type'] ?? '-';
+        $btnId       = $this->getButtonReplyId($message) ?? 'null';
+        $listId      = $this->getListReplyId($message)   ?? 'null';
+        $hasText     = $this->getMessageText($message) !== null ? 'si' : 'no';
+
+        $this->logger->info(
+            "IN phone={$phone} state={$state} type={$type}"
+            . " interactiveType={$intType} btnId={$btnId} listId={$listId} hasText={$hasText}"
+        );
+    }
+
+    /**
+     * Registra una transición de estado.
+     * Formato: TRANS phone=X FROM → TO reason=Z
+     */
+    private function logTrans(string $phone, string $from, string $to, string $reason): void
+    {
+        $this->logger->info(
+            "TRANS phone={$phone} {$from} → {$to} reason={$reason}"
+        );
     }
 }
