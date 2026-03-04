@@ -33,13 +33,21 @@ class ConversationManager
      * Obtiene la conversación existente o crea una nueva en estado WELCOME.
      *
      * Siempre agrega la clave 'context' con el JSON decodificado de context_data.
+     * Incluye 'last_ts' (Unix timestamp de last_interaction vía UNIX_TIMESTAMP())
+     * para que isTimedOut() compare timestamps UTC sin depender de la zona horaria
+     * configurada en PHP o MySQL.
      *
-     * @return array  Fila de wa_conversations + clave 'context' (array).
+     * @return array  Fila de wa_conversations + claves 'context' (array) y 'last_ts' (int).
      */
     public function getOrCreate(string $phone): array
     {
+        // UNIX_TIMESTAMP evita desfases de zona horaria entre PHP y MySQL.
+        // strtotime() interpreta el datetime según la TZ de PHP; NOW() usa la TZ de MySQL.
+        // Ambas pueden diferir en servidores de hosting compartido.
+        // UNIX_TIMESTAMP() siempre devuelve segundos desde epoch (UTC), igual que time().
         $stmt = $this->pdo->prepare(
-            'SELECT * FROM wa_conversations WHERE phone_number = ?'
+            'SELECT *, UNIX_TIMESTAMP(last_interaction) AS last_ts
+             FROM wa_conversations WHERE phone_number = ?'
         );
         $stmt->execute([$phone]);
         $conv = $stmt->fetch();
@@ -56,6 +64,7 @@ class ConversationManager
                 'current_state'    => 'WELCOME',
                 'context_data'     => '{}',
                 'last_interaction' => date('Y-m-d H:i:s'),
+                'last_ts'          => time(), // PHP time() siempre es UTC, coherente con isTimedOut()
                 'created_at'       => date('Y-m-d H:i:s'),
             ];
         }
@@ -105,31 +114,47 @@ class ConversationManager
     /**
      * Verifica si la conversación superó el tiempo máximo de inactividad.
      *
-     * Protege contra fechas inválidas de MySQL ('0000-00-00' u otros valores
-     * anómalos) que harían que strtotime devuelva un timestamp muy antiguo y
-     * dispararían un falso timeout inmediato.
+     * Usa 'last_ts' (UNIX_TIMESTAMP de MySQL) cuando está disponible para evitar
+     * desfases de zona horaria. Fallback a strtotime() para compatibilidad.
      *
      * @param array $conversation  Fila devuelta por getOrCreate().
      */
     public function isTimedOut(array $conversation): bool
     {
+        // Camino principal: usar el Unix timestamp calculado por MySQL (siempre UTC)
+        if (isset($conversation['last_ts'])) {
+            $lastTs = (int)$conversation['last_ts'];
+
+            // last_ts = 0 indica fecha inválida o NULL en MySQL
+            if ($lastTs <= 0) {
+                return false;
+            }
+
+            $elapsed = time() - $lastTs;
+
+            // Negativo → reloj desfasado, no expirar
+            if ($elapsed < 0) {
+                return false;
+            }
+
+            return $elapsed > $this->timeout;
+        }
+
+        // Fallback: parsear el string datetime (puede tener desfase de TZ)
         $raw = $conversation['last_interaction'] ?? '';
 
-        // Ignorar fechas claramente inválidas (MySQL puede retornar '0000-00-00 00:00:00')
         if (empty($raw) || str_starts_with((string)$raw, '0000')) {
             return false;
         }
 
         $lastTs = strtotime((string)$raw);
 
-        // Si la fecha no se pudo parsear, asumir que NO expiró (no resetear por error)
         if ($lastTs === false) {
             return false;
         }
 
         $elapsed = time() - $lastTs;
 
-        // Si el resultado es negativo (reloj del servidor desfasado), no expira
         if ($elapsed < 0) {
             return false;
         }
