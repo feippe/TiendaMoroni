@@ -124,7 +124,7 @@
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex items-center gap-6 h-10 text-sm font-medium text-navy-light/80 overflow-x-auto">
       <a href="/productos" class="hover:text-gold whitespace-nowrap transition">Todos los productos</a>
-      <?php foreach (\TiendaMoroni\Models\CategoryModel::roots() as $cat): ?>
+      <?php foreach (\TiendaMoroni\Models\CategoryModel::rootsActive() as $cat): ?>
       <a href="/categoria/<?= e($cat['slug']) ?>"
          class="hover:text-gold whitespace-nowrap transition">
         <?= e($cat['name']) ?>

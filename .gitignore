@@ -1,9 +1,14 @@
 # Configuration
 config/config.php
+public_html/whatsapp/config.php
 
 # Uploads
 public_html/assets/uploads/*
 !public_html/assets/uploads/.gitkeep
+
+# WhatsApp bot logs
+public_html/whatsapp/logs/*
+!public_html/whatsapp/logs/.gitkeep
 
 # OS & IDE
 .DS_Store

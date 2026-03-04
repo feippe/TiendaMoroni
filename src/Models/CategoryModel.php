@@ -42,8 +42,77 @@ class CategoryModel
              LEFT JOIN products p ON p.category_id = c.id AND p.status = "active"
              WHERE c.parent_id IS NULL
              GROUP BY c.id
+             HAVING product_count > 0
              ORDER BY c.sort_order ASC, c.name ASC'
         );
+    }
+
+    /**
+     * Root categories that have at least one active product,
+     * directly or in any subcategory (up to any depth).
+     */
+    public static function rootsActive(): array
+    {
+        // Get the IDs of all visible categories (with active products)
+        // then filter to roots only — reuses treeActive() so depth logic is shared.
+        $tree = self::treeActive();
+        return array_values(array_filter($tree, fn($c) => (int)$c['depth'] === 0));
+    }
+
+    /**
+     * Full category tree restricted to categories that have active products
+     * (directly or through any descendant), including their ancestors.
+     */
+    public static function treeActive(): array
+    {
+        // Step 1: categories that have at least one active product
+        $withProducts = DB::fetchAll(
+            'SELECT DISTINCT c.id, c.parent_id
+             FROM categories c
+             INNER JOIN products p ON p.category_id = c.id AND p.status = "active"'
+        );
+
+        if (empty($withProducts)) {
+            return [];
+        }
+
+        // Step 2: walk up the ancestor chain so parent categories are also included
+        $allCats = DB::fetchAll('SELECT id, parent_id FROM categories');
+        $parentOf = [];
+        foreach ($allCats as $row) {
+            $parentOf[(int)$row['id']] = $row['parent_id'] !== null ? (int)$row['parent_id'] : null;
+        }
+
+        $visible = [];
+        foreach ($withProducts as $row) {
+            $id = (int)$row['id'];
+            while ($id !== null && !isset($visible[$id])) {
+                $visible[$id] = true;
+                $id = $parentOf[$id] ?? null;
+            }
+        }
+
+        if (empty($visible)) {
+            return [];
+        }
+
+        // Step 3: fetch full data and build tree
+        $ids          = array_keys($visible);
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+        $cats         = DB::fetchAll(
+            "SELECT * FROM categories WHERE id IN ($placeholders) ORDER BY sort_order ASC, name ASC",
+            $ids
+        );
+
+        $byParent = [];
+        foreach ($cats as $cat) {
+            $key              = $cat['parent_id'] !== null ? (int)$cat['parent_id'] : 0;
+            $byParent[$key][] = $cat;
+        }
+
+        $result = [];
+        self::flattenTree($byParent, 0, 0, $result);
+        return $result;
     }
 
     public static function create(array $data): int

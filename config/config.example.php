@@ -49,6 +49,12 @@ define('UPLOAD_PATH', dirname(__DIR__) . '/public_html/assets/uploads/');
 define('UPLOAD_URL',  SITE_URL . '/assets/uploads/');
 define('UPLOAD_MAX_SIZE', 5 * 1024 * 1024);   // 5 MB
 
+// ── Feed XML (Meta Commerce Manager – Autenticación HTTP Basic) ───────────────
+// Configurar los mismos valores en Commerce Manager al registrar el feed.
+// Si no se definen estas constantes, el feed queda público (sin autenticación).
+define('FEED_META_USER', 'meta_feed_user');
+define('FEED_META_PASS', 'contraseña_segura_del_feed');
+
 // ── Environment ───────────────────────────────────────────────────────────────
 define('APP_ENV',   'development');   // 'development' | 'production'
 define('APP_DEBUG',  true);

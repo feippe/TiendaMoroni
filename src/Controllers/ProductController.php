@@ -33,7 +33,7 @@ class ProductController
         $total      = ProductModel::count($filters);
         $pagination = paginate($total, $perPage);
         $products   = ProductModel::list($filters, $perPage, $pagination['offset']);
-        $categories = CategoryModel::tree();
+        $categories = CategoryModel::treeActive();
 
         view('products/index', [
             'products'   => $products,
