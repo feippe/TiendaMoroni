@@ -1,0 +1,40 @@
+# ── Seguridad del directorio WhatsApp Bot ────────────────────────────────────
+# Protege archivos sensibles de acceso directo desde el navegador.
+# Solo webhook.php debe ser accesible públicamente.
+
+Options -Indexes
+
+# Denegar acceso directo a todos los PHP excepto webhook.php
+<FilesMatch "^(?!webhook\.php$).*\.php$">
+    Require all denied
+</FilesMatch>
+
+# Denegar acceso a archivos de configuración
+<Files "config.php">
+    Require all denied
+</Files>
+
+# Denegar acceso a archivos SQL
+<FilesMatch "\.sql$">
+    Require all denied
+</FilesMatch>
+
+# Denegar acceso a archivos de log
+<FilesMatch "\.log$">
+    Require all denied
+</FilesMatch>
+
+# Denegar acceso al directorio de logs y sql
+<DirectoryMatch "^.*(logs|sql)$">
+    Require all denied
+</DirectoryMatch>
+
+# Denegar acceso a archivos ocultos (.gitkeep, .env, etc.)
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>
+
+# Forzar HTTPS (descomenta si el hosting no lo hace automáticamente)
+# RewriteEngine On
+# RewriteCond %{HTTPS} off
+# RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]

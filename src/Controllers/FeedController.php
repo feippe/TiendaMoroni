@@ -9,6 +9,22 @@ class FeedController
 {
     public function productosXml(array $params = []): void
     {
+        // ── HTTP Basic Auth para Meta Commerce Manager ─────────────────────────
+        // Definir FEED_META_USER y FEED_META_PASS en config/config.php.
+        // Configurar los mismos valores en Commerce Manager al registrar el feed.
+        if (defined('FEED_META_USER') && defined('FEED_META_PASS')) {
+            $user = $_SERVER['PHP_AUTH_USER'] ?? '';
+            $pass = $_SERVER['PHP_AUTH_PW']   ?? '';
+            if (
+                !hash_equals(FEED_META_USER, $user) ||
+                !hash_equals(FEED_META_PASS, $pass)
+            ) {
+                header('WWW-Authenticate: Basic realm="Product Feed"');
+                http_response_code(401);
+                exit('Acceso denegado');
+            }
+        }
+
         // Clean any buffered output before sending the feed
         while (ob_get_level()) {
             ob_end_clean();
