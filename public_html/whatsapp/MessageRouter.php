@@ -800,14 +800,19 @@ class MessageRouter
     /**
      * Extrae el ID del botón de respuesta rápida (interactive → button_reply).
      * Devuelve null si el mensaje no es button_reply.
+     * Usa trim() y comparación case-insensitive para tolerar variaciones de la API.
      */
     private function getButtonReplyId(array $message): ?string
     {
-        if (
-            ($message['type'] ?? '') === 'interactive' &&
-            ($message['interactive']['type'] ?? '') === 'button_reply'
-        ) {
-            return $message['interactive']['button_reply']['id'] ?? null;
+        if (strtolower(trim($message['type'] ?? '')) !== 'interactive') {
+            return null;
+        }
+        $interactive = $message['interactive'] ?? [];
+        $intType     = strtolower(trim($interactive['type'] ?? ''));
+
+        if ($intType === 'button_reply' || isset($interactive['button_reply']['id'])) {
+            $id = $interactive['button_reply']['id'] ?? null;
+            return $id !== null ? trim((string)$id) : null;
         }
         return null;
     }
@@ -815,14 +820,19 @@ class MessageRouter
     /**
      * Extrae el ID de la fila seleccionada (interactive → list_reply).
      * Devuelve null si el mensaje no es list_reply.
+     * Usa trim() y comparación case-insensitive para tolerar variaciones de la API.
      */
     private function getListReplyId(array $message): ?string
     {
-        if (
-            ($message['type'] ?? '') === 'interactive' &&
-            ($message['interactive']['type'] ?? '') === 'list_reply'
-        ) {
-            return $message['interactive']['list_reply']['id'] ?? null;
+        if (strtolower(trim($message['type'] ?? '')) !== 'interactive') {
+            return null;
+        }
+        $interactive = $message['interactive'] ?? [];
+        $intType     = strtolower(trim($interactive['type'] ?? ''));
+
+        if ($intType === 'list_reply' || isset($interactive['list_reply']['id'])) {
+            $id = $interactive['list_reply']['id'] ?? null;
+            return $id !== null ? trim((string)$id) : null;
         }
         return null;
     }
@@ -841,9 +851,14 @@ class MessageRouter
         $listId      = $this->getListReplyId($message)   ?? 'null';
         $hasText     = $this->getMessageText($message) !== null ? 'si' : 'no';
 
+        $interactiveRaw = isset($message['interactive'])
+            ? json_encode($message['interactive'], JSON_UNESCAPED_UNICODE)
+            : 'null';
+
         $this->logger->info(
             "IN phone={$phone} state={$state} type={$type}"
             . " interactiveType={$intType} btnId={$btnId} listId={$listId} hasText={$hasText}"
+            . " interactive_raw={$interactiveRaw}"
         );
     }
 
