@@ -80,6 +80,9 @@ $router->get('/vendedor/{slug}',     ['TiendaMoroni\Controllers\VendorController
 
 // Publicar gratis (artisan landing)
 $router->get('/publicar-gratis',     ['TiendaMoroni\Controllers\PublishController', 'show']);
+
+// Política de privacidad
+$router->get('/privacidad',          ['TiendaMoroni\Controllers\PrivacidadController', 'show']);
 $router->post('/publicar-gratis',    ['TiendaMoroni\Controllers\PublishController', 'store']);
 
 // Cart
