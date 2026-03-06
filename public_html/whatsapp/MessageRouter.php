@@ -820,28 +820,46 @@ class MessageRouter
     }
 
     /**
-     * Fallback: envía productos como mensajes de texto con link a la web.
-     * Se usa cuando el product_list falla (productos no aprobados en el catálogo, etc.).
+     * Fallback visual: envía cada producto como imagen + caption con nombre, precio y link.
+     * Máx. 5 productos con imagen; el resto se lista en un único mensaje de texto al final.
+     * Se usa cuando el product_list de WhatsApp falla.
      */
     private function sendProductsAsText(string $phone, array $products, string $title): void
     {
-        $baseUrl = $this->config['app']['base_url'];
-        $lines   = ["📋 *{$title}*\n"];
+        $baseUrl    = $this->config['app']['base_url'];
+        $withImage  = array_slice($products, 0, 5);
+        $withoutImg = array_slice($products, 5);
 
-        foreach (array_slice($products, 0, 10) as $p) {
-            $price = number_format((float)$p['price'], 0, ',', '.');
-            $name  = $p['name'] ?? 'Producto';
-            $link  = $baseUrl . '/producto/' . ($p['slug'] ?? $p['id']);
-            $lines[] = "• *{$name}* — \${$price}\n  {$link}";
+        // Enviar los primeros 5 productos como imagen + caption
+        foreach ($withImage as $p) {
+            $price    = number_format((float)$p['price'], 0, ',', '.');
+            $name     = $p['name'] ?? 'Producto';
+            $link     = $baseUrl . '/producto/' . ($p['slug'] ?? $p['id']);
+            $imageUrl = (string)($p['main_image_url'] ?? '');
+            $caption  = "*{$name}*\n💰 \${$price} UYU\n👉 {$link}";
+
+            if ($imageUrl !== '') {
+                $this->api->sendImage($phone, $imageUrl, $caption);
+            } else {
+                // Sin imagen: enviar como texto
+                $this->api->sendText($phone, $caption);
+            }
         }
 
-        if (count($products) > 10) {
-            $lines[] = "\n_...y " . (count($products) - 10) . " productos más._";
+        // Si hay más de 5, listar el resto en un texto compacto
+        if (!empty($withoutImg)) {
+            $lines = ["_Y " . count($withoutImg) . " productos más en *{$title}*:_\n"];
+            foreach ($withoutImg as $p) {
+                $price   = number_format((float)$p['price'], 0, ',', '.');
+                $name    = $p['name'] ?? 'Producto';
+                $link    = $baseUrl . '/producto/' . ($p['slug'] ?? $p['id']);
+                $lines[] = "• *{$name}* — \${$price}\n  {$link}";
+            }
+            $this->api->sendText($phone, implode("\n", $lines));
         }
 
-        $lines[] = "\n🌐 Ver todos: {$baseUrl}";
-
-        $this->api->sendText($phone, implode("\n", $lines));
+        // Siempre cerrar con link a la web
+        $this->api->sendText($phone, "🌐 Ver catálogo completo: {$baseUrl}");
     }
 
     // ── Parser centralizado de mensajes ───────────────────────────────────────
