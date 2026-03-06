@@ -119,3 +119,41 @@ $csUrl = "https://graph.facebook.com/{$version}/{$phoneNumberId}/whatsapp_commer
 $csRes = @file_get_contents($csUrl);
 $cs    = json_decode($csRes ?: '{}', true) ?: [];
 echo json_encode($cs, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . "\n";
+$linkedCatalogId = $cs['data'][0]['catalog_id'] ?? null;
+echo "\ncatalog_id real vinculado a WhatsApp: " . ($linkedCatalogId ?? '(NINGUNO - catálogo no vinculado a este WABA)') . "\n";
+
+// ── Buscar WABA ID y sus catálogos ───────────────────────────────────────────
+echo "\n=== WABA ASOCIADO AL PHONE NUMBER ===\n";
+$wabaUrl = "https://graph.facebook.com/{$version}/{$phoneNumberId}?fields=id,display_phone_number,verified_name,whatsapp_business_account&access_token={$token}";
+$wabaRes = @file_get_contents($wabaUrl);
+$wabaData = json_decode($wabaRes ?: '{}', true) ?: [];
+echo json_encode($wabaData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . "\n";
+
+$wabaId = $wabaData['whatsapp_business_account']['id'] ?? null;
+if ($wabaId) {
+    echo "\n=== CATÁLOGOS VINCULADOS AL WABA {$wabaId} ===\n";
+    $catUrl = "https://graph.facebook.com/{$version}/{$wabaId}?fields=id,name,message_template_namespace,on_behalf_of_business_info&access_token={$token}";
+    $catRes = @file_get_contents($catUrl);
+    echo json_decode($catRes ?: '{}', true) ? json_encode(json_decode($catRes, true), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) : $catRes;
+    echo "\n";
+}
+
+// ── Verificar si el catalog_id configurado existe y tiene canales ────────────
+echo "\n=== CATALOG {$catalogId} - CANALES CONECTADOS ===\n";
+$catChUrl = "https://graph.facebook.com/{$version}/{$catalogId}?fields=id,name,product_count,vertical,destination_catalogs&access_token={$token}";
+$catChRes = @file_get_contents($catChUrl);
+$catCh    = json_decode($catChRes ?: '{}', true) ?: [];
+echo json_encode($catCh, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . "\n";
+
+echo "\n=== RESUMEN DE DIAGNÓSTICO ===\n";
+if (!$linkedCatalogId) {
+    echo "❌ PROBLEMA ENCONTRADO: No hay ningún catálogo vinculado a este phone_number_id en WhatsApp.\n";
+    echo "   El campo 'catalog_id' no aparece en whatsapp_commerce_settings.\n";
+    echo "   Solución: En Meta Business Manager → WhatsApp Manager → Catálogos → vinculá tu catálogo.\n";
+} elseif ($linkedCatalogId !== $catalogId) {
+    echo "❌ PROBLEMA: catalog_id en config ({$catalogId}) no coincide con el vinculado ({$linkedCatalogId}).\n";
+    echo "   Actualizá WA_CATALOG_ID en config.php a {$linkedCatalogId}\n";
+} else {
+    echo "✅ El catalog_id coincide ({$catalogId}).\n";
+    echo "   Si aun así falla, los productos no están aprobados en Commerce Manager para WhatsApp.\n";
+}
