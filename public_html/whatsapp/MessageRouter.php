@@ -779,7 +779,8 @@ class MessageRouter
         $hasMore   = ($offset + $limit) < $total;
         $catalogId = $this->config['whatsapp']['catalog_id'];
 
-        $this->api->sendProductList(
+        // ── Intentar enviar como product_list (catálogo nativo de WhatsApp) ──
+        $result = $this->api->sendProductList(
             $phone,
             wa_truncate($title, 60),
             'Deslizá para ver todos los productos:',
@@ -796,6 +797,15 @@ class MessageRouter
             ]
         );
 
+        // ── Fallback: si product_list falla, enviar como texto con links ─────
+        $httpCode = $result['_http_code'] ?? 200;
+        if ($httpCode !== 200 || isset($result['error'])) {
+            $this->logger->info(
+                "FALLBACK: product_list falló (http={$httpCode}), enviando como texto. phone={$phone}"
+            );
+            $this->sendProductsAsText($phone, $products, $title);
+        }
+
         $navButtons = [['id' => 'nav_menu', 'title' => 'Volver al menú']];
         if ($hasMore) {
             array_unshift($navButtons, ['id' => 'nav_mas', 'title' => 'Ver más']);
@@ -807,6 +817,31 @@ class MessageRouter
         $navText  = "Mostrando {$shown} de {$total} productos{$pageInfo}.";
 
         $this->api->sendReplyButtons($phone, $navText, array_slice($navButtons, 0, 3));
+    }
+
+    /**
+     * Fallback: envía productos como mensajes de texto con link a la web.
+     * Se usa cuando el product_list falla (productos no aprobados en el catálogo, etc.).
+     */
+    private function sendProductsAsText(string $phone, array $products, string $title): void
+    {
+        $baseUrl = $this->config['app']['base_url'];
+        $lines   = ["📋 *{$title}*\n"];
+
+        foreach (array_slice($products, 0, 10) as $p) {
+            $price = number_format((float)$p['price'], 0, ',', '.');
+            $name  = $p['name'] ?? 'Producto';
+            $link  = $baseUrl . '/producto/' . ($p['slug'] ?? $p['id']);
+            $lines[] = "• *{$name}* — \${$price}\n  {$link}";
+        }
+
+        if (count($products) > 10) {
+            $lines[] = "\n_...y " . (count($products) - 10) . " productos más._";
+        }
+
+        $lines[] = "\n🌐 Ver todos: {$baseUrl}";
+
+        $this->api->sendText($phone, implode("\n", $lines));
     }
 
     // ── Parser centralizado de mensajes ───────────────────────────────────────
