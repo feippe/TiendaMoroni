@@ -232,18 +232,29 @@ class WhatsAppAPI
             ],
         ];
 
-        // ── LOG DIAGNÓSTICO TEMPORAL ──────────────────────────────────────────
-        $this->logger->info(
-            "DIAG sendProductList: to={$to}"
-            . " catalog_id={$catalogId}"
-            . " totalProducts={$totalProducts}"
-            . " retailer_ids=[" . implode(',', $retailerIds) . "]"
-            . " sections=" . count($apiSections)
-            . " payload=" . json_encode($payload, JSON_UNESCAPED_UNICODE)
-        );
-        // ── FIN LOG DIAGNÓSTICO ───────────────────────────────────────────────
-
         return $this->post($to, 'product_list', $payload);
+    }
+
+    /**
+     * Envía un mensaje con imagen y caption.
+     * Si la URL de la imagen no es accesible, Meta ignora la imagen en silencio.
+     *
+     * @param string $to       Número destino.
+     * @param string $imageUrl URL pública de la imagen (HTTPS).
+     * @param string $caption  Texto del caption. Máx. 1024 chars.
+     */
+    public function sendImage(string $to, string $imageUrl, string $caption = ''): array
+    {
+        $payload = [
+            'messaging_product' => 'whatsapp',
+            'to'                => $to,
+            'type'              => 'image',
+            'image'             => [
+                'link'    => $imageUrl,
+                'caption' => wa_truncate($caption, 1024),
+            ],
+        ];
+        return $this->post($to, 'image', $payload);
     }
 
     /**
@@ -296,12 +307,6 @@ class WhatsAppAPI
 
         $jsonPayload = json_encode($payload, JSON_UNESCAPED_UNICODE);
 
-        // ── LOG DIAGNÓSTICO TEMPORAL: request saliente ────────────────────────
-        $this->logger->info(
-            "DIAG POST: url={$url} type={$type} to={$to} payload_length=" . strlen($jsonPayload)
-        );
-        // ── FIN LOG DIAGNÓSTICO ───────────────────────────────────────────────
-
         $ch = curl_init($url);
         curl_setopt_array($ch, [
             CURLOPT_POST           => true,
@@ -341,12 +346,6 @@ class WhatsAppAPI
                 'type'      => $type,
             ]);
 
-            // ── LOG DIAGNÓSTICO TEMPORAL: respuesta de error detallada ────────
-            $this->logger->info(
-                "DIAG API_ERROR: http_code={$httpCode} type={$type} to={$to}"
-                . " response=" . ($response ?: '(vacío)')
-            );
-            // ── FIN LOG DIAGNÓSTICO ──────────────────────────────────────────
         }
 
         $decoded['_http_code'] = $httpCode;
