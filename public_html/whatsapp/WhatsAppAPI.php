@@ -186,6 +186,7 @@ class WhatsAppAPI
     ): array {
         $apiSections   = [];
         $totalProducts = 0;
+        $retailerIds   = []; // Para diagnóstico
 
         foreach (array_slice($sections, 0, 10) as $section) {
             $items = [];
@@ -193,7 +194,9 @@ class WhatsAppAPI
                 if ($totalProducts >= 30) {
                     break 2;
                 }
-                $items[] = ['product_retailer_id' => (string)$product['retailer_id']];
+                $rid = (string)$product['retailer_id'];
+                $items[] = ['product_retailer_id' => $rid];
+                $retailerIds[] = $rid;
                 $totalProducts++;
             }
             if (!empty($items)) {
@@ -203,6 +206,14 @@ class WhatsAppAPI
                 }
                 $apiSections[] = $sec;
             }
+        }
+
+        // Validación: no enviar si no hay productos
+        if (empty($apiSections) || $totalProducts === 0) {
+            $this->logger->error('sendProductList: sin productos válidos para enviar', [
+                'to' => $to, 'catalog_id' => $catalogId,
+            ]);
+            return ['error' => 'no_products'];
         }
 
         $payload = [
@@ -220,6 +231,18 @@ class WhatsAppAPI
                 ],
             ],
         ];
+
+        // ── LOG DIAGNÓSTICO TEMPORAL ──────────────────────────────────────────
+        $this->logger->info(
+            "DIAG sendProductList: to={$to}"
+            . " catalog_id={$catalogId}"
+            . " totalProducts={$totalProducts}"
+            . " retailer_ids=[" . implode(',', $retailerIds) . "]"
+            . " sections=" . count($apiSections)
+            . " payload=" . json_encode($payload, JSON_UNESCAPED_UNICODE)
+        );
+        // ── FIN LOG DIAGNÓSTICO ───────────────────────────────────────────────
+
         return $this->post($to, 'product_list', $payload);
     }
 
@@ -273,6 +296,12 @@ class WhatsAppAPI
 
         $jsonPayload = json_encode($payload, JSON_UNESCAPED_UNICODE);
 
+        // ── LOG DIAGNÓSTICO TEMPORAL: request saliente ────────────────────────
+        $this->logger->info(
+            "DIAG POST: url={$url} type={$type} to={$to} payload_length=" . strlen($jsonPayload)
+        );
+        // ── FIN LOG DIAGNÓSTICO ───────────────────────────────────────────────
+
         $ch = curl_init($url);
         curl_setopt_array($ch, [
             CURLOPT_POST           => true,
@@ -299,7 +328,7 @@ class WhatsAppAPI
                 'to'    => $to,
                 'type'  => $type,
             ]);
-            return ['error' => $curlError];
+            return ['error' => $curlError, '_http_code' => 0];
         }
 
         $decoded = json_decode($response ?: '{}', true) ?: [];
@@ -311,8 +340,16 @@ class WhatsAppAPI
                 'to'        => $to,
                 'type'      => $type,
             ]);
+
+            // ── LOG DIAGNÓSTICO TEMPORAL: respuesta de error detallada ────────
+            $this->logger->info(
+                "DIAG API_ERROR: http_code={$httpCode} type={$type} to={$to}"
+                . " response=" . ($response ?: '(vacío)')
+            );
+            // ── FIN LOG DIAGNÓSTICO ──────────────────────────────────────────
         }
 
+        $decoded['_http_code'] = $httpCode;
         return $decoded;
     }
 }

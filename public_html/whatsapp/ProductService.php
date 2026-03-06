@@ -116,11 +116,11 @@ class ProductService
         int $limit  = self::PRODUCTS_PER_PAGE
     ): array {
         $stmt = $this->pdo->prepare(
-            'SELECT p.id, p.name, p.price, p.main_image_url,
+            'SELECT p.id, p.name, p.slug, p.price, p.stock, p.main_image_url,
                     v.id AS vendor_id, v.business_name AS vendor_name, v.phone AS vendor_phone
              FROM products p
              INNER JOIN vendors v ON v.id = p.vendor_id
-             WHERE p.category_id = :cat AND p.status = :status
+             WHERE p.category_id = :cat AND p.status = :status AND p.stock > 0
              ORDER BY p.featured DESC, p.created_at DESC
              LIMIT :lim OFFSET :off'
         );
@@ -135,7 +135,7 @@ class ProductService
     public function countProductsByCategory(int $categoryId): int
     {
         $stmt = $this->pdo->prepare(
-            'SELECT COUNT(*) FROM products WHERE category_id = ? AND status = ?'
+            'SELECT COUNT(*) FROM products WHERE category_id = ? AND status = ? AND stock > 0'
         );
         $stmt->execute([$categoryId, 'active']);
         return (int)$stmt->fetchColumn();
@@ -152,11 +152,11 @@ class ProductService
         int $limit  = self::PRODUCTS_PER_PAGE
     ): array {
         $stmt = $this->pdo->prepare(
-            'SELECT p.id, p.name, p.price, p.main_image_url,
+            'SELECT p.id, p.name, p.slug, p.price, p.stock, p.main_image_url,
                     v.id AS vendor_id, v.business_name AS vendor_name, v.phone AS vendor_phone
              FROM products p
              INNER JOIN vendors v ON v.id = p.vendor_id
-             WHERE p.vendor_id = :vid AND p.status = :status
+             WHERE p.vendor_id = :vid AND p.status = :status AND p.stock > 0
              ORDER BY p.featured DESC, p.created_at DESC
              LIMIT :lim OFFSET :off'
         );
@@ -171,7 +171,7 @@ class ProductService
     public function countProductsByVendor(int $vendorId): int
     {
         $stmt = $this->pdo->prepare(
-            'SELECT COUNT(*) FROM products WHERE vendor_id = ? AND status = ?'
+            'SELECT COUNT(*) FROM products WHERE vendor_id = ? AND status = ? AND stock > 0'
         );
         $stmt->execute([$vendorId, 'active']);
         return (int)$stmt->fetchColumn();
@@ -190,11 +190,11 @@ class ProductService
     ): array {
         $like = '%' . $term . '%';
         $stmt = $this->pdo->prepare(
-            'SELECT p.id, p.name, p.price, p.main_image_url,
+            'SELECT p.id, p.name, p.slug, p.price, p.stock, p.main_image_url,
                     v.id AS vendor_id, v.business_name AS vendor_name, v.phone AS vendor_phone
              FROM products p
              INNER JOIN vendors v ON v.id = p.vendor_id
-             WHERE (p.name LIKE :t1 OR p.description LIKE :t2) AND p.status = :status
+             WHERE (p.name LIKE :t1 OR p.description LIKE :t2) AND p.status = :status AND p.stock > 0
              ORDER BY p.featured DESC, p.created_at DESC
              LIMIT :lim OFFSET :off'
         );
@@ -212,7 +212,7 @@ class ProductService
         $like = '%' . $term . '%';
         $stmt = $this->pdo->prepare(
             'SELECT COUNT(*) FROM products
-             WHERE (name LIKE ? OR description LIKE ?) AND status = ?'
+             WHERE (name LIKE ? OR description LIKE ?) AND status = ? AND stock > 0'
         );
         $stmt->execute([$like, $like, 'active']);
         return (int)$stmt->fetchColumn();
