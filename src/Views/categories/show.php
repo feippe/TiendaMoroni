@@ -5,6 +5,56 @@ if ($parentCategory) {
     $crumbs[] = ['name' => $parentCategory['name'], 'url' => SITE_URL . '/categoria/' . $parentCategory['slug']];
 }
 $crumbs[] = ['name' => $category['name'], 'url' => SITE_URL . '/categoria/' . $category['slug']];
+
+/* ── JSON-LD: CollectionPage + ItemList ── */
+$graphItems = [
+    [
+        '@type'       => 'CollectionPage',
+        '@id'         => SITE_URL . '/categoria/' . $category['slug'] . '#webpage',
+        'url'         => SITE_URL . '/categoria/' . $category['slug'],
+        'name'        => $category['meta_title'] ?: $category['name'],
+        'description' => $category['meta_description'] ?: ($category['description'] ?? ''),
+        'isPartOf'    => ['@id' => SITE_URL . '/#website'],
+    ],
+];
+
+if (!empty($products)) {
+    $listItems = [];
+    foreach ($products as $i => $p) {
+        $avail = ((int)($p['stock'] ?? 0)) > 0
+            ? 'https://schema.org/InStock'
+            : 'https://schema.org/OutOfStock';
+        $listItems[] = [
+            '@type'    => 'ListItem',
+            'position' => $i + 1,
+            'item'     => [
+                '@type'  => 'Product',
+                'name'   => $p['name'],
+                'url'    => SITE_URL . '/producto/' . $p['slug'],
+                'image'  => $p['main_image_url'] ?? '',
+                'offers' => [
+                    '@type'         => 'Offer',
+                    'price'         => number_format((float)$p['price'], 2, '.', ''),
+                    'priceCurrency' => 'UYU',
+                    'availability'  => $avail,
+                    'url'           => SITE_URL . '/producto/' . $p['slug'],
+                ],
+            ],
+        ];
+    }
+    $graphItems[] = [
+        '@type'           => 'ItemList',
+        'name'            => $category['name'] . ' — ' . SITE_NAME,
+        'url'             => SITE_URL . '/categoria/' . $category['slug'],
+        'numberOfItems'   => count($products),
+        'itemListElement' => $listItems,
+    ];
+}
+
+$jsonLD = json_encode([
+    '@context' => 'https://schema.org',
+    '@graph'   => $graphItems,
+], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 ?>
 
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

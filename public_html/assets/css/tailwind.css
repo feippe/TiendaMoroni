@@ -1,0 +1,16 @@
+/*
+ * TiendaMoroni — Tailwind CSS source
+ *
+ * Este archivo es el PUNTO DE ENTRADA para la compilación de Tailwind.
+ * El output compilado y minificado se genera en:
+ *   public_html/assets/css/tailwind.min.css
+ *
+ * Comando de build:
+ *   npm run build
+ *
+ * NO editar el archivo de output directamente.
+ */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

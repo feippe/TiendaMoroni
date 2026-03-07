@@ -1,0 +1,14 @@
+{
+  "name": "tiendamoroni",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "tailwindcss -i ./public_html/assets/css/tailwind.css -o ./public_html/assets/css/tailwind.min.css --minify",
+    "watch": "tailwindcss -i ./public_html/assets/css/tailwind.css -o ./public_html/assets/css/tailwind.min.css --watch"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.3",
+    "tailwindcss": "^3.4.17"
+  }
+}
