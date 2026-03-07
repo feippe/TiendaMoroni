@@ -3,9 +3,10 @@
  * AiIntentService – Clasificador de intenciones del usuario.
  *
  * Estrategia de evaluación (en orden):
- *   1. Reglas locales: keywords de FAQ + regex de búsqueda (sin red, sin latencia)
- *   2. Gemini AI: solo si las reglas no dan match con confianza suficiente
- *   3. Fallback seguro: si todo falla, devuelve intent=fallback
+ *   1. Reglas locales: regex de búsqueda (más específicos, exigen un producto)
+ *   2. Reglas locales: keywords de FAQ (más generales)
+ *   3. Gemini AI: solo si las reglas no dan match con confianza suficiente
+ *   4. Fallback seguro: si todo falla, devuelve intent=fallback
  *
  * El servicio NUNCA genera contenido. Solo clasifica.
  * Devuelve siempre una estructura normalizada:
@@ -70,18 +71,20 @@ class AiIntentService
             return $this->result('fallback', null, null, 0.0, 'rule');
         }
 
-        // ── Paso 1: FAQ por keywords ─────────────────────────────────────────
-        $faqResult = $this->matchFaq($normalized);
-        if ($faqResult !== null) {
-            $this->logger->info("AI_INTENT: FAQ match key={$faqResult} source=rule text=\"{$normalized}\"");
-            return $this->result('faq', $faqResult, null, 1.0, 'rule');
-        }
-
-        // ── Paso 2: Búsqueda por regex/frase ─────────────────────────────────
+        // ── Paso 1: Búsqueda por regex/frase (más específico → va primero) ────
+        // Los extractors exigen un término concreto después del verbo, así que
+        // "quiero comprar una tapa" → search, pero "cómo comprar?" → no matchea.
         $searchTerm = $this->matchSearch($normalized);
         if ($searchTerm !== null) {
             $this->logger->info("AI_INTENT: search match term=\"{$searchTerm}\" source=rule text=\"{$normalized}\"");
             return $this->result('search', null, $searchTerm, 0.95, 'rule');
+        }
+
+        // ── Paso 2: FAQ por keywords ─────────────────────────────────────────
+        $faqResult = $this->matchFaq($normalized);
+        if ($faqResult !== null) {
+            $this->logger->info("AI_INTENT: FAQ match key={$faqResult} source=rule text=\"{$normalized}\"");
+            return $this->result('faq', $faqResult, null, 1.0, 'rule');
         }
 
         // ── Paso 3: Stopwords → fallback directo (no gastar en AI) ───────────
