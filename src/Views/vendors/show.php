@@ -5,6 +5,56 @@ $crumbs = [
     ['name' => 'Vendedores', 'url' => SITE_URL . '/productos'],
     ['name' => $vendor['business_name'], 'url' => SITE_URL . '/vendedor/' . $vendor['slug']],
 ];
+
+/* ── JSON-LD: CollectionPage + ItemList ── */
+$graphItems = [
+    [
+        '@type'       => 'CollectionPage',
+        '@id'         => SITE_URL . '/vendedor/' . $vendor['slug'] . '#webpage',
+        'url'         => SITE_URL . '/vendedor/' . $vendor['slug'],
+        'name'        => $vendor['business_name'] . ' — ' . SITE_NAME,
+        'description' => $vendor['business_description'] ?: 'Productos de ' . $vendor['business_name'],
+        'isPartOf'    => ['@id' => SITE_URL . '/#website'],
+    ],
+];
+
+if (!empty($products)) {
+    $listItems = [];
+    foreach ($products as $i => $p) {
+        $avail = ((int)($p['stock'] ?? 0)) > 0
+            ? 'https://schema.org/InStock'
+            : 'https://schema.org/OutOfStock';
+        $listItems[] = [
+            '@type'    => 'ListItem',
+            'position' => $i + 1,
+            'item'     => [
+                '@type'  => 'Product',
+                'name'   => $p['name'],
+                'url'    => SITE_URL . '/producto/' . $p['slug'],
+                'image'  => $p['main_image_url'] ?? '',
+                'offers' => [
+                    '@type'         => 'Offer',
+                    'price'         => number_format((float)$p['price'], 2, '.', ''),
+                    'priceCurrency' => 'UYU',
+                    'availability'  => $avail,
+                    'url'           => SITE_URL . '/producto/' . $p['slug'],
+                ],
+            ],
+        ];
+    }
+    $graphItems[] = [
+        '@type'           => 'ItemList',
+        'name'            => 'Productos de ' . $vendor['business_name'],
+        'url'             => SITE_URL . '/vendedor/' . $vendor['slug'],
+        'numberOfItems'   => count($products),
+        'itemListElement' => $listItems,
+    ];
+}
+
+$jsonLD = json_encode([
+    '@context' => 'https://schema.org',
+    '@graph'   => $graphItems,
+], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 ?>
 
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

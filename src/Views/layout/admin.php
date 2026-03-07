@@ -13,65 +13,9 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS: compilado y minificado para producción (npm run build) -->
+  <link rel="stylesheet" href="/assets/css/tailwind.min.css">
   <link rel="stylesheet" href="/assets/css/app.css">
-
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: { sans: ['Lato', 'sans-serif'], serif: ['Playfair Display', 'Georgia', 'serif'] },
-          colors: {
-            gold: {
-              light:  '#FEF9EC',
-              tint:   '#FDF0C4',
-              soft:   '#F5C842',
-              DEFAULT:'#E8B020',
-              dark:   '#C8920A',
-              deeper: '#9E6F05',
-            },
-            navy: {
-              light:  '#EEF1F8',
-              mid:    '#4F6EA8',
-              DEFAULT:'#1E3A6E',
-              dark:   '#152B54',
-              deeper: '#0D1C38',
-            },
-            /* Aliases de compatibilidad — mapean a paleta oficial */
-            brand: {
-              50:  '#F8F9FA',   /* --color-bg */
-              100: '#EEF1F8',   /* --color-navy-light */
-              200: '#EEF1F8',   /* --color-navy-light */
-              300: '#4F6EA8',   /* --color-navy-mid */
-              400: '#E8B020',   /* --color-gold */
-              500: '#C8920A',   /* --color-gold-dark */
-              600: '#1E3A6E',   /* --color-navy */
-              700: '#152B54',   /* --color-navy-dark */
-              800: '#0D1C38',   /* --color-navy-deeper */
-              900: '#0D1C38',   /* --color-navy-deeper */
-            },
-            accent: {
-              DEFAULT: '#E8B020',   /* --color-gold */
-              light:   '#F5C842',   /* --color-gold-soft */
-              dark:    '#C8920A',   /* --color-gold-dark */
-            },
-            warm: {
-              50:  '#F8F6F2',
-              100: '#f0ede6',
-              200: '#e2ddd4',
-              300: '#cdc7bb',
-              400: '#7c756c', /* ≥4.5:1 vs blanco — pasa WCAG AA */
-              500: '#7a7268',
-              600: '#5a5450',
-              700: '#44403c',
-              800: '#2C2A27',
-              900: '#1a1916',
-            },
-          }
-        }
-      }
-    }
-  </script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
   <script>
     document.addEventListener('alpine:init', () => {

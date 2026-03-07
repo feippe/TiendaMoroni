@@ -44,65 +44,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
 
-  <!-- Tailwind CSS CDN — load CDN first, then configure -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            sans:  ['Lato', 'sans-serif'],
-            serif: ['Playfair Display', 'Georgia', 'serif'],
-          },
-          colors: {
-            /* ── Sistema de diseño ── */
-            gold: {
-              DEFAULT: '#E8B020',   /* primario */
-              dark:    '#C8920A',   /* hover primario */
-              soft:    '#F5C842',   /* badges */
-              light:   '#FEF9EC',
-              tint:    '#FDF0C4',
-              deeper:  '#9E6F05',
-            },
-            navy: {
-              DEFAULT: '#1E3A6E',   /* secundario */
-              dark:    '#152B54',   /* hover / footer */
-              deeper:  '#0D1C38',   /* dark bg / texto oscuro */
-              light:   '#EEF1F8',   /* superficie clara */
-              mid:     '#4F6EA8',   /* texto mutado */
-            },
-            /* ── Neutrales ── */
-            warm: {
-              50:  '#F8F6F2',
-              100: '#f0ede6',
-              200: '#e2ddd4',
-              300: '#cdc7bb',
-              400: '#7c756c', /* ≥4.5:1 vs blanco — pasa WCAG AA */
-              500: '#7a7268',
-              600: '#5a5450',
-              700: '#44403c',
-              800: '#2C2A27',
-              900: '#1a1916',
-            },
-            /* ── Aliases de compatibilidad — mapean a paleta oficial ── */
-            brand: {
-              50:  '#F8F9FA',   /* --color-bg */
-              100: '#EEF1F8',   /* --color-navy-light */
-              200: '#EEF1F8',   /* --color-navy-light */
-              300: '#4F6EA8',   /* --color-navy-mid */
-              400: '#E8B020',   /* --color-gold */
-              500: '#C8920A',   /* --color-gold-dark */
-              600: '#1E3A6E',   /* --color-navy */
-              700: '#152B54',   /* --color-navy-dark */
-              800: '#0D1C38',   /* --color-navy-deeper */
-              900: '#0D1C38',   /* --color-navy-deeper */
-            },
-          },
-          transitionDuration: { DEFAULT: '200ms' },
-        }
-      }
-    }
-  </script>
+  <!-- Tailwind CSS: compilado y minificado para producción (npm run build) -->
+  <link rel="stylesheet" href="/assets/css/tailwind.min.css">
 
   <!-- Alpine.js plugins (must load before Alpine) -->
   <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/intersect@3.x.x/dist/cdn.min.js"></script>

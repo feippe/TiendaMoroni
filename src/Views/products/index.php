@@ -5,6 +5,9 @@ $layout = 'layout/app';
 if (!empty($products)) {
     $listItems = [];
     foreach ($products as $i => $p) {
+        $avail = ((int)($p['stock'] ?? 0)) > 0
+            ? 'https://schema.org/InStock'
+            : 'https://schema.org/OutOfStock';
         $listItems[] = [
             '@type'    => 'ListItem',
             'position' => $i + 1,
@@ -17,7 +20,7 @@ if (!empty($products)) {
                     '@type'        => 'Offer',
                     'price'        => number_format((float)$p['price'], 2, '.', ''),
                     'priceCurrency'=> 'UYU',
-                    'availability' => 'https://schema.org/InStock',
+                    'availability' => $avail,
                 ],
             ],
         ];

@@ -13,26 +13,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS: compilado y minificado para producción (npm run build) -->
+  <link rel="stylesheet" href="/assets/css/tailwind.min.css">
   <link rel="stylesheet" href="/assets/css/app.css">
-
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            sans:  ['Lato', 'sans-serif'],
-            serif: ['Playfair Display', 'Georgia', 'serif'],
-          },
-          colors: {
-            gold: { DEFAULT: '#E8B020', dark: '#C8920A', soft: '#F5C842' },
-            navy: { DEFAULT: '#1E3A6E', dark: '#152B54', deeper: '#0D1C38' },
-            warm: { 300: '#cdc7bb' },
-          },
-        },
-      },
-    }
-  </script>
 
   <style>
     @keyframes fadeInUp {

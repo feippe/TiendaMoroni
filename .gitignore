@@ -20,4 +20,10 @@ Thumbs.db
 .vscode/
 *.log
 
+# Node – solo las dependencias instaladas localmente
+# package.json, package-lock.json, tailwind.config.js, postcss.config.js
+# y public_html/assets/css/tailwind.min.css se VERSIONAN:
+# el servidor de producción NO necesita Node/npm, solo el CSS ya compilado.
+node_modules/
+
 /README.md
