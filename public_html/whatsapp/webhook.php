@@ -23,6 +23,7 @@ require_once __DIR__ . '/WhatsAppAPI.php';
 require_once __DIR__ . '/ProductService.php';
 require_once __DIR__ . '/OrderService.php';
 require_once __DIR__ . '/MessageRouter.php';
+require_once __DIR__ . '/AiIntentService.php';
 
 // ── GET: Verificación del webhook por Meta ────────────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
@@ -107,7 +108,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $waApi  = new WhatsAppAPI(WA_PHONE_NUMBER_ID, WA_ACCESS_TOKEN, WA_API_VERSION, $logger);
         $prods  = new ProductService($pdo);
         $orders = new OrderService($pdo);
-        $router = new MessageRouter($waApi, $conv, $prods, $orders, $logger, $config);
+
+        // IA: crear instancia solo si el kill-switch está habilitado
+        $ai = (defined('WA_AI_ENABLED') && WA_AI_ENABLED)
+            ? new AiIntentService($logger)
+            : null;
+
+        $router = new MessageRouter($waApi, $conv, $prods, $orders, $logger, $config, $ai);
 
         // ── Iterar sobre los entries del payload ──────────────────────────────
         $entries = $payload['entry'] ?? [];

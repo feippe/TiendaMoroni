@@ -72,6 +72,7 @@ class MessageRouter
     private OrderService        $orders;
     private Logger              $logger;
     private array               $config;
+    private ?AiIntentService    $ai;
 
     public function __construct(
         WhatsAppAPI         $api,
@@ -79,7 +80,8 @@ class MessageRouter
         ProductService      $products,
         OrderService        $orders,
         Logger              $logger,
-        array               $config
+        array               $config,
+        ?AiIntentService    $ai = null
     ) {
         $this->api      = $api;
         $this->conv     = $conv;
@@ -87,6 +89,7 @@ class MessageRouter
         $this->orders   = $orders;
         $this->logger   = $logger;
         $this->config   = $config;
+        $this->ai       = $ai;
     }
 
     // ── Punto de entrada ──────────────────────────────────────────────────────
@@ -200,7 +203,12 @@ class MessageRouter
             return;
         }
 
-        // Cualquier otro mensaje (primer contacto, texto libre, etc.) → bienvenida
+        // Texto libre → clasificar con IA antes de mostrar bienvenida por defecto
+        if ($parsed['text'] !== null && $this->handleFreeText($phone, $parsed['text'], 'WELCOME')) {
+            return;
+        }
+
+        // Sin match AI o sin texto → bienvenida normal
         $this->logger->info(
             "HANDLER handleWelcome: id inesperado='" . ($id ?? 'null') . "' → mostrando bienvenida"
         );
@@ -254,8 +262,11 @@ class MessageRouter
                 break;
 
             default:
-                // Input no reconocido (texto libre, ID desconocido, etc.)
-                // NO resetear a WELCOME: reenviar el menú para mantener al usuario en contexto.
+                // Texto libre → clasificar con IA
+                if ($parsed['text'] !== null && $this->handleFreeText($phone, $parsed['text'], 'BROWSE_MENU')) {
+                    break;
+                }
+                // Sin match → reenviar menú
                 $this->logger->info(
                     "HANDLER handleBrowseMenu: id inesperado='"
                     . ($id ?? 'null') . "' → reenviando menú"
@@ -305,7 +316,11 @@ class MessageRouter
             return;
         }
 
-        // Input inesperado → reenviar la misma lista sin cambiar estado
+        // Texto libre → clasificar con IA
+        if ($parsed['text'] !== null && $this->handleFreeText($phone, $parsed['text'], 'SELECT_CATEGORY')) {
+            return;
+        }
+        // Sin match → reenviar la misma lista sin cambiar estado
         $this->logger->info(
             "HANDLER handleSelectCategory: id inesperado='"
             . ($id ?? 'null') . "' → reenviando lista"
@@ -354,7 +369,11 @@ class MessageRouter
             return;
         }
 
-        // Input inesperado → reenviar la misma lista sin cambiar estado
+        // Texto libre → clasificar con IA
+        if ($parsed['text'] !== null && $this->handleFreeText($phone, $parsed['text'], 'SELECT_SELLER')) {
+            return;
+        }
+        // Sin match → reenviar la misma lista sin cambiar estado
         $this->logger->info(
             "HANDLER handleSelectSeller: id inesperado='"
             . ($id ?? 'null') . "' → reenviando lista"
@@ -456,7 +475,11 @@ class MessageRouter
             return;
         }
 
-        // Input no reconocido (list_reply, texto libre, etc.) → reenviar botones sin cambiar estado
+        // Texto libre → clasificar con IA (puede ser nueva búsqueda)
+        if ($parsed['text'] !== null && $this->handleFreeText($phone, $parsed['text'], 'SHOW_PRODUCTS')) {
+            return;
+        }
+        // Sin match → reenviar botones sin cambiar estado
         $this->logger->info(
             "HANDLER handleShowProducts: id inesperado='"
             . ($id ?? 'null') . "' → reenviando botones"
@@ -491,7 +514,12 @@ class MessageRouter
             return;
         }
 
-        // "menu_inicio" o cualquier otro mensaje → volver al inicio
+        // Texto libre → clasificar con IA
+        if ($parsed['text'] !== null && $this->handleFreeText($phone, $parsed['text'], 'PRODUCT_INTEREST')) {
+            return;
+        }
+
+        // "menu_inicio" o cualquier otro → volver al inicio
         $this->logTrans($phone, 'PRODUCT_INTEREST', 'WELCOME', $id ?? 'otro');
         $this->conv->reset($phone);
         $this->sendWelcomeMessage($phone);
@@ -946,6 +974,116 @@ class MessageRouter
             'text'    => $text,
             'order'   => $order,
         ];
+    }
+
+    // ── IA: clasificación de texto libre ──────────────────────────────────────
+
+    /**
+     * Clasifica texto libre con AiIntentService y ejecuta la acción correspondiente.
+     *
+     * Retorna TRUE si se procesó el texto (FAQ respondida o búsqueda disparada).
+     * Retorna FALSE si debe continuar con el comportamiento por defecto del handler.
+     *
+     * @param string $phone      Número del cliente.
+     * @param string $text       Texto libre del usuario.
+     * @param string $fromState  Estado actual (para logging y post-acción).
+     */
+    private function handleFreeText(string $phone, string $text, string $fromState): bool
+    {
+        if ($this->ai === null) {
+            return false; // AI no inyectada → fallback al comportamiento original
+        }
+
+        $result = $this->ai->classify($text);
+
+        $this->logger->info(
+            "AI_DISPATCH: phone={$phone} state={$fromState}"
+            . " intent={$result['intent']} source={$result['source']}"
+            . " faq_key=" . ($result['faq_key'] ?? 'null')
+            . " search_term=" . ($result['search_term'] ?? 'null')
+            . " confidence={$result['confidence']}"
+        );
+
+        // ── FAQ ───────────────────────────────────────────────────────────────
+        if ($result['intent'] === 'faq' && $result['faq_key'] !== null) {
+            $response = $this->ai->getFaqResponse($result['faq_key']);
+            if ($response !== null) {
+                $this->api->sendText($phone, $response);
+                // Después de la FAQ, reenviar la UI correspondiente al estado actual
+                $this->resendStateUi($phone, $fromState);
+                return true;
+            }
+        }
+
+        // ── SEARCH ────────────────────────────────────────────────────────────
+        if ($result['intent'] === 'search' && $result['search_term'] !== null) {
+            $term  = mb_substr($result['search_term'], 0, 100);
+            $count = $this->products->countSearchProducts($term);
+
+            if ($count === 0) {
+                $this->api->sendText(
+                    $phone,
+                    "No encontré productos con \"*{$term}*\". Intentá con otra palabra."
+                );
+                $this->resendStateUi($phone, $fromState);
+                return true;
+            }
+
+            $newCtx = ['filter_type' => 'search', 'search_term' => $term, 'page' => 1];
+            $this->logTrans($phone, $fromState, 'SHOW_PRODUCTS', "ai-search:{$term}");
+            $this->conv->setState($phone, 'SHOW_PRODUCTS', $newCtx);
+            $this->sendProductsDisplay($phone, $newCtx);
+            return true;
+        }
+
+        // ── FALLBACK → no procesado, dejar que el handler actual maneje ──────
+        return false;
+    }
+
+    /**
+     * Reenvía la UI correspondiente al estado actual después de responder una FAQ.
+     * El usuario queda en el mismo estado sin perder contexto.
+     */
+    private function resendStateUi(string $phone, string $state): void
+    {
+        switch ($state) {
+            case 'WELCOME':
+                $this->sendWelcomeMessage($phone);
+                break;
+            case 'BROWSE_MENU':
+                $this->sendBrowseMenu($phone);
+                break;
+            case 'SELECT_CATEGORY':
+                $conv = $this->conv->getOrCreate($phone);
+                $page = (int)($conv['context']['cat_page'] ?? 1);
+                $this->sendCategoryList($phone, $page);
+                break;
+            case 'SELECT_SELLER':
+                $conv = $this->conv->getOrCreate($phone);
+                $page = (int)($conv['context']['sel_page'] ?? 1);
+                $this->sendSellerList($phone, $page);
+                break;
+            case 'SHOW_PRODUCTS':
+                $this->api->sendReplyButtons(
+                    $phone,
+                    '¿Qué querés hacer?',
+                    [
+                        ['id' => 'nav_menu',   'title' => 'Volver al menú'],
+                        ['id' => 'nav_buscar', 'title' => 'Nueva búsqueda'],
+                    ]
+                );
+                break;
+            case 'PRODUCT_INTEREST':
+                $this->api->sendReplyButtons(
+                    $phone,
+                    '¿Qué querés hacer ahora?',
+                    [
+                        ['id' => 'pi_seguir',   'title' => 'Seguir comprando'],
+                        ['id' => 'menu_inicio', 'title' => 'Volver al inicio'],
+                    ]
+                );
+                break;
+        }
     }
 
     // ── Helpers de logging ────────────────────────────────────────────────────
