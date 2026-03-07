@@ -1,0 +1,127 @@
+{
+  "version": 1,
+  "settings": {
+    "normalize_accents": true,
+    "normalize_plural_to_singular": false,
+    "min_confidence_for_ai_search": 0.7,
+    "prefer_rules_over_ai": true
+  },
+  "search_intent": {
+    "enabled": true,
+    "phrases": [
+      "quiero comprar",
+      "quiero ver",
+      "busco",
+      "estoy buscando",
+      "tienen",
+      "tenes",
+      "tenés",
+      "necesito",
+      "quiero",
+      "me gustaria",
+      "me gustaría",
+      "quisiera",
+      "algo para",
+      "regalo para"
+    ],
+    "stopwords": [
+      "hola",
+      "buenas",
+      "gracias",
+      "ok",
+      "dale",
+      "perfecto",
+      "menú",
+      "menu",
+      "inicio",
+      "volver"
+    ],
+    "extractors": [
+      {
+        "type": "regex",
+        "pattern": "^quiero comprar\\s+(.+)$",
+        "group": 1
+      },
+      {
+        "type": "regex",
+        "pattern": "^quiero ver\\s+(.+)$",
+        "group": 1
+      },
+      {
+        "type": "regex",
+        "pattern": "^busco\\s+(.+)$",
+        "group": 1
+      },
+      {
+        "type": "regex",
+        "pattern": "^estoy buscando\\s+(.+)$",
+        "group": 1
+      },
+      {
+        "type": "regex",
+        "pattern": "^necesito\\s+(.+)$",
+        "group": 1
+      },
+      {
+        "type": "regex",
+        "pattern": "^quisiera\\s+(.+)$",
+        "group": 1
+      },
+      {
+        "type": "regex",
+        "pattern": "^me gustaria\\s+(.+)$",
+        "group": 1
+      },
+      {
+        "type": "regex",
+        "pattern": "^me gustaría\\s+(.+)$",
+        "group": 1
+      },
+      {
+        "type": "regex",
+        "pattern": "^tienen\\s+(.+)$",
+        "group": 1
+      },
+      {
+        "type": "regex",
+        "pattern": "^tenes\\s+(.+)$",
+        "group": 1
+      },
+      {
+        "type": "regex",
+        "pattern": "^tenés\\s+(.+)$",
+        "group": 1
+      },
+      {
+        "type": "regex",
+        "pattern": "^algo para\\s+(.+)$",
+        "group": 1
+      },
+      {
+        "type": "regex",
+        "pattern": "^regalo para\\s+(.+)$",
+        "group": 1
+      }
+    ],
+    "cleanup_patterns": [
+      "^un\\s+",
+      "^una\\s+",
+      "^unos\\s+",
+      "^unas\\s+",
+      "^el\\s+",
+      "^la\\s+",
+      "^los\\s+",
+      "^las\\s+",
+      "\\?$",
+      "\\.$"
+    ]
+  },
+  "faq_routing": {
+    "enabled": true,
+    "min_keyword_matches": 1
+  },
+  "fallback": {
+    "enabled": true,
+    "message": "No estoy seguro de haber entendido tu consulta. Puedes usar el menú para explorar el catálogo o realizar una búsqueda."
+  }
+}

@@ -19,6 +19,11 @@ Options -Indexes
     Require all denied
 </FilesMatch>
 
+# Denegar acceso a archivos JSON (faq.json, intent_rules.json, etc.)
+<FilesMatch "\.json$">
+    Require all denied
+</FilesMatch>
+
 # Denegar acceso a archivos de log
 <FilesMatch "\.log$">
     Require all denied

@@ -1,0 +1,91 @@
+{
+  "version": 1,
+  "default_fallback_message": "No estoy seguro de haber entendido tu consulta. Puedes usar el menú para explorar el catálogo o realizar una búsqueda.",
+  "items": {
+    "envios": {
+      "enabled": true,
+      "keywords": [
+        "envio",
+        "envíos",
+        "entrega",
+        "entregas",
+        "delivery",
+        "despacho",
+        "mandan",
+        "mandan a domicilio"
+      ],
+      "response": "Los envíos se coordinan directamente con el vendedor. En algunos casos podrán tener costo y en otros no. En cualquier caso, te sugiero que lo consultes directamente con tu vendedor al momento de comprar."
+    },
+    "horarios": {
+      "enabled": true,
+      "keywords": [
+        "horario",
+        "horarios",
+        "atienden",
+        "atención",
+        "cuando responden",
+        "en qué horario",
+        "hora de atención"
+      ],
+      "response": "Puedes ver los productos y realizar pedidos en cualquier día y horario, pero ten presente que el vendedor podrá responderte dentro de su horario habitual de atención."
+    },
+    "personalizacion": {
+      "enabled": true,
+      "keywords": [
+        "personalizacion",
+        "personalización",
+        "personalizado",
+        "personalizada",
+        "nombre",
+        "nombres",
+        "texto",
+        "foto",
+        "fotos",
+        "dedicatoria",
+        "personalizar"
+      ],
+      "response": "Algunos productos publicados se ofrecen con personalizaciones, como por ejemplo pinturas, nombres, textos o fotos. Presta atención a la publicación, sobre todo a la descripción. Si el producto no lo especifica, entonces se vende tal como se muestra en la foto."
+    },
+    "proceso_compra": {
+      "enabled": true,
+      "keywords": [
+        "como compro",
+        "cómo compro",
+        "como comprar",
+        "cómo comprar",
+        "proceso de compra",
+        "comprar",
+        "pedido",
+        "hacer un pedido",
+        "como funciona la compra"
+      ],
+      "response": "Una vez que selecciones todos los productos que desees comprar, te daré un botón para escribirle directamente al vendedor con el o los productos que hayas elegido, para facilitarte el contacto. Si decides comprar por la web, el vendedor se pondrá en contacto contigo luego de confirmar la compra."
+    },
+    "pagos": {
+      "enabled": true,
+      "keywords": [
+        "pago",
+        "pagos",
+        "medios de pago",
+        "como pago",
+        "cómo pago",
+        "transferencia",
+        "efectivo",
+        "tarjeta"
+      ],
+      "response": "Los detalles del pago se coordinan directamente con el vendedor. Los medios de pago pueden variar según cada caso, por lo que te recomendamos consultarlo al momento de concretar la compra."
+    },
+    "stock": {
+      "enabled": true,
+      "keywords": [
+        "stock",
+        "disponible",
+        "disponibilidad",
+        "hay disponible",
+        "queda",
+        "tienen disponible"
+      ],
+      "response": "La disponibilidad puede variar. Si el producto aparece publicado, normalmente está disponible, pero la confirmación final te la dará el vendedor al momento de coordinar la compra."
+    }
+  }
+}
