@@ -7,8 +7,9 @@
   <meta name="theme-color" content="#0D1C38">
   <title>Sitio en mantenimiento — Tienda Moroni</title>
 
-  <link rel="icon" href="/assets/img/isotipo.ico?v=2" type="image/x-icon">
-  <link rel="shortcut icon" href="/assets/img/isotipo.ico?v=2" type="image/x-icon">
+  <link rel="icon" href="/assets/img/isotipo.svg?v=3" type="image/svg+xml">
+  <link rel="icon" href="/assets/img/isotipo.ico?v=3" type="image/x-icon">
+  <link rel="shortcut icon" href="/assets/img/isotipo.ico?v=3" type="image/x-icon">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

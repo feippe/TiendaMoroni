@@ -4,8 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><?= e($pageTitle ?? 'Admin – ' . SITE_NAME) ?></title>
-  <link rel="icon" href="/assets/img/isotipo.ico" type="image/x-icon">
-  <link rel="shortcut icon" href="/assets/img/isotipo.ico" type="image/x-icon">
+  <link rel="icon" href="/assets/img/isotipo.svg?v=3" type="image/svg+xml">
+  <link rel="icon" href="/assets/img/isotipo.ico?v=3" type="image/x-icon">
+  <link rel="shortcut icon" href="/assets/img/isotipo.ico?v=3" type="image/x-icon">
   <meta name="robots" content="noindex, nofollow">
   <meta name="theme-color" content="#0D1C38">
   <meta name="csrf-token" content="<?= csrfToken() ?>">
