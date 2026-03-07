@@ -4,8 +4,8 @@
 
 Options -Indexes
 
-# Denegar acceso directo a todos los PHP excepto webhook.php y check-productlist.php (temporal)
-<FilesMatch "^(?!webhook\.php$|check-productlist\.php$).*\.php$">
+# Denegar acceso directo a todos los PHP excepto webhook.php
+<FilesMatch "^(?!webhook\.php$).*\.php$">
     Require all denied
 </FilesMatch>
 
