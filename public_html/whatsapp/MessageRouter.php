@@ -538,7 +538,7 @@ class MessageRouter
         $this->api->sendText(
             $phone,
             "¡Excelente elección! 📦 Registramos tu pedido.\n\n"
-            . 'Para coordinar la entrega y el pago, contactá directamente al artesano:'
+            . 'Para coordinar la entrega y el pago, contactá directamente al vendedor:'
         );
 
         // Agrupar productos por vendedor y enviar un link wa.me por vendedor
@@ -553,25 +553,35 @@ class MessageRouter
 
         foreach ($vendorGroups as $group) {
             $vendorPhone = (string)($group['vendor']['vendor_phone'] ?? '');
-            $vendorName  = (string)($group['vendor']['vendor_name']  ?? 'el artesano');
+            $vendorName  = (string)($group['vendor']['vendor_name']  ?? 'el vendedor');
             $productList = implode(', ', $group['product_names']);
 
             if ($vendorPhone) {
+                // Normalizar al formato internacional uruguayo: "095..." → "59895..."
+                $intlPhone = $vendorPhone;
+                if (str_starts_with($intlPhone, '0')) {
+                    $intlPhone = '598' . substr($intlPhone, 1);
+                }
                 $waText = rawurlencode(
-                    "Hola! Vi {$productList} en TiendaMoroni y me interesa. "
+                    "Hola! Vi {$productList} en Tienda Moroni y me interesa. "
                     . '¿Podés darme más información sobre precio y entrega?'
                 );
-                $waLink = "https://wa.me/{$vendorPhone}?text={$waText}";
-            } else {
-                $waLink = $this->config['app']['base_url'];
-            }
+                $waLink = "https://wa.me/{$intlPhone}?text={$waText}";
 
-            $this->api->sendText(
-                $phone,
-                "🧵 *{$vendorName}*\n"
-                . "Producto/s: {$productList}\n\n"
-                . "👉 {$waLink}"
-            );
+                $this->api->sendCtaUrl(
+                    $phone,
+                    "🧵 *{$vendorName}*\nProducto/s: {$productList}",
+                    'Contactar vendedor',
+                    $waLink
+                );
+            } else {
+                $this->api->sendCtaUrl(
+                    $phone,
+                    "🧵 *{$vendorName}*\nProducto/s: {$productList}",
+                    'Ver tienda',
+                    $this->config['app']['base_url']
+                );
+            }
         }
 
         // Botones post-pedido
@@ -593,11 +603,11 @@ class MessageRouter
     {
         $this->api->sendReplyButtons(
             $phone,
-            "¡Hola! 👋 Bienvenido a *TiendaMoroni*, donde encontrás productos únicos "
+            "¡Hola! 👋 Bienvenido a *Tienda Moroni*, donde encontrás productos únicos "
             . "hechos a mano por artesanos de nuestra comunidad.\n\n"
             . '¿Cómo querés explorar el catálogo?',
             [
-                ['id' => 'btn_ver_web',      'title' => 'Ver en la web'],
+                ['id' => 'btn_ver_web',      'title' => 'Ir a la web'],
                 ['id' => 'btn_ver_whatsapp', 'title' => 'Ver en WhatsApp'],
             ]
         );
@@ -605,11 +615,11 @@ class MessageRouter
 
     private function sendBrowseMenu(string $phone): void
     {
-        $this->api->sendList(
+        /*$this->api->sendList(
             $phone,
             'Explorar catálogo',
-            'Elegí cómo querés navegar los productos de TiendaMoroni.',
-            'TiendaMoroni - Productos únicos para tu fe',
+            '',
+            'Tienda Moroni',
             'Ver opciones',
             [
                 [
@@ -617,11 +627,11 @@ class MessageRouter
                     'rows'  => [
                         [
                             'id'    => 'menu_categorias',
-                            'title' => 'Ver por categoría',
+                            'title' => 'Ver categorías',
                         ],
                         [
                             'id'    => 'menu_vendedores',
-                            'title' => 'Ver por vendedor',
+                            'title' => 'Por vendedor',
                         ],
                         [
                             'id'    => 'menu_buscar',
@@ -633,6 +643,16 @@ class MessageRouter
                         ],
                     ],
                 ],
+            ]
+        );*/
+        $this->api->sendReplyButtons(
+            $phone,
+            "*Explorar el catálogo.*\nSeleccioná una opción para ver productos",
+            [
+                ['id' => 'menu_categorias', 'title' => 'Ver por categorías'],
+                ['id' => 'menu_vendedores', 'title' => 'Por vendedor'],
+                ['id' => 'menu_buscar',    'title' => 'Buscar producto'],
+                ['id' => 'menu_inicio',    'title' => 'Volver al inicio'],
             ]
         );
     }
@@ -671,13 +691,13 @@ class MessageRouter
         }
         $rows[] = ['id' => 'nav_volver', 'title' => 'Volver al menú'];
 
-        $header = $page > 1 ? "Categorías – pág. {$page}" : 'Categorías disponibles';
+        $header = $page > 1 ? "Categorías - pág. {$page}" : 'Categorías disponibles';
 
         $this->api->sendList(
             $phone,
             $header,
             'Elegí una categoría para ver sus productos:',
-            'TiendaMoroni · ' . $total . ' categorías',
+            'Tienda Moroni · ' . $total . ' categorías',
             'Ver categorías',
             [['title' => 'Categorías', 'rows' => $rows]]
         );
@@ -692,7 +712,7 @@ class MessageRouter
         $hasMore = ($offset + $perPage) < $total;
 
         if (empty($sellers)) {
-            $this->api->sendText($phone, 'No hay artesanos con productos disponibles por el momento.');
+            $this->api->sendText($phone, 'No hay vendedores con productos disponibles por el momento.');
             $this->conv->setState($phone, 'BROWSE_MENU');
             $this->sendBrowseMenu($phone);
             return;
@@ -711,21 +731,21 @@ class MessageRouter
         if ($hasMore) {
             $rows[] = [
                 'id'          => 'nav_mas_sels',
-                'title'       => 'Ver más artesanos',
+                'title'       => 'Ver más vendedores',
                 'description' => 'Pág. ' . ($page + 1),
             ];
         }
         $rows[] = ['id' => 'nav_volver', 'title' => 'Volver al menú'];
 
-        $header = $page > 1 ? "Artesanos – pág. {$page}" : 'Nuestros artesanos';
+        $header = $page > 1 ? "Vendedores - pág. {$page}" : 'Nuestros vendedores';
 
         $this->api->sendList(
             $phone,
             $header,
-            'Elegí un artesano para ver sus creaciones:',
-            'TiendaMoroni · ' . $total . ' artesanos',
-            'Ver artesanos',
-            [['title' => 'Artesanos', 'rows' => $rows]]
+            'Elegí un vendedor para ver sus creaciones:',
+            'Tienda Moroni · ' . $total . ' vendedores',
+            'Ver vendedores',
+            [['title' => 'Vendedores', 'rows' => $rows]]
         );
     }
 
@@ -783,8 +803,8 @@ class MessageRouter
         $result = $this->api->sendProductList(
             $phone,
             wa_truncate($title, 60),
-            'Deslizá para ver todos los productos:',
-            'TiendaMoroni - Productos únicos para tu fe',
+            'Toca el botón para ver resultados:',
+            'Tienda Moroni',
             $catalogId,
             [
                 [
